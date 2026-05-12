@@ -6,8 +6,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class TaskgoblinApplication {
 
-	public static void main(String[] args) {
-		SpringApplication.run(TaskgoblinApplication.class, args);
-	}
+    public static void main(String[] args) {
+        SpringApplication.run(TaskgoblinApplication.class, args);
+    }
 
 }
