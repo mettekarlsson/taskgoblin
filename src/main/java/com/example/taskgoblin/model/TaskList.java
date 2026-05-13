@@ -2,17 +2,23 @@ package com.example.taskgoblin.model;
 
 import jakarta.persistence.*;
 
+import java.time.LocalDateTime;
+
 @Entity
-@Table(name = "categories")
-public class Category {
+@Table(name = "lists")
+public class TaskList {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @ManyToOne
-    @JoinColumn(nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     private User user;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
 
     @Column(nullable = false, length = 100)
     private String name;
@@ -23,7 +29,12 @@ public class Category {
     @Column(length = 50)
     private String icon;
 
-    public Category() {
+    @Column(nullable = false)
+    private LocalDateTime createdAt;
+    
+    private LocalDateTime updatedAt;
+
+    public TaskList() {
     }
 
     public Long getId() {
@@ -36,6 +47,14 @@ public class Category {
 
     public void setUser(User user) {
         this.user = user;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
     }
 
     public String getName() {
@@ -60,5 +79,21 @@ public class Category {
 
     public void setIcon(String icon) {
         this.icon = icon;
+    }
+
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
+    }
+
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
     }
 }
