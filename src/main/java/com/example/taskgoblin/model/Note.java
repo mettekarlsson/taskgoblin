@@ -25,13 +25,13 @@ public class Note {
     @Column(length = 20)
     private String color;
 
-    @Column(nullable = false)
-    private boolean pinned;
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean pinned;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
     
-    private LocalDateTime updatedAt;
+    private LocalDateTime lastInteractedAt;
 
     public Note() {
     }
@@ -88,11 +88,11 @@ public class Note {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public LocalDateTime getLastInteractedAt() {
+        return lastInteractedAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setLastInteractedAt(LocalDateTime lastInteractedAt) {
+        this.lastInteractedAt = lastInteractedAt;
     }
 }

@@ -34,8 +34,16 @@ public class Event {
     @Column(length = 255)
     private String location;
 
-    @Column(nullable = false)
-    private boolean allDay;
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean isAllDay;
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean isRecurring;
+
+    @Enumerated(EnumType.STRING)
+    private Frequency frequency;
+
+    private Integer intervalValue;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
@@ -105,14 +113,6 @@ public class Event {
         this.location = location;
     }
 
-    public boolean isAllDay() {
-        return allDay;
-    }
-
-    public void setAllDay(boolean allDay) {
-        this.allDay = allDay;
-    }
-
     public LocalDateTime getCreatedAt() {
         return createdAt;
     }
@@ -127,5 +127,37 @@ public class Event {
 
     public void setUpdatedAt(LocalDateTime updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isAllDay() {
+        return isAllDay;
+    }
+
+    public void setAllDay(boolean allDay) {
+        isAllDay = allDay;
+    }
+
+    public boolean isRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        isRecurring = recurring;
+    }
+
+    public Frequency getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(Frequency frequency) {
+        this.frequency = frequency;
+    }
+
+    public Integer getIntervalValue() {
+        return intervalValue;
+    }
+
+    public void setIntervalValue(Integer intervalValue) {
+        this.intervalValue = intervalValue;
     }
 }

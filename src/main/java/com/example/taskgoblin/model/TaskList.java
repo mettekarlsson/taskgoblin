@@ -31,8 +31,22 @@ public class TaskList {
 
     @Column(nullable = false)
     private LocalDateTime createdAt;
-    
-    private LocalDateTime updatedAt;
+
+    private LocalDateTime dueAt;
+
+    @Enumerated(EnumType.STRING)
+    private Frequency frequency;
+
+    private Integer intervalValue;
+
+    @Column(columnDefinition = "TINYINT(1)")
+    private Boolean isRecurring;
+
+    @Column(nullable = false)
+    private LocalDateTime lastInteractedAt;
+
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean pinned;
 
     public TaskList() {
     }
@@ -89,11 +103,51 @@ public class TaskList {
         this.createdAt = createdAt;
     }
 
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
+    public LocalDateTime getDueAt() {
+        return dueAt;
     }
 
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
+    public void setDueAt(LocalDateTime dueAt) {
+        this.dueAt = dueAt;
+    }
+
+    public Frequency getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(Frequency frequency) {
+        this.frequency = frequency;
+    }
+
+    public Integer getIntervalValue() {
+        return intervalValue;
+    }
+
+    public void setIntervalValue(Integer intervalValue) {
+        this.intervalValue = intervalValue;
+    }
+
+    public boolean isRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        isRecurring = recurring;
+    }
+
+    public LocalDateTime getLastInteractedAt() {
+        return lastInteractedAt;
+    }
+
+    public void setLastInteractedAt(LocalDateTime lastInteractedAt) {
+        this.lastInteractedAt = lastInteractedAt;
+    }
+
+    public boolean isPinned() {
+        return pinned;
+    }
+
+    public void setPinned(boolean pinned) {
+        this.pinned = pinned;
     }
 }
