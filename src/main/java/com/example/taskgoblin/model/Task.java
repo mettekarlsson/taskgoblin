@@ -20,6 +20,10 @@ public class Task {
     @JoinColumn(name = "list_id")
     private TaskList list;
 
+    @ManyToOne
+    @JoinColumn(name = "category_id")
+    private Category category;
+
     @Column(nullable = false, length = 200)
     private String title;
 
@@ -32,24 +36,25 @@ public class Task {
     @Column(nullable = false)
     private TaskStatus status;
 
-
     private Integer sortOrder;
 
-    @Column(nullable = false)
-    private boolean recurring;
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean isRecurring;
 
     @Enumerated(EnumType.STRING)
     private Frequency frequency;
 
     private Integer intervalValue;
 
-    private LocalDateTime lastCompletedAt;
-
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    private LocalDateTime updatedAt;
+
     @Column(nullable = false)
     private LocalDateTime completedAt;
+
+    private LocalDateTime lastCompletedAt;
 
     public Task() {
     }
@@ -114,14 +119,6 @@ public class Task {
         this.sortOrder = sortOrder;
     }
 
-    public boolean isRecurring() {
-        return recurring;
-    }
-
-    public void setRecurring(boolean recurring) {
-        this.recurring = recurring;
-    }
-
     public Frequency getFrequency() {
         return frequency;
     }
@@ -160,5 +157,29 @@ public class Task {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+    public LocalDateTime getUpdatedAt() {
+        return updatedAt;
+    }
+
+    public void setUpdatedAt(LocalDateTime updatedAt) {
+        this.updatedAt = updatedAt;
+    }
+
+    public boolean isRecurring() {
+        return isRecurring;
+    }
+
+    public void setRecurring(boolean recurring) {
+        isRecurring = recurring;
     }
 }

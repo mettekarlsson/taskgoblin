@@ -18,11 +18,11 @@ public class User {
     @Column(nullable = false, length = 255, unique = true)
     private String email;
 
-    @Column(nullable = false, length = 100)
+    @Column(name = "password_hash", nullable = false, length = 100)
     private String password;
 
-    @Column(nullable = false)
-    private boolean status;
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private Boolean status;
 
     @Column(nullable = false)
     private LocalDateTime createdAt;

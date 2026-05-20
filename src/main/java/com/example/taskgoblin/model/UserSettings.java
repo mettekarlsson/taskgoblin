@@ -16,7 +16,7 @@ public class UserSettings {
 
     private Integer defaultReminderMinutes;
 
-    @Column(nullable = false)
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean notificationsEnabled;
 
     @Column(length = 20)
