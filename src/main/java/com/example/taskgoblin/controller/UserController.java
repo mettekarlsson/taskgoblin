@@ -1,5 +1,6 @@
 package com.example.taskgoblin.controller;
 
+import com.example.taskgoblin.dto.UserProfileDTO;
 import com.example.taskgoblin.model.User;
 import com.example.taskgoblin.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -22,6 +23,14 @@ public class UserController {
     @GetMapping
     public ResponseEntity<List<User>> getAll() {
         return ResponseEntity.ok(userService.getAll());
+    }
+
+    @GetMapping("/profile")
+    public ResponseEntity<UserProfileDTO> getUserById() {
+        Long hardcodedUserId = 1L; // placeholder tills inloggning är klar
+        //kommer sen se ut såhär istället:
+        //Long id = securityContext.getAuthenticatedUser().getId();
+        return ResponseEntity.ok(userService.getUserById(hardcodedUserId));
     }
 
 }
