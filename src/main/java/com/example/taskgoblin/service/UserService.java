@@ -17,11 +17,7 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public List<User> getAll() {
-        return userRepository.findAll();
-    }
-
-    public UserProfileDTO getUserById(Long id) {
+    public UserProfileDTO getProfile(Long id) {
         User user = userRepository.findById(id)
          .orElseThrow(() -> new RuntimeException("User not found"));
 

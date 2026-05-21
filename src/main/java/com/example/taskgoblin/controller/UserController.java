@@ -20,17 +20,12 @@ public class UserController {
         this.userService = userService;
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAll() {
-        return ResponseEntity.ok(userService.getAll());
-    }
-
     @GetMapping("/profile")
-    public ResponseEntity<UserProfileDTO> getUserById() {
+    public ResponseEntity<UserProfileDTO> getProfile() {
         Long hardcodedUserId = 1L; // placeholder tills inloggning är klar
         //kommer sen se ut såhär istället:
         //Long id = securityContext.getAuthenticatedUser().getId();
-        return ResponseEntity.ok(userService.getUserById(hardcodedUserId));
+        return ResponseEntity.ok(userService.getProfile(hardcodedUserId));
     }
 
 }
