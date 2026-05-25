@@ -1,45 +1,27 @@
-package com.example.taskgoblin.model;
+package com.example.taskgoblin.dto;
 
-import jakarta.persistence.*;
+import com.example.taskgoblin.model.Language;
+import com.example.taskgoblin.model.User;
 
-@Entity
-@Table(name = "user_settings")
-public class UserSettings {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
-    @OneToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
+public class UserSettingsDTO {
 
     private Integer defaultReminderMinutes;
 
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean notificationsEnabled;
 
-    @Column(length = 20)
     private String theme;
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
     private Language language;
 
-    public UserSettings() {
+    public UserSettingsDTO(Integer defaultReminderMinutes, Boolean notificationsEnabled, String theme, Language language) {
+        this.defaultReminderMinutes = defaultReminderMinutes;
+        this.notificationsEnabled = notificationsEnabled;
+        this.theme = theme;
+        this.language = language;
+
+
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public Integer getDefaultReminderMinutes() {
         return defaultReminderMinutes;
@@ -73,3 +55,4 @@ public class UserSettings {
         this.language = language;
     }
 }
+

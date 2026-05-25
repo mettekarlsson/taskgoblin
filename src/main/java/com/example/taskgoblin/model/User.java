@@ -27,6 +27,8 @@ public class User {
     @Column(nullable = false)
     private LocalDateTime createdAt;
 
+    @OneToOne(mappedBy = "user", cascade = CascadeType.ALL) private UserSettings settings;
+
     public User() {
     }
 
@@ -73,4 +75,6 @@ public class User {
     public void setCreatedAt(LocalDateTime createdAt) {
         this.createdAt = createdAt;
     }
+
+
 }
