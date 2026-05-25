@@ -1,6 +1,7 @@
 package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.NoteDTO;
+import com.example.taskgoblin.mapper.NoteMapper;
 import com.example.taskgoblin.model.Note;
 import com.example.taskgoblin.repository.NoteRepository;
 import org.springframework.stereotype.Service;

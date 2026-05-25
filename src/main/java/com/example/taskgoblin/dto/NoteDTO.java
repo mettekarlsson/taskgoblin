@@ -1,6 +1,5 @@
 package com.example.taskgoblin.dto;
 
-import jakarta.persistence.Column;
 
 import java.time.LocalDateTime;
 
