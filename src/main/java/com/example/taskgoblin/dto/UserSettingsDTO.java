@@ -5,8 +5,6 @@ import com.example.taskgoblin.model.User;
 
 public class UserSettingsDTO {
 
-    private User user;
-
     private Integer defaultReminderMinutes;
 
     private Boolean notificationsEnabled;
@@ -15,8 +13,7 @@ public class UserSettingsDTO {
 
     private Language language;
 
-    public UserSettingsDTO(User user, Integer defaultReminderMinutes, Boolean notificationsEnabled, String theme, Language language) {
-        this.user = user;
+    public UserSettingsDTO(Integer defaultReminderMinutes, Boolean notificationsEnabled, String theme, Language language) {
         this.defaultReminderMinutes = defaultReminderMinutes;
         this.notificationsEnabled = notificationsEnabled;
         this.theme = theme;
@@ -25,13 +22,6 @@ public class UserSettingsDTO {
 
     }
 
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
-    }
 
     public Integer getDefaultReminderMinutes() {
         return defaultReminderMinutes;
