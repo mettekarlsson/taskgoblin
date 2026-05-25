@@ -1,12 +1,11 @@
 package com.example.taskgoblin.controller;
 
+import com.example.taskgoblin.dto.CreateNoteDTO;
 import com.example.taskgoblin.dto.NoteDTO;
 import com.example.taskgoblin.service.NoteService;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,5 +34,10 @@ public class NoteController {
         return ResponseEntity.ok(noteService.getNote(id, hardcodedUserId));
     }
 
+    @PostMapping("/create")
+    public ResponseEntity<NoteDTO> addNote(@Valid @RequestBody CreateNoteDTO createNoteDto) {
+        Long hardcodedUserId = 1L;
+        return ResponseEntity.ok(noteService.createNote(hardcodedUserId, createNoteDto));
+    }
 
 }
