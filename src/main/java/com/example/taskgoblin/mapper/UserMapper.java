@@ -1,7 +1,10 @@
 package com.example.taskgoblin.mapper;
 
 import com.example.taskgoblin.dto.UserProfileDTO;
+import com.example.taskgoblin.dto.UserSettingsDTO;
 import com.example.taskgoblin.model.User;
+import com.example.taskgoblin.model.UserSettings;
+
 
 public class UserMapper {
 
@@ -9,6 +12,15 @@ public class UserMapper {
         return new UserProfileDTO(
                 user.getName(),
                 user.getEmail()
+        );
+    }
+
+    public static UserSettingsDTO mapToUserSettingsDto(UserSettings userSettings) {
+        return new UserSettingsDTO(
+                userSettings.getDefaultReminderMinutes(),
+                userSettings.getNotificationsEnabled(),
+                userSettings.getTheme(),
+                userSettings.getLanguage()
         );
     }
 }
