@@ -22,8 +22,9 @@ public class UserSettings {
     @Column(length = 20)
     private String theme;
 
-    @Column(length = 10)
-    private String language;
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Language language;
 
     public UserSettings() {
     }
@@ -64,11 +65,11 @@ public class UserSettings {
         this.theme = theme;
     }
 
-    public String getLanguage() {
+    public Language getLanguage() {
         return language;
     }
 
-    public void setLanguage(String language) {
+    public void setLanguage(Language language) {
         this.language = language;
     }
 }
