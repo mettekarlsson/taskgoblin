@@ -8,14 +8,57 @@
 </head>
 <body>
 
+<header>
+    <img
+            src="/images/logo.png"
+            alt="TaskGoblin logo"
+            class="app-logo"
+    />
+
+    <!-- Hamburger button -->
+    <button class="hamburger-btn" id="menu-btn">
+        <span></span>
+        <span></span>
+        <span></span>
+    </button>
+
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+
+        <!-- Close button -->
+        <button class="close-btn" id="close-btn">
+            ×
+        </button>
+        <!-- Top image -->
+        <img
+                src="/images/MenuHeader.png"
+                alt="Menu decoration"
+                class="menu-header"
+        >
+
+        <!-- Navigation -->
+        <nav class="sidebar-links">
+
+            <a href="/index.html">Home</a>
+            <a href="/profile.html">Profile</a>
+            <a href="/tasks.html">Tasks</a>
+            <a href="/lists.html">Lists</a>
+            <a href="/notes.html">Notes</a>
+            <a href="/calendar.html">Calendar</a>
+            <a href="/settings.html">Settings</a>
+
+        </nav>
+
+        <!-- Bottom image -->
+        <img
+                src="/images/MenuFooter.png"
+                alt="Menu decoration"
+                class="menu-footer"
+        >
+
+    </aside>
+</header>
 <main class="home-page">
-
-    <!-- Profile button -->
-    <button class="menu-btn" id="profile-btn">Profile</button>
-
-    <!-- Container where profile info will be displayed -->
-    <div id="profile-container"></div>
-
 
     <section class="quote-container">
         <p id="quote-text">Loading quote...</p>
@@ -25,6 +68,9 @@
 
 
 </main>
-<script src="/js/app.js"></script>
+<script src="/js/api.js"></script>
+<script src="/js/menu.js"></script>
+<script src="/js/modal.js"></script>
+<script src="/js/home.js"></script>
 </body>
 </html>
