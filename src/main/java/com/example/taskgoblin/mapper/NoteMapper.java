@@ -9,6 +9,7 @@ public class NoteMapper {
     //mapping from entity to dto
     public static NoteDTO mapToNoteDto(Note note) {
         return new NoteDTO(
+                note.getId(),
                 note.getTitle(),
                 note.getContent(),
                 note.getColor(),
