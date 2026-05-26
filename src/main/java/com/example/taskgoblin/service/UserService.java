@@ -1,6 +1,7 @@
 package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.UserProfileDTO;
+import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.UserMapper;
 import com.example.taskgoblin.model.User;
 import com.example.taskgoblin.repository.UserRepository;
@@ -19,7 +20,7 @@ public class UserService {
 
     public UserProfileDTO getProfile(Long id) {
         User user = userRepository.findById(id)
-         .orElseThrow(() -> new RuntimeException("User not found"));
+         .orElseThrow(() -> new ResourceNotFoundException("User"));
 
         return UserMapper.mapToUserProfileDto(user);
     }
