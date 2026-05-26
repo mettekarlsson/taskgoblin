@@ -10,6 +10,7 @@ public class NoteDTO {
 
     private String content;
 
+
     private String color;
 
     private Boolean pinned;

@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 
 import com.example.taskgoblin.dto.UserSettingsDTO;
+import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.UserMapper;
 import com.example.taskgoblin.model.UserSettings;
 import com.example.taskgoblin.repository.UserSettingsRepository;
@@ -18,7 +19,7 @@ public class UserSettingsService {
 
     public UserSettingsDTO getUserSettings(Long id) {
         UserSettings userSettings = userSettingsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("User settings not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User settings"));
 
         return UserMapper.mapToUserSettingsDto(userSettings);
     }

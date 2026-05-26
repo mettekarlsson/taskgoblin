@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateNoteDTO;
 import com.example.taskgoblin.dto.NoteDTO;
+import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.NoteMapper;
 import com.example.taskgoblin.model.Note;
 import com.example.taskgoblin.model.User;
@@ -40,7 +41,7 @@ public class NoteService {
     // or belongs to another user.
     public NoteDTO getNote(Long id, Long userId) {
         Note note = noteRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new RuntimeException("Note not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Note"));
 
         return NoteMapper.mapToNoteDto(note);
     }
@@ -50,7 +51,7 @@ public class NoteService {
     // are set in the service layer before saving.
     public NoteDTO createNote(Long userId, CreateNoteDTO createNoteDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("User"));
         Note note = NoteMapper.mapToNoteEntity(createNoteDto);
         note.setUser(user);
         note.setCreatedAt(LocalDateTime.now());
