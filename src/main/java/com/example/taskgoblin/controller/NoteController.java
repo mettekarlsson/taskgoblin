@@ -27,12 +27,26 @@ public class NoteController {
 
     }
 
+    // @PathVariable takes a value directly from the URL.
+    //
+    // Example:
+    // GET /notes/1
+    // The value "1" is automatically stored in the id parameter.
+
     // GET /notes/1
     @GetMapping("/{id}")
     public ResponseEntity<NoteDTO> getNote(@PathVariable Long id) {
         Long hardcodedUserId = 1L; // placeholder tills inloggning är klar
         return ResponseEntity.ok(noteService.getNote(id, hardcodedUserId));
     }
+    // @Valid checks that the incoming request body follows
+    // the validation constraints defined in CreateNoteDTO.
+    //
+    // Example:
+    // - @NotBlank prevents empty content
+    // - @Size limits title length
+    //
+    // If validation fails, Spring automatically returns an error response.
 
     @PostMapping("/create")
     public ResponseEntity<NoteDTO> addNote(@Valid @RequestBody CreateNoteDTO createNoteDto) {
