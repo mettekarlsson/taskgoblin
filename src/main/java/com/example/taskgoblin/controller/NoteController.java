@@ -2,6 +2,7 @@ package com.example.taskgoblin.controller;
 
 import com.example.taskgoblin.dto.CreateNoteDTO;
 import com.example.taskgoblin.dto.NoteDTO;
+import com.example.taskgoblin.dto.UpdateNoteDTO;
 import com.example.taskgoblin.service.NoteService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -67,6 +68,19 @@ public class NoteController {
         noteService.deleteNote(id, hardcodedUserId);
 
         return ResponseEntity.ok("Note deleted successfully");
+    }
+
+    // PUT (update) /notes/1
+    @PutMapping("/{id}")
+    public ResponseEntity<NoteDTO> updateNote(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateNoteDTO updateNoteDTO
+    ) {
+        Long hardcodedUserId = 1L;
+
+        return ResponseEntity.ok(
+                noteService.updateNote(id, hardcodedUserId, updateNoteDTO)
+        );
     }
 
 }
