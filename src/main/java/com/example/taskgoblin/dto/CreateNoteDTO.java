@@ -3,6 +3,14 @@ package com.example.taskgoblin.dto;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 
+// Validation constraints check that user input is valid
+// before the data reaches the service layer or database.
+//
+// - @NotBlank prevents empty content
+// - @Size limits how long the title can be
+//
+// This helps protect the application from invalid data.
+
 public class CreateNoteDTO {
 
     @Size(max = 200, message = "Title cannot be longer than 200 characters.")

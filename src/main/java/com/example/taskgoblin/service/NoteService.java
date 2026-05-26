@@ -18,11 +18,15 @@ public class NoteService {
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
 
+    // Constructor injection.
+    // Spring automatically injects the repositories here.
     public NoteService(NoteRepository noteRepository, UserRepository userRepository) {
         this.noteRepository = noteRepository;
         this.userRepository = userRepository;
     }
 
+    // Returns all notes that belong to a specific user.
+    // The notes are converted from entities into DTOs before being returned.
     public List<NoteDTO> getAllNotes(Long id) {
         List<Note> notes = noteRepository.findByUserId(id);
 
@@ -31,6 +35,9 @@ public class NoteService {
                 .toList();
     }
 
+    // Returns a single note if it belongs to the specified user.
+    // Throws an exception if the note does not exist
+    // or belongs to another user.
     public NoteDTO getNote(Long id, Long userId) {
         Note note = noteRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new RuntimeException("Note not found"));
@@ -38,6 +45,9 @@ public class NoteService {
         return NoteMapper.mapToNoteDto(note);
     }
 
+    // Creates and saves a new note for a specific user.
+    // Automatic values such as timestamps and pinned status
+    // are set in the service layer before saving.
     public NoteDTO createNote(Long userId, CreateNoteDTO createNoteDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new RuntimeException("User not found"));
