@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateNoteDTO;
 import com.example.taskgoblin.dto.NoteDTO;
+import com.example.taskgoblin.dto.UpdateNoteDTO;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.NoteMapper;
 import com.example.taskgoblin.model.Note;
@@ -68,5 +69,27 @@ public class NoteService {
                 .orElseThrow(() -> new ResourceNotFoundException("Note"));
 
         noteRepository.delete(note);
+    }
+
+    public NoteDTO updateNote(
+            Long noteId,
+            Long userId,
+            UpdateNoteDTO updateNoteDTO
+    ) {
+
+        Note note = noteRepository.findByIdAndUserId(noteId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Note"));
+
+        note.setTitle(updateNoteDTO.getTitle());
+        note.setContent(updateNoteDTO.getContent());
+        note.setColor(updateNoteDTO.getColor());
+
+        if (updateNoteDTO.getPinned() != null) {
+            note.setPinned(updateNoteDTO.getPinned());
+        }
+
+        note.setLastInteractedAt(LocalDateTime.now());
+        Note updatedNote = noteRepository.save(note);
+        return NoteMapper.mapToNoteDto(updatedNote);
     }
 }
