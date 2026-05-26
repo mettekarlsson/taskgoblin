@@ -4,6 +4,7 @@ import com.example.taskgoblin.dto.CreateNoteDTO;
 import com.example.taskgoblin.dto.NoteDTO;
 import com.example.taskgoblin.service.NoteService;
 import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -48,10 +49,24 @@ public class NoteController {
     //
     // If validation fails, Spring automatically returns an error response.
 
-    @PostMapping("/create")
+    // POST (create) /notes
+    @PostMapping
     public ResponseEntity<NoteDTO> addNote(@Valid @RequestBody CreateNoteDTO createNoteDto) {
         Long hardcodedUserId = 1L;
-        return ResponseEntity.ok(noteService.createNote(hardcodedUserId, createNoteDto));
+
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(noteService.createNote(hardcodedUserId, createNoteDto));
+    }
+
+    // DELETE /notes/1
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteNote(@PathVariable Long id) {
+
+        Long hardcodedUserId = 1L;
+
+        noteService.deleteNote(id, hardcodedUserId);
+
+        return ResponseEntity.ok("Note deleted successfully");
     }
 
 }

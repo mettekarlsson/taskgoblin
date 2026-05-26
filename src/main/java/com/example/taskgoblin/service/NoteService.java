@@ -60,4 +60,13 @@ public class NoteService {
         Note savedNote = noteRepository.save(note);
         return NoteMapper.mapToNoteDto(savedNote);
     }
+
+    // Deletes a note for a specific user.
+    public void deleteNote(Long noteId, Long userId) {
+
+        Note note = noteRepository.findByIdAndUserId(noteId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Note"));
+
+        noteRepository.delete(note);
+    }
 }
