@@ -54,4 +54,15 @@ public class NoteController {
         return ResponseEntity.ok(noteService.createNote(hardcodedUserId, createNoteDto));
     }
 
+    // DELETE /notes/1
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteNote(@PathVariable Long id) {
+
+        Long hardcodedUserId = 1L;
+
+        noteService.deleteNote(id, hardcodedUserId);
+
+        return ResponseEntity.ok("Note deleted successfully");
+    }
+
 }
