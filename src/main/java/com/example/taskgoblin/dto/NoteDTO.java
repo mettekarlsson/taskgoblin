@@ -4,6 +4,7 @@ package com.example.taskgoblin.dto;
 import java.time.LocalDateTime;
 
 public class NoteDTO {
+    private Long id;
 
     private String title;
 
@@ -17,7 +18,8 @@ public class NoteDTO {
 
     private LocalDateTime lastInteractedAt;
 
-    public NoteDTO(String title, String content, String color, Boolean pinned, LocalDateTime createdAt, LocalDateTime lastInteractedAt) {
+    public NoteDTO(Long id, String title, String content, String color, Boolean pinned, LocalDateTime createdAt, LocalDateTime lastInteractedAt) {
+        this.id = id;
         this.title = title;
         this.content = content;
         this.color = color;
@@ -25,6 +27,8 @@ public class NoteDTO {
         this.createdAt = createdAt;
         this.lastInteractedAt = lastInteractedAt;
     }
+
+    public Long getId() { return id; }
 
     public String getTitle() {
         return title;

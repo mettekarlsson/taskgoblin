@@ -44,6 +44,7 @@ public class NoteService {
         Note note = NoteMapper.mapToNoteEntity(createNoteDto);
         note.setUser(user);
         note.setCreatedAt(LocalDateTime.now());
+        note.setLastInteractedAt(LocalDateTime.now());
         note.setPinned(false);
         Note savedNote = noteRepository.save(note);
         return NoteMapper.mapToNoteDto(savedNote);
