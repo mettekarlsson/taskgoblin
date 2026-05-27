@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateTaskDTO;
 import com.example.taskgoblin.dto.TaskDTO;
+import com.example.taskgoblin.exception.InvalidDueDateException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.TaskMapper;
 import com.example.taskgoblin.model.Task;
@@ -39,6 +40,15 @@ public class TaskService {
 
         // Convert DTO into Task entity
         Task task = TaskMapper.mapToTaskEntity(createTaskDTO);
+
+        if (
+                createTaskDTO.getDueAt() != null &&
+                        createTaskDTO.getDueAt().isBefore(LocalDateTime.now())
+        ) {
+            throw new InvalidDueDateException(
+                    "Due date cannot be in the past."
+            );
+        }
 
         // Connect task to the user
         task.setUser(user);

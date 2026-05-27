@@ -51,4 +51,17 @@ public class GlobalExceptionHandler {
                         message
                 ));
     }
+
+    @ExceptionHandler(InvalidDueDateException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidDueDate(
+            InvalidDueDateException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage()
+                ));
+    }
 }
