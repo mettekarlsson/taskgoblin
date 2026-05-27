@@ -44,10 +44,11 @@ main {
     width: 45px;
     height: 45px;
 
-    border: 3px solid #53602C;
+    background: #E4EACF;
+    border: 1.5px solid rgba(83, 96, 44, 0.75);
+
     border-radius: 50%;
 
-    background: #E9EFD8;
 
     display: flex;
     flex-direction: column;
@@ -64,11 +65,11 @@ main {
 
 .hamburger-btn span {
     width: 24px;
-    height: 3px;
+    height: 3.5px;
 
     background: #53602C;
 
-    border-radius: 10px;
+    border-radius: 999px;
 }
 
 /* Close button */
@@ -173,6 +174,239 @@ main {
     display: block;
 
     margin-top: auto;
+}
+
+/* -------------------- */
+/* Quick add button */
+/* -------------------- */
+
+.quick-add-btn {
+    position: fixed;
+
+    right: 24px;
+    bottom: 24px;
+
+    width: 58px;
+    height: 58px;
+
+    border: 1px solid #53602C;
+    border-radius: 50%;
+
+    background: #53602C;
+    color: white;
+
+    font-size: 3rem;
+    line-height: 1;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    cursor: pointer;
+
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+
+    z-index: 2000;
+}
+
+/* Plus icon */
+
+.quick-add-btn span {
+    position: relative;
+
+    width: 22px;
+    height: 22px;
+
+    display: block;
+}
+
+.quick-add-btn span::before,
+.quick-add-btn span::after {
+    content: "";
+
+    position: absolute;
+
+    background: white;
+
+    border-radius: 999px;
+}
+
+/* Horizontal line */
+
+.quick-add-btn span::before {
+    top: 9px;
+    left: 0;
+
+    width: 22px;
+    height: 4px;
+}
+
+/* Vertical line */
+
+.quick-add-btn span::after {
+    top: 0;
+    left: 9px;
+
+    width: 4px;
+    height: 22px;
+}
+
+/* -------------------- */
+/* Quick add menu */
+/* -------------------- */
+
+.quick-add-menu {
+    position: fixed;
+
+    right: 24px;
+    bottom: 92px;
+
+    width: 190px;
+
+    background: #FFFBF5;
+
+    border-radius: 18px;
+
+    display: none;
+
+    overflow: visible;
+
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.10);
+
+    z-index: 1999;
+}
+
+.quick-add-menu.open {
+    display: block;
+}
+
+/* Small speech bubble arrow */
+
+.quick-add-menu::after {
+    content: "";
+
+    position: absolute;
+
+    right: 26px;
+    bottom: -5px;
+
+    width: 8px;
+    height: 14px;
+
+    background: #FFFBF5;
+
+    border-radius: 2px;
+
+    transform: rotate(45deg);
+}
+
+/* -------------------- */
+/* Quick add options */
+/* -------------------- */
+
+.quick-add-option {
+    width: 100%;
+
+    padding: 18px 20px;
+
+    border: none;
+    border-bottom: 1px solid rgba(39, 51, 15, 0.10);
+
+    background: transparent;
+
+    color: #27330F;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.quick-add-option:last-child {
+    border-bottom: none;
+}
+
+.quick-add-option:hover {
+    background: rgba(83, 96, 44, 0.06);
+}
+/* -------------------- */
+/* Quick add icons */
+/* -------------------- */
+
+.quick-add-option {
+    width: 100%;
+
+    padding: 18px 20px;
+
+    border: none;
+    border-bottom: 1px solid rgba(39, 51, 15, 0.10);
+
+    background: transparent;
+
+    color: #27330F;
+
+    font-size: 1rem;
+    font-weight: 600;
+
+    display: flex;
+    align-items: center;
+    gap: 16px;
+
+    text-align: left;
+
+    cursor: pointer;
+
+    transition: background 0.2s ease;
+}
+
+.quick-add-option:last-child {
+    border-bottom: none;
+}
+
+.quick-add-option:hover {
+    background: rgba(83, 96, 44, 0.06);
+}
+
+.quick-add-icon {
+    width: 48px;
+    height: 48px;
+
+    border-radius: 16px;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    flex-shrink: 0;
+}
+
+.quick-add-icon svg {
+    width: 24px;
+    height: 24px;
+
+    stroke: #27330F;
+}
+
+/* Individual icon background colors */
+
+.task-icon {
+    background: #E9EBCF;
+}
+
+.note-icon {
+    background: #EDE0EF;
+}
+
+.list-icon {
+    background: #F3E8B7;
+}
+
+.event-icon {
+    background: #DCE7F4;
 }
 
 /* -------------------- */
