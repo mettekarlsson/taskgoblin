@@ -5,6 +5,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.stream.Collectors;
 
@@ -62,6 +63,20 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(
                         HttpStatus.BAD_REQUEST.value(),
                         ex.getMessage()
+                ));
+    }
+
+    @ExceptionHandler(ResponseStatusException.class)
+    // Handles custom status errors thrown from the service layer.
+    // Example: "Email is already in use"
+    public ResponseEntity<ErrorResponse> handleResponseStatusException(
+            ResponseStatusException ex
+    ) {
+        return ResponseEntity
+                .status(ex.getStatusCode())
+                .body(new ErrorResponse(
+                        ex.getStatusCode().value(),
+                        ex.getReason()
                 ));
     }
 }
