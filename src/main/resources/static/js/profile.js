@@ -186,7 +186,7 @@ const updateEmail = async () => {
     await updateProfile({ email });
 };
 
-// Sends PATCH request for profile updates.
+// Sends PATCH request for profile updates
 const updateProfile = async (updatedProfile) => {
     try {
         const response = await fetch("/user/profile", {
