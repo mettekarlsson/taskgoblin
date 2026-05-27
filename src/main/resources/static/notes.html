@@ -2,12 +2,14 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>TaskGoblin</title>
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Notes | TaskGoblin</title>
+
     <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
-
 <header>
     <img
             src="/images/logo.png"
@@ -58,19 +60,24 @@
 
     </aside>
 </header>
-<main class="home-page">
+<main class="calendar-page">
 
-    <section class="quote-container">
-        <p id="quote-text">Loading quote...</p>
-        <p id="quote-author"></p>
+    <!-- Note content -->
+    <section class="note-container">
+
+        <h1>Notes</h1>
+
+        <div id="note-content">
+            Loading notes...
+        </div>
+
     </section>
 
-
-
 </main>
+
 <script src="/js/api.js"></script>
 <script src="/js/menu.js"></script>
-<script src="/js/modal.js"></script>
-<script src="/js/home.js"></script>
+<script src="/js/notes.js"></script>
+
 </body>
 </html>

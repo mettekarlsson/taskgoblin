@@ -1,12 +1,221 @@
-body {
-    background: bisque;
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+
+    font-family: 'DM Sans', sans-serif;
 }
+
+body {
+    margin: 0;
+    background: #F6F1EB;
+    overflow-x: hidden;
+}
+
+main {
+    padding-top: 120px;
+    padding-left: 24px;
+    padding-right: 24px;
+}
+
+.app-logo {
+    position: fixed;
+
+    top: 16px;
+    left: 75px;
+
+    width: 70px;
+
+    z-index: 1001;
+}
+
+/* -------------------- */
+/* Hamburger button */
+/* -------------------- */
+
+.hamburger-btn {
+    position: fixed;
+
+    top: 20px;
+    left: 20px;
+
+    width: 45px;
+    height: 45px;
+
+    border: none;
+    border-radius: 50%;
+
+    background: #6b7d3c;
+
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+
+    cursor: pointer;
+
+    z-index: 1000;
+}
+
+.hamburger-btn span {
+    width: 24px;
+    height: 3px;
+
+    background: white;
+
+    border-radius: 10px;
+}
+
+/* Close button */
+
+.close-btn {
+    position: absolute;
+
+    top: 10px;
+    right: 12px;
+
+    border: none;
+    background: transparent;
+
+    color: #27330F;
+
+    font-size: 1.5rem;
+    font-weight: 300;
+
+    cursor: pointer;
+
+    z-index: 2;
+}
+
+/* -------------------- */
+/* Sidebar */
+/* -------------------- */
+
+.sidebar {
+    position: fixed;
+
+    top: 0;
+    left: -150px;
+
+    width: 150px;
+    height: 100vh;
+
+    background: #EEE5D9;
+
+    display: flex;
+    flex-direction: column;
+
+    transition: left 0.3s ease;
+
+    border-top-right-radius: 15px;
+    border-bottom-right-radius: 15px;
+
+    box-shadow: 4px 0 20px rgba(0,0,0,0.18);
+
+    overflow: hidden;
+
+    z-index: 3000;
+}
+
+.sidebar.open {
+    left: 0;
+}
+
+/* -------------------- */
+/* Sidebar navigation */
+/* -------------------- */
+
+.sidebar-links {
+    display: flex;
+    flex-direction: column;
+
+    margin-top: 10px;
+}
+
+/* -------------------- */
+/* Sidebar links */
+/* -------------------- */
+
+.sidebar a {
+    color: #27330F;
+
+    text-decoration: none;
+
+    padding: 16px 20px;
+
+    font-size: 1rem;
+
+    transition: background 0.2s;
+}
+
+.sidebar a:hover {
+    background: rgba(255, 255, 255, 0.12);
+}
+
+/* -------------------- */
+/* Sidebar images */
+/* -------------------- */
+
+.menu-header {
+    width: 100%;
+
+    display: block;
+}
+
+.menu-footer {
+    width: 100%;
+
+    display: block;
+
+    margin-top: auto;
+}
+
+/* -------------------- */
+/* Quote section */
+/* -------------------- */
+
 .quote-container {
     display: flex;
     flex-direction: column;
     align-items: center;
 
-    margin-top: 200px;
+    margin-top: 220px;
+
+    color: #2f3b1f;
+
+    padding: 0 24px;
+}
+
+#quote-text {
+    font-size: 2rem;
+    font-weight: 600;
+
+    text-align: center;
+
+    max-width: 100%;
+
+    margin-bottom: 10px;
+}
+
+#quote-author {
+    width: 100%;
+
+    text-align: right;
+
+    font-size: 1.2rem;
+
+    margin: 0;
+}
+
+.quote-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+
+    margin-top: 100px;
 
     color: #2f3b1f;
 
