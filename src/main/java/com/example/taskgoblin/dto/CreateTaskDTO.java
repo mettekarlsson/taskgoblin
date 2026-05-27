@@ -22,13 +22,18 @@ public class CreateTaskDTO {
     // Optional priority level
     private Priority priority;
 
+    // Determines if the task should repeat
+    private Boolean isRecurring;
+
     public CreateTaskDTO() {
     }
 
-    public CreateTaskDTO(String title, LocalDateTime dueAt, Priority priority) {
+    public CreateTaskDTO(String title, LocalDateTime dueAt, Priority priority, Boolean isRecurring) {
         this.title = title;
         this.dueAt = dueAt;
         this.priority = priority;
+        this.isRecurring = isRecurring;
+
     }
 
     public String getTitle() {
@@ -54,5 +59,13 @@ public class CreateTaskDTO {
 
     public void setPriority(Priority priority) {
         this.priority = priority;
+    }
+
+    public Boolean getIsRecurring() {
+        return isRecurring;
+    }
+
+    public void setIsRecurring(Boolean recurring) {
+        isRecurring = recurring;
     }
 }
