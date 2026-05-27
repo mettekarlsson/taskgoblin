@@ -1,5 +1,6 @@
 package com.example.taskgoblin.dto;
 
+import com.example.taskgoblin.model.Frequency;
 import com.example.taskgoblin.model.Priority;
 import com.example.taskgoblin.model.TaskStatus;
 
@@ -33,6 +34,15 @@ public class TaskDTO {
 
     private LocalDateTime completedAt;
 
+    private Long listId;
+
+    private Long categoryId;
+
+    private Frequency frequency;
+
+    private Integer intervalValue;
+
+
     public TaskDTO() {
     }
 
@@ -45,7 +55,11 @@ public class TaskDTO {
             Boolean isRecurring,
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
-            LocalDateTime completedAt
+            LocalDateTime completedAt,
+            Long listId,
+            Long categoryId,
+            Frequency frequency,
+            Integer intervalValue
     ) {
         this.id = id;
         this.title = title;
@@ -56,6 +70,10 @@ public class TaskDTO {
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
         this.completedAt = completedAt;
+        this.listId = listId;
+        this.categoryId = categoryId;
+        this.frequency = frequency;
+        this.intervalValue = intervalValue;
     }
 
     public Long getId() {
@@ -93,4 +111,14 @@ public class TaskDTO {
     public LocalDateTime getCompletedAt() {
         return completedAt;
     }
+
+    public Long getListId() { return listId; }
+
+    public Long getCategoryId() { return categoryId; }
+
+    public Frequency getFrequency() { return frequency; }
+
+    public Integer getIntervalValue() { return intervalValue; }
+
+
 }
