@@ -1,0 +1,45 @@
+package com.example.taskgoblin.controller;
+
+import com.example.taskgoblin.dto.CreateTaskDTO;
+import com.example.taskgoblin.dto.TaskDTO;
+import com.example.taskgoblin.service.TaskService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+@RestController
+@RequestMapping("/tasks")
+public class TaskController {
+
+    private final TaskService taskService;
+
+    // Constructor injection.
+
+    public TaskController(TaskService taskService) {
+        this.taskService = taskService;
+    }
+
+    /*
+     POST /tasks
+
+     Creates a new task for the current user.
+    */
+    @PostMapping
+    public ResponseEntity<TaskDTO> createTask(
+            @Valid @RequestBody CreateTaskDTO createTaskDTO
+    ) {
+
+        // Temporary hardcoded user until authentication is implemented
+        Long hardcodedUserId = 1L;
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(
+                        taskService.createTask(
+                                hardcodedUserId,
+                                createTaskDTO
+                        )
+                );
+    }
+}
