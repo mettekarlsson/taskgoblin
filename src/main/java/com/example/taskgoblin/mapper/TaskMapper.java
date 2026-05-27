@@ -22,7 +22,15 @@ public class TaskMapper {
                 task.isRecurring(),
                 task.getCreatedAt(),
                 task.getUpdatedAt(),
-                task.getCompletedAt()
+                task.getCompletedAt(),
+
+                task.getList() != null ? task.getList().getId() : null,
+
+                task.getCategory() != null ? task.getCategory().getId() : null,
+
+                task.getFrequency(),
+
+                task.getIntervalValue()
         );
     }
 
@@ -40,6 +48,10 @@ public class TaskMapper {
         task.setDueAt(createTaskDTO.getDueAt());
         task.setPriority(createTaskDTO.getPriority());
         task.setRecurring(Boolean.TRUE.equals(createTaskDTO.getIsRecurring()));
+
+        task.setFrequency(createTaskDTO.getFrequency());
+
+        task.setIntervalValue(createTaskDTO.getIntervalValue());
 
         return task;
     }
