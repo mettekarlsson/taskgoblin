@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
 
 import java.util.List;
 
@@ -46,6 +47,12 @@ public class TaskController {
     }
 
     /*
+ DELETE /tasks/{id}
+
+ Deletes a task that belongs to the current user.
+*/
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteTask(
  GET /tasks
 
  Returns all tasks that belong to the current user.
@@ -73,6 +80,11 @@ public class TaskController {
 
         // Temporary hardcoded user until authentication is implemented
         Long hardcodedUserId = 1L;
+
+        taskService.deleteTask(hardcodedUserId, id);
+
+        return ResponseEntity.noContent().build();
+    }
 
         return ResponseEntity.ok(
                 taskService.getTaskById(hardcodedUserId, id)

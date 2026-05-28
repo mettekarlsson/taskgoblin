@@ -124,6 +124,10 @@ public class TaskService {
         return TaskMapper.mapToTaskDto(savedTask);
     }
 
+    // Deletes a task that belongs to a specific user.
+    public void deleteTask(Long userId, Long taskId) {
+
+        // Find task by id and verify ownership
 
     // Retrieves all tasks that belong to a specific user.
 
@@ -149,6 +153,8 @@ public class TaskService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Task"));
 
+        // Delete task from database
+        taskRepository.delete(task);
         // Convert entity into DTO
         return TaskMapper.mapToTaskDto(task);
     }
