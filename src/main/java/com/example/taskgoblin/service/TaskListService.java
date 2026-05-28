@@ -4,9 +4,11 @@ import com.example.taskgoblin.dto.TaskListDTO;
 import com.example.taskgoblin.mapper.TaskListMapper;
 import com.example.taskgoblin.model.TaskList;
 import com.example.taskgoblin.repository.TaskListRepository;
+import org.springframework.stereotype.Service;
 
 import java.util.List;
 
+@Service
 public class TaskListService {
 
     private final TaskListRepository taskListRepository;
