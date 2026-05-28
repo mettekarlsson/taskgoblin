@@ -64,4 +64,17 @@ public class TaskService {
         // Convert entity back into DTO
         return TaskMapper.mapToTaskDto(savedTask);
     }
+
+    // Deletes a task that belongs to a specific user.
+    public void deleteTask(Long userId, Long taskId) {
+
+        // Find task by id and verify ownership
+        Task task = taskRepository
+                .findByIdAndUserId(taskId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task"));
+
+        // Delete task from database
+        taskRepository.delete(task);
+    }
 }
