@@ -3,6 +3,20 @@ package com.example.taskgoblin.repository;
 import com.example.taskgoblin.model.Category;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.util.Optional;
+
 public interface CategoryRepository
         extends JpaRepository<Category, Long> {
+
+    /*
+     Finds a category by id that belongs
+     to a specific user.
+
+     Prevents users from accessing
+     categories owned by other users.
+    */
+    Optional<Category> findByIdAndUserId(
+            Long id,
+            Long userId
+    );
 }
