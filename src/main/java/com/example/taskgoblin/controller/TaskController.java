@@ -8,6 +8,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -41,5 +43,21 @@ public class TaskController {
                                 createTaskDTO
                         )
                 );
+    }
+
+    /*
+ GET /tasks
+
+ Returns all tasks that belong to the current user.
+*/
+    @GetMapping
+    public ResponseEntity<List<TaskDTO>> getAllTasks() {
+
+        // Temporary hardcoded user until authentication is implemented
+        Long hardcodedUserId = 1L;
+
+        return ResponseEntity.ok(
+                taskService.getAllTasks(hardcodedUserId)
+        );
     }
 }
