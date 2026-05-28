@@ -6,16 +6,16 @@ import com.example.taskgoblin.exception.InvalidDueDateException;
 import com.example.taskgoblin.exception.InvalidRecurringTaskException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.TaskMapper;
+import com.example.taskgoblin.model.Category;
 import com.example.taskgoblin.model.Task;
+import com.example.taskgoblin.model.TaskList;
 import com.example.taskgoblin.model.TaskStatus;
 import com.example.taskgoblin.model.User;
+import com.example.taskgoblin.repository.CategoryRepository;
+import com.example.taskgoblin.repository.TaskListRepository;
 import com.example.taskgoblin.repository.TaskRepository;
 import com.example.taskgoblin.repository.UserRepository;
 import org.springframework.stereotype.Service;
-import com.example.taskgoblin.model.Category;
-import com.example.taskgoblin.model.TaskList;
-import com.example.taskgoblin.repository.CategoryRepository;
-import com.example.taskgoblin.repository.TaskListRepository;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -28,9 +28,7 @@ public class TaskService {
     private final CategoryRepository categoryRepository;
     private final TaskListRepository taskListRepository;
 
-
     // Constructor injection.
-
     public TaskService(
             TaskRepository taskRepository,
             UserRepository userRepository,
@@ -46,14 +44,11 @@ public class TaskService {
     // Creates and saves a new task for a specific user.
     public TaskDTO createTask(Long userId, CreateTaskDTO createTaskDTO) {
 
-        // Find the user that owns the task
+        // Find the user that owns the task.
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User"));
 
-        // Convert DTO into Task entity
-        Task task = TaskMapper.mapToTaskEntity(createTaskDTO);
-
-        // Validate due date
+        // Validate due date before saving the task.
         if (
                 createTaskDTO.getDueAt() != null &&
                         createTaskDTO.getDueAt().isBefore(LocalDateTime.now())
@@ -63,17 +58,17 @@ public class TaskService {
             );
         }
 
-        // Validate recurring task fields
+        // Validate recurring task fields.
         if (Boolean.TRUE.equals(createTaskDTO.getIsRecurring())) {
 
-            // Recurring tasks must have a frequency
+            // Recurring tasks must have a frequency.
             if (createTaskDTO.getFrequency() == null) {
                 throw new InvalidRecurringTaskException(
                         "Recurring tasks must have a frequency."
                 );
             }
 
-            // Recurring tasks must have an interval value
+            // Recurring tasks must have a positive interval value.
             if (
                     createTaskDTO.getIntervalValue() == null ||
                             createTaskDTO.getIntervalValue() <= 0
@@ -84,7 +79,11 @@ public class TaskService {
             }
         }
 
-        // Connect category if categoryId exists
+        // Convert DTO into Task entity.
+        Task task = TaskMapper.mapToTaskEntity(createTaskDTO);
+
+        // Connect category if categoryId exists.
+        // The category must belong to the current user.
         if (createTaskDTO.getCategoryId() != null) {
 
             Category category = categoryRepository
@@ -98,7 +97,7 @@ public class TaskService {
             task.setCategory(category);
         }
 
-        // Connect task list if listId exists
+        // Connect task list if listId exists.
         if (createTaskDTO.getListId() != null) {
 
             TaskList list = taskListRepository
@@ -109,53 +108,56 @@ public class TaskService {
             task.setList(list);
         }
 
-        // Connect task to the user
+        // Connect task to the user.
         task.setUser(user);
 
-        // Set automatic system values
+        // Set automatic system values.
         task.setStatus(TaskStatus.TODO);
         task.setCreatedAt(LocalDateTime.now());
         task.setUpdatedAt(LocalDateTime.now());
 
-        // Save task to database
+        // Save task to database.
         Task savedTask = taskRepository.save(task);
 
-        // Convert entity back into DTO
+        // Convert entity back into DTO.
         return TaskMapper.mapToTaskDto(savedTask);
     }
 
-    // Deletes a task that belongs to a specific user.
-    public void deleteTask(Long userId, Long taskId) {
-
-        // Find task by id and verify ownership
-
     // Retrieves all tasks that belong to a specific user.
-
     public List<TaskDTO> getAllTasks(Long userId) {
 
-        // Fetch all tasks belonging to the user
+        // Fetch all tasks belonging to the user.
         List<Task> tasks = taskRepository.findByUserId(userId);
 
-        // Convert task entities into DTOs
+        // Convert task entities into DTOs.
         return tasks.stream()
                 .map(TaskMapper::mapToTaskDto)
                 .toList();
     }
 
-    /*
- Retrieves a specific task that belongs to a user.
-*/
+    // Retrieves a specific task that belongs to a user.
     public TaskDTO getTaskById(Long userId, Long taskId) {
 
-        // Find task by id and user ownership
+        // Find task by id and verify ownership.
         Task task = taskRepository
                 .findByIdAndUserId(taskId, userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Task"));
 
-        // Delete task from database
-        taskRepository.delete(task);
-        // Convert entity into DTO
+        // Convert entity into DTO.
         return TaskMapper.mapToTaskDto(task);
+    }
+
+    // Deletes a task that belongs to a specific user.
+    public void deleteTask(Long userId, Long taskId) {
+
+        // Find task by id and verify ownership before deleting.
+        Task task = taskRepository
+                .findByIdAndUserId(taskId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task"));
+
+        // Delete task from database.
+        taskRepository.delete(task);
     }
 }
