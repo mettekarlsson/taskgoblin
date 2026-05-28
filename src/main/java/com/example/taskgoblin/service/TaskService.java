@@ -13,6 +13,7 @@ import com.example.taskgoblin.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TaskService {
@@ -63,5 +64,19 @@ public class TaskService {
 
         // Convert entity back into DTO
         return TaskMapper.mapToTaskDto(savedTask);
+    }
+
+
+    // Retrieves all tasks that belong to a specific user.
+
+    public List<TaskDTO> getAllTasks(Long userId) {
+
+        // Fetch all tasks belonging to the user
+        List<Task> tasks = taskRepository.findByUserId(userId);
+
+        // Convert task entities into DTOs
+        return tasks.stream()
+                .map(TaskMapper::mapToTaskDto)
+                .toList();
     }
 }
