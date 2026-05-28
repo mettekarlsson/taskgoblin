@@ -18,6 +18,7 @@ import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.TaskListRepository;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 public class TaskService {
@@ -123,4 +124,32 @@ public class TaskService {
         return TaskMapper.mapToTaskDto(savedTask);
     }
 
+
+    // Retrieves all tasks that belong to a specific user.
+
+    public List<TaskDTO> getAllTasks(Long userId) {
+
+        // Fetch all tasks belonging to the user
+        List<Task> tasks = taskRepository.findByUserId(userId);
+
+        // Convert task entities into DTOs
+        return tasks.stream()
+                .map(TaskMapper::mapToTaskDto)
+                .toList();
+    }
+
+    /*
+ Retrieves a specific task that belongs to a user.
+*/
+    public TaskDTO getTaskById(Long userId, Long taskId) {
+
+        // Find task by id and user ownership
+        Task task = taskRepository
+                .findByIdAndUserId(taskId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task"));
+
+        // Convert entity into DTO
+        return TaskMapper.mapToTaskDto(task);
+    }
 }
