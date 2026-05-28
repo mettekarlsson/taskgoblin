@@ -60,4 +60,22 @@ public class TaskController {
                 taskService.getAllTasks(hardcodedUserId)
         );
     }
+
+    /*
+ GET /tasks/{id}
+
+ Returns a specific task that belongs to the current user.
+*/
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskDTO> getTaskById(
+            @PathVariable Long id
+    ) {
+
+        // Temporary hardcoded user until authentication is implemented
+        Long hardcodedUserId = 1L;
+
+        return ResponseEntity.ok(
+                taskService.getTaskById(hardcodedUserId, id)
+        );
+    }
 }
