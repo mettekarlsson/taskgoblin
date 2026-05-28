@@ -87,7 +87,10 @@ public class TaskService {
         if (createTaskDTO.getCategoryId() != null) {
 
             Category category = categoryRepository
-                    .findById(createTaskDTO.getCategoryId())
+                    .findByIdAndUserId(
+                            createTaskDTO.getCategoryId(),
+                            userId
+                    )
                     .orElseThrow(() ->
                             new ResourceNotFoundException("Category"));
 
