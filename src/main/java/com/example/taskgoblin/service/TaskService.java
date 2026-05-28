@@ -79,4 +79,19 @@ public class TaskService {
                 .map(TaskMapper::mapToTaskDto)
                 .toList();
     }
+
+    /*
+ Retrieves a specific task that belongs to a user.
+*/
+    public TaskDTO getTaskById(Long userId, Long taskId) {
+
+        // Find task by id and user ownership
+        Task task = taskRepository
+                .findByIdAndUserId(taskId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task"));
+
+        // Convert entity into DTO
+        return TaskMapper.mapToTaskDto(task);
+    }
 }
