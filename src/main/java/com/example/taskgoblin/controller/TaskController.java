@@ -9,6 +9,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.annotation.DeleteMapping;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/tasks")
 public class TaskController {
@@ -51,6 +53,28 @@ public class TaskController {
 */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(
+ GET /tasks
+
+ Returns all tasks that belong to the current user.
+*/
+    @GetMapping
+    public ResponseEntity<List<TaskDTO>> getAllTasks() {
+
+        // Temporary hardcoded user until authentication is implemented
+        Long hardcodedUserId = 1L;
+
+        return ResponseEntity.ok(
+                taskService.getAllTasks(hardcodedUserId)
+        );
+    }
+
+    /*
+ GET /tasks/{id}
+
+ Returns a specific task that belongs to the current user.
+*/
+    @GetMapping("/{id}")
+    public ResponseEntity<TaskDTO> getTaskById(
             @PathVariable Long id
     ) {
 
@@ -62,4 +86,8 @@ public class TaskController {
         return ResponseEntity.noContent().build();
     }
 
+        return ResponseEntity.ok(
+                taskService.getTaskById(hardcodedUserId, id)
+        );
+    }
 }

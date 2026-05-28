@@ -79,4 +79,17 @@ public class GlobalExceptionHandler {
                         ex.getReason()
                 ));
     }
+
+    @ExceptionHandler(InvalidRecurringTaskException.class)
+    public ResponseEntity<ErrorResponse> handleInvalidRecurringTask(
+            InvalidRecurringTaskException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        ex.getMessage()
+                ));
+    }
 }

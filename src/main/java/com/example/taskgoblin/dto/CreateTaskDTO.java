@@ -4,6 +4,7 @@ import com.example.taskgoblin.model.Frequency;
 import com.example.taskgoblin.model.Priority;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Positive;
 
 import java.time.LocalDateTime;
 
@@ -38,6 +39,7 @@ public class CreateTaskDTO {
 
     // Example:
     // every 2 days / every 3 weeks
+    @Positive(message = "Interval value must be greater than 0.")
     private Integer intervalValue;
 
 
