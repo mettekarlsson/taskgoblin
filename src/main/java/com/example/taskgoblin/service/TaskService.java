@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateTaskDTO;
 import com.example.taskgoblin.dto.TaskDTO;
+import com.example.taskgoblin.dto.UpdateDueDateDTO;
 import com.example.taskgoblin.dto.UpdateTaskDTO;
 import com.example.taskgoblin.exception.*;
 import com.example.taskgoblin.mapper.TaskMapper;
@@ -220,6 +221,32 @@ public class TaskService {
 
         // Clear completion timestamp
         task.setCompletedAt(null);
+
+        // Update system timestamp
+        task.setUpdatedAt(LocalDateTime.now());
+
+        // Save updated task
+        Task updatedTask = taskRepository.save(task);
+
+        // Convert updated entity into DTO
+        return TaskMapper.mapToTaskDto(updatedTask);
+    }
+
+
+
+    // Updates the due date of a task
+    public TaskDTO updateDueDate(Long taskId,
+                                 UpdateDueDateDTO dto,
+                                 Long userId) {
+
+        // Find task and validate ownership
+        Task task = getTaskByIdAndUserId(taskId, userId);
+
+        // Validate due date rules
+        validateDueDate(dto.getDueAt());
+
+        // Update due date
+        task.setDueAt(dto.getDueAt());
 
         // Update system timestamp
         task.setUpdatedAt(LocalDateTime.now());
