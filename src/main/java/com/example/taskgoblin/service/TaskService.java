@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateTaskDTO;
 import com.example.taskgoblin.dto.TaskDTO;
+import com.example.taskgoblin.dto.UpdateTaskDTO;
 import com.example.taskgoblin.exception.InvalidDueDateException;
 import com.example.taskgoblin.exception.InvalidRecurringTaskException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
@@ -82,34 +83,21 @@ public class TaskService {
         // Convert DTO into Task entity.
         Task task = TaskMapper.mapToTaskEntity(createTaskDTO);
 
-        // Connect category if categoryId exists.
-        // The category must belong to the current user.
-        if (createTaskDTO.getCategoryId() != null) {
+        // Find category and validate ownership
+        Category category = getCategoryIfOwned(
+                createTaskDTO.getCategoryId(),
+                userId
+        );
 
-            Category category = categoryRepository
-                    .findByIdAndUserId(
-                            createTaskDTO.getCategoryId(),
-                            userId
-                    )
-                    .orElseThrow(() ->
-                            new ResourceNotFoundException("Category"));
+        task.setCategory(category);
 
-            task.setCategory(category);
-        }
+        // Find task list and validate ownership
+        TaskList taskList = getTaskListIfOwned(
+                createTaskDTO.getListId(),
+                userId
+        );
 
-        // Connect task list if listId exists.
-        if (createTaskDTO.getListId() != null) {
-
-            TaskList list = taskListRepository
-                    .findByIdAndUserId(
-                            createTaskDTO.getListId(),
-                            userId
-                    )
-                    .orElseThrow(() ->
-                            new ResourceNotFoundException("Task list"));
-
-            task.setList(list);
-        }
+        task.setList(taskList);
 
         // Connect task to the user.
         task.setUser(user);
@@ -142,10 +130,7 @@ public class TaskService {
     public TaskDTO getTaskById(Long userId, Long taskId) {
 
         // Find task by id and verify ownership.
-        Task task = taskRepository
-                .findByIdAndUserId(taskId, userId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Task"));
+        Task task = getTaskByIdAndUserId(taskId, userId);
 
         // Convert entity into DTO.
         return TaskMapper.mapToTaskDto(task);
@@ -155,12 +140,77 @@ public class TaskService {
     public void deleteTask(Long userId, Long taskId) {
 
         // Find task by id and verify ownership before deleting.
-        Task task = taskRepository
-                .findByIdAndUserId(taskId, userId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Task"));
+        Task task = getTaskByIdAndUserId(taskId, userId);
 
         // Delete task from database.
         taskRepository.delete(task);
     }
+
+    // Updates an existing task for the current user
+    public TaskDTO updateTask(Long id,
+                              UpdateTaskDTO updateTaskDTO,
+                              Long userId) {
+
+        Task task = getTaskByIdAndUserId(id, userId);
+
+        Category category = getCategoryIfOwned(
+                updateTaskDTO.getCategoryId(),
+                userId
+        );
+
+        TaskList taskList = getTaskListIfOwned(
+                updateTaskDTO.getTaskListId(),
+                userId
+        );
+
+        return TaskMapper.mapToTaskDto(task);
+    }
+
+
+
+// ___________________helper________________________
+
+    /*
+ Finds a task by id and validates ownership.
+ Throws ResourceNotFoundException if the task does not exist
+ or does not belong to the current user.
+*/
+    private Task getTaskByIdAndUserId(Long taskId, Long userId) {
+
+        return taskRepository.findByIdAndUserId(taskId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task not found"));
+    }
+
+    /*
+ Finds a category and validates ownership.
+ Returns null if no category id was provided.
+*/
+    private Category getCategoryIfOwned(Long categoryId, Long userId) {
+
+        if (categoryId == null) {
+            return null;
+        }
+
+        return categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Category not found"));
+    }
+
+    /*
+ Finds a task list and validates ownership.
+ Returns null if no task list id was provided.
+*/
+    private TaskList getTaskListIfOwned(Long taskListId, Long userId) {
+
+        if (taskListId == null) {
+            return null;
+        }
+
+        return taskListRepository.findByIdAndUserId(taskListId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list not found"));
+    }
+
 }
+
