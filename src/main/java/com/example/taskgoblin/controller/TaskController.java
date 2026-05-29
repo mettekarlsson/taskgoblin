@@ -112,4 +112,16 @@ public class TaskController {
         );
     }
 
+    /*
+    Marks a task as completed.
+    */
+    @PatchMapping("/{id}/complete")
+    public TaskDTO completeTask(@PathVariable Long id) {
+
+        // Temporary hardcoded user id
+        Long userId = 1L;
+
+        return taskService.completeTask(id, userId);
+    }
+
 }

@@ -92,4 +92,14 @@ public class GlobalExceptionHandler {
                         ex.getMessage()
                 ));
     }
+
+    @ExceptionHandler(TaskAlreadyCompletedException.class)
+    public ResponseEntity<String> handleTaskAlreadyCompletedException(
+            TaskAlreadyCompletedException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
 }
