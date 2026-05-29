@@ -2,6 +2,7 @@ package com.example.taskgoblin.controller;
 
 import com.example.taskgoblin.dto.CreateTaskDTO;
 import com.example.taskgoblin.dto.TaskDTO;
+import com.example.taskgoblin.dto.UpdateDueDateDTO;
 import com.example.taskgoblin.dto.UpdateTaskDTO;
 import com.example.taskgoblin.service.TaskService;
 import jakarta.validation.Valid;
@@ -135,6 +136,25 @@ public class TaskController {
         Long userId = 1L;
 
         return taskService.reopenTask(id, userId);
+    }
+
+    /*
+ Updates the due date of a task.
+*/
+    @PatchMapping("/{id}/due-date")
+    public TaskDTO updateDueDate(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDueDateDTO dto
+    ) {
+
+        // Temporary hardcoded user id
+        Long userId = 1L;
+
+        return taskService.updateDueDate(
+                id,
+                dto,
+                userId
+        );
     }
 
 }
