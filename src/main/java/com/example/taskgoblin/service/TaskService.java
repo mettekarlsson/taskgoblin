@@ -6,6 +6,7 @@ import com.example.taskgoblin.dto.UpdateTaskDTO;
 import com.example.taskgoblin.exception.InvalidDueDateException;
 import com.example.taskgoblin.exception.InvalidRecurringTaskException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
+import com.example.taskgoblin.exception.TaskAlreadyCompletedException;
 import com.example.taskgoblin.mapper.TaskMapper;
 import com.example.taskgoblin.model.*;
 import com.example.taskgoblin.repository.CategoryRepository;
@@ -170,9 +171,42 @@ public class TaskService {
         return TaskMapper.mapToTaskDto(updatedTask);
     }
 
+    // Marks a task as completed
+    public TaskDTO completeTask(Long taskId, Long userId) {
+
+        // Find task and validate ownership
+        Task task = getTaskByIdAndUserId(taskId, userId);
+
+        // Prevent completing an already completed task
+        if (task.getStatus() == TaskStatus.DONE) {
+
+            throw new TaskAlreadyCompletedException(
+                    "Task is already completed"
+            );
+        }
+
+        // Update task status
+        task.setStatus(TaskStatus.DONE);
+
+        // Set completion timestamps
+        task.setCompletedAt(LocalDateTime.now());
+        task.setLastCompletedAt(LocalDateTime.now());
+
+        // Update system timestamp
+        task.setUpdatedAt(LocalDateTime.now());
+
+        // Save updated task
+        Task updatedTask = taskRepository.save(task);
+
+        // Convert updated entity into DTO
+        return TaskMapper.mapToTaskDto(updatedTask);
+    }
 
 
-// ___________________helper________________________
+
+
+
+// _____________________helper________________________
 
     /*
  Finds a task by id and validates ownership.
