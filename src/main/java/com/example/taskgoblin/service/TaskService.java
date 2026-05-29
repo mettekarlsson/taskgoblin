@@ -3,10 +3,7 @@ package com.example.taskgoblin.service;
 import com.example.taskgoblin.dto.CreateTaskDTO;
 import com.example.taskgoblin.dto.TaskDTO;
 import com.example.taskgoblin.dto.UpdateTaskDTO;
-import com.example.taskgoblin.exception.InvalidDueDateException;
-import com.example.taskgoblin.exception.InvalidRecurringTaskException;
-import com.example.taskgoblin.exception.ResourceNotFoundException;
-import com.example.taskgoblin.exception.TaskAlreadyCompletedException;
+import com.example.taskgoblin.exception.*;
 import com.example.taskgoblin.mapper.TaskMapper;
 import com.example.taskgoblin.model.*;
 import com.example.taskgoblin.repository.CategoryRepository;
@@ -191,6 +188,38 @@ public class TaskService {
         // Set completion timestamps
         task.setCompletedAt(LocalDateTime.now());
         task.setLastCompletedAt(LocalDateTime.now());
+
+        // Update system timestamp
+        task.setUpdatedAt(LocalDateTime.now());
+
+        // Save updated task
+        Task updatedTask = taskRepository.save(task);
+
+        // Convert updated entity into DTO
+        return TaskMapper.mapToTaskDto(updatedTask);
+    }
+
+
+
+    // Reopens a completed task
+    public TaskDTO reopenTask(Long taskId, Long userId) {
+
+        // Find task and validate ownership
+        Task task = getTaskByIdAndUserId(taskId, userId);
+
+        // Prevent reopening an already open task
+        if (task.getStatus() == TaskStatus.TODO) {
+
+            throw new TaskAlreadyOpenException(
+                    "Task is already open"
+            );
+        }
+
+        // Restore task status
+        task.setStatus(TaskStatus.TODO);
+
+        // Clear completion timestamp
+        task.setCompletedAt(null);
 
         // Update system timestamp
         task.setUpdatedAt(LocalDateTime.now());

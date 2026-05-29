@@ -124,4 +124,17 @@ public class TaskController {
         return taskService.completeTask(id, userId);
     }
 
+
+    /*
+ Reopens a completed task.
+*/
+    @PatchMapping("/{id}/reopen")
+    public TaskDTO reopenTask(@PathVariable Long id) {
+
+        // Temporary hardcoded user id
+        Long userId = 1L;
+
+        return taskService.reopenTask(id, userId);
+    }
+
 }
