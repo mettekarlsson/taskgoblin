@@ -101,7 +101,10 @@ public class TaskService {
         if (createTaskDTO.getListId() != null) {
 
             TaskList list = taskListRepository
-                    .findById(createTaskDTO.getListId())
+                    .findByIdAndUserId(
+                            createTaskDTO.getListId(),
+                            userId
+                    )
                     .orElseThrow(() ->
                             new ResourceNotFoundException("Task list"));
 
