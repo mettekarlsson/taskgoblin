@@ -127,19 +127,47 @@ public class TaskService {
                               UpdateTaskDTO updateTaskDTO,
                               Long userId) {
 
+        // Find task and validate ownership
         Task task = getTaskByIdAndUserId(id, userId);
 
+        // Find related category and validate ownership
         Category category = getCategoryIfOwned(
                 updateTaskDTO.getCategoryId(),
                 userId
         );
 
+        // Find related task list and validate ownership
         TaskList taskList = getTaskListIfOwned(
                 updateTaskDTO.getTaskListId(),
                 userId
         );
 
-        return TaskMapper.mapToTaskDto(task);
+        // Validate due date rules
+        validateDueDate(updateTaskDTO.getDueAt());
+
+        // Validate recurring task configuration
+        validateRecurringConfiguration(
+                updateTaskDTO.getRecurring(),
+                updateTaskDTO.getFrequency(),
+                updateTaskDTO.getIntervalValue()
+        );
+
+        // Apply updated values to the task entity
+        TaskMapper.updateEntity(
+                task,
+                updateTaskDTO,
+                category,
+                taskList
+        );
+
+        // Update system timestamp
+        task.setUpdatedAt(LocalDateTime.now());
+
+        // Save updated task
+        Task updatedTask = taskRepository.save(task);
+
+        // Convert updated entity into DTO
+        return TaskMapper.mapToTaskDto(updatedTask);
     }
 
 
