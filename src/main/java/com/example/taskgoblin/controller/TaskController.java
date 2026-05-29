@@ -2,6 +2,8 @@ package com.example.taskgoblin.controller;
 
 import com.example.taskgoblin.dto.CreateTaskDTO;
 import com.example.taskgoblin.dto.TaskDTO;
+import com.example.taskgoblin.dto.UpdateDueDateDTO;
+import com.example.taskgoblin.dto.UpdateTaskDTO;
 import com.example.taskgoblin.service.TaskService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -90,4 +92,69 @@ public class TaskController {
 
         return ResponseEntity.noContent().build();
     }
+
+
+    /*
+ Updates an existing task for the current user.
+*/
+    @PutMapping("/{id}")
+    public TaskDTO updateTask(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTaskDTO updateTaskDTO
+    ) {
+
+        // Temporary hardcoded user id
+        Long userId = 1L;
+
+        return taskService.updateTask(
+                id,
+                updateTaskDTO,
+                userId
+        );
+    }
+
+    /*
+    Marks a task as completed.
+    */
+    @PatchMapping("/{id}/complete")
+    public TaskDTO completeTask(@PathVariable Long id) {
+
+        // Temporary hardcoded user id
+        Long userId = 1L;
+
+        return taskService.completeTask(id, userId);
+    }
+
+
+    /*
+ Reopens a completed task.
+*/
+    @PatchMapping("/{id}/reopen")
+    public TaskDTO reopenTask(@PathVariable Long id) {
+
+        // Temporary hardcoded user id
+        Long userId = 1L;
+
+        return taskService.reopenTask(id, userId);
+    }
+
+    /*
+ Updates the due date of a task.
+*/
+    @PatchMapping("/{id}/due-date")
+    public TaskDTO updateDueDate(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDueDateDTO dto
+    ) {
+
+        // Temporary hardcoded user id
+        Long userId = 1L;
+
+        return taskService.updateDueDate(
+                id,
+                dto,
+                userId
+        );
+    }
+
 }
