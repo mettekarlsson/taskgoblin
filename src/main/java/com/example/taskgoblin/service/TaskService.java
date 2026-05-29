@@ -7,11 +7,7 @@ import com.example.taskgoblin.exception.InvalidDueDateException;
 import com.example.taskgoblin.exception.InvalidRecurringTaskException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.TaskMapper;
-import com.example.taskgoblin.model.Category;
-import com.example.taskgoblin.model.Task;
-import com.example.taskgoblin.model.TaskList;
-import com.example.taskgoblin.model.TaskStatus;
-import com.example.taskgoblin.model.User;
+import com.example.taskgoblin.model.*;
 import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.TaskListRepository;
 import com.example.taskgoblin.repository.TaskRepository;
@@ -49,36 +45,15 @@ public class TaskService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User"));
 
-        // Validate due date before saving the task.
-        if (
-                createTaskDTO.getDueAt() != null &&
-                        createTaskDTO.getDueAt().isBefore(LocalDateTime.now())
-        ) {
-            throw new InvalidDueDateException(
-                    "Due date cannot be in the past."
-            );
-        }
+        // Validate due date rules
+        validateDueDate(createTaskDTO.getDueAt());
 
-        // Validate recurring task fields.
-        if (Boolean.TRUE.equals(createTaskDTO.getIsRecurring())) {
-
-            // Recurring tasks must have a frequency.
-            if (createTaskDTO.getFrequency() == null) {
-                throw new InvalidRecurringTaskException(
-                        "Recurring tasks must have a frequency."
-                );
-            }
-
-            // Recurring tasks must have a positive interval value.
-            if (
-                    createTaskDTO.getIntervalValue() == null ||
-                            createTaskDTO.getIntervalValue() <= 0
-            ) {
-                throw new InvalidRecurringTaskException(
-                        "Recurring tasks must have a valid interval value."
-                );
-            }
-        }
+        // Validate recurring task configuration
+        validateRecurringConfiguration(
+                createTaskDTO.getIsRecurring(),
+                createTaskDTO.getFrequency(),
+                createTaskDTO.getIntervalValue()
+        );
 
         // Convert DTO into Task entity.
         Task task = TaskMapper.mapToTaskEntity(createTaskDTO);
@@ -113,6 +88,7 @@ public class TaskService {
         // Convert entity back into DTO.
         return TaskMapper.mapToTaskDto(savedTask);
     }
+
 
     // Retrieves all tasks that belong to a specific user.
     public List<TaskDTO> getAllTasks(Long userId) {
@@ -210,6 +186,63 @@ public class TaskService {
         return taskListRepository.findByIdAndUserId(taskListId, userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Task list not found"));
+    }
+
+    /*
+ Validates recurring task configuration.
+ Centralized validation for recurring task rules.
+
+ Reused across multiple endpoints to avoid duplicated
+ business logic and ensure consistent validation.
+*/
+    private void validateRecurringConfiguration(
+            Boolean recurring,
+            Frequency frequency,
+            Integer intervalValue
+    ) {
+
+        if (Boolean.TRUE.equals(recurring)) {
+
+            // Recurring tasks must have a frequency
+            if (frequency == null) {
+                throw new InvalidRecurringTaskException(
+                        "Recurring tasks must have a frequency."
+                );
+            }
+
+            // Recurring tasks must have a positive interval value
+            if (intervalValue == null || intervalValue <= 0) {
+
+                throw new InvalidRecurringTaskException(
+                        "Recurring tasks must have a valid interval value."
+                );
+            }
+
+        } else {
+
+            // Non-recurring tasks must not contain recurring settings
+            if (frequency != null || intervalValue != null) {
+
+                throw new InvalidRecurringTaskException(
+                        "Non-recurring tasks cannot contain recurring settings."
+                );
+            }
+        }
+    }
+
+    /*
+ Validates that the due date is not in the past.
+*/
+    private void validateDueDate(LocalDateTime dueAt) {
+
+        if (
+                dueAt != null &&
+                        dueAt.isBefore(LocalDateTime.now())
+        ) {
+            throw new InvalidDueDateException(
+                    "Due date cannot be in the past."
+            );
+        }
     }
 
 }
