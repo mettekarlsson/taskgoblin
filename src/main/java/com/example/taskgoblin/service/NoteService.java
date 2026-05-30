@@ -80,16 +80,33 @@ public class NoteService {
         Note note = noteRepository.findByIdAndUserId(noteId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note"));
 
-        note.setTitle(updateNoteDTO.getTitle());
-        note.setContent(updateNoteDTO.getContent());
-        note.setColor(updateNoteDTO.getColor());
+        boolean contentWasUpdated = false;
+
+        if (updateNoteDTO.getTitle() != null) {
+            note.setTitle(updateNoteDTO.getTitle());
+            contentWasUpdated = true;
+        }
+
+        if (updateNoteDTO.getContent() != null) {
+            note.setContent(updateNoteDTO.getContent());
+            contentWasUpdated = true;
+        }
+
+        if (updateNoteDTO.getColor() != null) {
+            note.setColor(updateNoteDTO.getColor());
+            contentWasUpdated = true;
+        }
 
         if (updateNoteDTO.getPinned() != null) {
             note.setPinned(updateNoteDTO.getPinned());
         }
 
-        note.setLastInteractedAt(LocalDateTime.now());
+        if (contentWasUpdated) {
+            note.setLastInteractedAt(LocalDateTime.now());
+        }
+
         Note updatedNote = noteRepository.save(note);
+
         return NoteMapper.mapToNoteDto(updatedNote);
     }
 }

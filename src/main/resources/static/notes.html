@@ -60,17 +60,43 @@
 
     </aside>
 </header>
-<main class="calendar-page">
+<main class="notes-page">
 
-    <!-- Note content -->
-    <section class="note-container">
+    <section class="notes-header">
 
-        <h1>Notes</h1>
-
-        <div id="note-content">
-            Loading notes...
+        <div>
+            <h1>Notes</h1>
+            <p>Quick thoughts and reminders.</p>
         </div>
 
+        <div class="notes-header-actions">
+            <button
+                    class="notes-search-btn"
+                    onclick="toggleSearch()"
+            >
+                🔍
+            </button>
+
+            <button class="new-note-btn" onclick="renderCreateNoteForm()">
+                + New note
+            </button>
+        </div>
+
+    </section>
+
+    <section class="notes-search-view" id="notes-search-view">
+
+        <input
+                id="notes-search"
+                class="notes-search-input"
+                type="text"
+                placeholder="Search notes..."
+        >
+
+    </section>
+
+    <section id="notes-grid" class="notes-grid">
+        Loading notes...
     </section>
 
 </main>
@@ -187,6 +213,28 @@
         <span></span>
     </button>
 </footer>
+
+<div class="delete-note-modal" id="delete-note-modal">
+
+    <div class="delete-note-modal-content">
+
+        <h2>Delete note?</h2>
+
+        <p>This action cannot be undone.</p>
+
+        <div class="delete-note-actions">
+            <button class="note-cancel-btn" onclick="closeDeleteModal()">
+                Cancel
+            </button>
+
+            <button class="note-delete-confirm-btn" onclick="confirmDeleteNote()">
+                Delete
+            </button>
+        </div>
+
+    </div>
+
+</div>
 
 <script src="/js/api.js"></script>
 <script src="/js/menu.js"></script>

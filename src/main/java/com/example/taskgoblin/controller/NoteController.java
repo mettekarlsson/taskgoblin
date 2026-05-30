@@ -70,11 +70,11 @@ public class NoteController {
         return ResponseEntity.ok("Note deleted successfully");
     }
 
-    // PUT (update) /notes/1
-    @PutMapping("/{id}")
+    // PATCH (partial update) /notes/1
+    @PatchMapping("/{id}")
     public ResponseEntity<NoteDTO> updateNote(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateNoteDTO updateNoteDTO
+            @RequestBody UpdateNoteDTO updateNoteDTO
     ) {
         Long hardcodedUserId = 1L;
 
