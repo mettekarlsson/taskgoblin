@@ -8,6 +8,38 @@ let currentNotes = [];
 
 let noteToDeleteId = null;
 
+const getNoteColor = (color) => {
+
+    if (!document.body.classList.contains("dark-theme")) {
+        return color;
+    }
+
+    switch (color) {
+
+        case "#F8F3F7":
+            return "#4A4350";
+
+        case "#FFF8DD":
+            return "#5A5330";
+
+        case "#E8F5E9":
+            return "#344536";
+
+        case "#DCE7F4":
+            return "#34465A";
+
+        case "#FDE2E4":
+            return "#5A3C40";
+
+        case "#EDE0EF":
+            return "#4D3B55";
+
+        default:
+            return color;
+    }
+
+};
+
 document.addEventListener("click", (event) => {
 
     const chip = event.target.closest(".note-color-chip");
@@ -78,14 +110,19 @@ const renderNotes = (notes, searchQuery = "") => {
         return;
     }
 
-    notesGrid.innerHTML = notes.map(note => `
+    notesGrid.innerHTML = notes.map(note => {
+
+        const noteColor =
+            getNoteColor(note.color || DEFAULT_NOTE_COLOR);
+
+        return `
 <article 
     class="note-card"
     onclick="openNote(${note.id})"
-    style="
-        background: ${note.color || DEFAULT_NOTE_COLOR};
-        --note-bg: ${note.color || DEFAULT_NOTE_COLOR};
-    "
+ style="
+    background: ${noteColor};
+    --note-bg: ${noteColor};
+"
 >
 
 <button
@@ -125,7 +162,8 @@ const renderNotes = (notes, searchQuery = "") => {
 </div>
 
         </article>
-    `).join("");
+     `;
+    }).join("");
 };
 
 const openNote = async (noteId) => {

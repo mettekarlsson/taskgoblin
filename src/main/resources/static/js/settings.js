@@ -157,6 +157,12 @@ const updateSingleSetting = async (settingData) => {
         }
 
         currentSettings = await response.json();
+
+        if (settingData.theme !== undefined) {
+            location.reload();
+            return;
+        }
+
         renderSettings(currentSettings);
 
     } catch (error) {
