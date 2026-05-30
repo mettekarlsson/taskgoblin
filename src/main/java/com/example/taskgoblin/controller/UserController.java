@@ -57,4 +57,15 @@ public class UserController {
         return ResponseEntity.ok(userSettingsService.getUserSettings(hardcodedUserId));
     }
 
+    @PatchMapping("/settings")
+    public ResponseEntity<UserSettingsDTO> updateUserSettings(
+            @RequestBody UserSettingsDTO userSettingsDTO
+    ) {
+        Long hardcodedUserId = 1L;
+
+        return ResponseEntity.ok(
+                userSettingsService.updateUserSettings(hardcodedUserId, userSettingsDTO)
+        );
+    }
+
 }
