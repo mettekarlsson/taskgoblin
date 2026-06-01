@@ -27,11 +27,6 @@ const login = async (email, password) => {
 
 };
 
-const logout = () => {
-    localStorage.removeItem("token");
-    window.location.href = "/login.html";
-};
-
 const register = async (name, email, password) => {
     const response = await fetch("/auth/register", {
         method: "POST",
@@ -48,6 +43,31 @@ const register = async (name, email, password) => {
     if (!response.ok) {
         throw new Error("Could not create account");
     }
+};
+
+const openLogoutModal = () => {
+
+    document
+        .getElementById("logout-modal")
+        .classList.add("open");
+
+};
+
+const closeLogoutModal = () => {
+
+    document
+        .getElementById("logout-modal")
+        .classList.remove("open");
+
+};
+
+const logout = () => {
+
+    localStorage.removeItem("token");
+
+    window.location.href =
+        "/login.html";
+
 };
 
 const apiFetch = async (url, options = {}) => {

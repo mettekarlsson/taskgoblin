@@ -9,6 +9,9 @@ const translations = {
         calendar: "Calendar",
         logout: "Logout",
 
+        logoutTitle: "Log out?",
+        logoutMessage: "Are you sure you want to log out?",
+
         name: "Name",
         email: "E-mail",
         password: "Password",
@@ -51,6 +54,9 @@ const translations = {
         noNotesMatchSearch: "No notes match your search.",
         contentCannotBeEmpty: "Content cannot be empty.",
 
+        deleteNoteTitle: "Delete note?",
+        deleteNoteMessage: "This action cannot be undone.",
+
         currentSettings: "Current settings",
         loadingSettings: "Loading settings..."
     },
@@ -64,6 +70,9 @@ const translations = {
         notes: "Anteckningar",
         calendar: "Kalender",
         logout: "Logga ut",
+
+        logoutTitle: "Logga ut?",
+        logoutMessage: "Är du säker på att du vill logga ut?",
 
         name: "Namn",
         email: "E-post",
@@ -106,6 +115,9 @@ const translations = {
         noNotesYet: "Inga anteckningar ännu.",
         noNotesMatchSearch: "Inga anteckningar matchar sökningen.",
         contentCannotBeEmpty: "Innehåll får inte vara tomt.",
+
+        deleteNoteTitle: "Ta bort anteckning?",
+        deleteNoteMessage: "Den här åtgärden kan inte ångras.",
 
         currentSettings: "Nuvarande inställningar",
         loadingSettings: "Laddar inställningar..."
