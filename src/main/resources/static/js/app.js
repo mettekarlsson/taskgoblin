@@ -2,7 +2,7 @@ let currentSettings = null;
 
 const loadAppSettings = async () => {
     try {
-        const response = await fetch("/user/settings");
+        const response = await apiFetch("/user/settings");
 
         if (!response.ok) {
             throw new Error("Failed to load app settings");

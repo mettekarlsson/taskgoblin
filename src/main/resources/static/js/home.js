@@ -1,5 +1,5 @@
 async function getRandomQuote() {
-    const response = await fetch("/api/quotes/random");
+    const response = await apiFetch("/api/quotes/random");
 
     if (!response.ok) {
         throw new Error("Failed to load quote");

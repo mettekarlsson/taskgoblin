@@ -116,7 +116,7 @@ const renderSettings = (settings) => {
 };
 const updateSingleSetting = async (settingData) => {
     try {
-        const response = await fetch("/user/settings", {
+        const response = await apiFetch("/user/settings", {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -143,5 +143,8 @@ const updateSingleSetting = async (settingData) => {
 };
 
 const initPage = () => {
+    if (!currentSettings) {
+        return;
+    }
     renderSettings(currentSettings);
 };

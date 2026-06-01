@@ -4,8 +4,11 @@ import com.example.taskgoblin.dto.RegisterDTO;
 import com.example.taskgoblin.dto.UserProfileDTO;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.UserMapper;
+import com.example.taskgoblin.model.Language;
 import com.example.taskgoblin.model.User;
+import com.example.taskgoblin.model.UserSettings;
 import com.example.taskgoblin.repository.UserRepository;
+import com.example.taskgoblin.repository.UserSettingsRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.taskgoblin.dto.ChangePasswordDTO;
@@ -18,10 +21,12 @@ import java.time.LocalDateTime;
 public class UserService {
 
     private final UserRepository userRepository;
+    private final UserSettingsRepository userSettingsRepository;
     private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, UserSettingsRepository userSettingsRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.userSettingsRepository = userSettingsRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -46,6 +51,15 @@ public class UserService {
         user.setCreatedAt(LocalDateTime.now());
         user.setStatus(true);
         User savedUser = userRepository.save(user);
+
+        UserSettings userSettings = new UserSettings();
+        userSettings.setUser(savedUser);
+        userSettings.setDefaultReminderMinutes(15);
+        userSettings.setNotificationsEnabled(true);
+        userSettings.setTheme("light");
+        userSettings.setLanguage(Language.en);
+
+        userSettingsRepository.save(userSettings);
         return UserMapper.mapToUserProfileDto(savedUser);
     }
 
