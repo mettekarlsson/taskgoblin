@@ -18,10 +18,21 @@ const loadAppSettings = async () => {
     }
 };
 
-document.addEventListener("DOMContentLoaded", async () => {
-    await loadAppSettings();
+document.addEventListener(
+    "DOMContentLoaded",
+    async () => {
 
-    if (typeof initPage === "function") {
-        initPage();
+        await loadAppSettings();
+
+        renderMenu();
+
+        translatePage();
+
+        initializeMenu();
+
+        if (typeof initPage === "function") {
+            await initPage();
+        }
+
     }
-});
+);
