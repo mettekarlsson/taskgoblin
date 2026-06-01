@@ -1,5 +1,6 @@
 package com.example.taskgoblin.mapper;
 
+import com.example.taskgoblin.dto.RegisterDTO;
 import com.example.taskgoblin.dto.UserProfileDTO;
 import com.example.taskgoblin.dto.UserSettingsDTO;
 import com.example.taskgoblin.model.User;
@@ -22,5 +23,12 @@ public class UserMapper {
                 userSettings.getTheme(),
                 userSettings.getLanguage()
         );
+    }
+
+    public static User mapToUserEntity(RegisterDTO dto) {
+        User user = new User();
+        user.setName(dto.getName());
+        user.setEmail(dto.getEmail());
+        return user;
     }
 }

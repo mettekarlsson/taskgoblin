@@ -3,7 +3,10 @@ package com.example.taskgoblin.controller;
 
 import com.example.taskgoblin.dto.TaskListDTO;
 import com.example.taskgoblin.service.TaskListService;
+import com.example.taskgoblin.service.UserService;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,14 +20,13 @@ import java.util.List;
 public class TaskListController {
 
     private final TaskListService taskListService;
+    private final UserService userService;
 
     // Constructor injection
-    public TaskListController(TaskListService taskListService) {
+    public TaskListController(TaskListService taskListService, UserService userService) {
         this.taskListService = taskListService;
+        this.userService = userService;
     }
-
-    // Temporary hardcoded user until authentication is implemented
-    Long hardcodedUserId = 1L;
 
     /*
      GET /lists
@@ -32,10 +34,13 @@ public class TaskListController {
      Fetches all task lists for the current user.
     */
     @GetMapping
-    public ResponseEntity<List<TaskListDTO>> getAllLists() {
+    public ResponseEntity<List<TaskListDTO>> getAllLists(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return ResponseEntity.ok(
-                taskListService.getAllListsForUser(hardcodedUserId)
+                taskListService.getAllListsForUser(userId)
         );
     }
 
@@ -46,11 +51,13 @@ public class TaskListController {
     */
     @GetMapping("/{id}")
     public ResponseEntity<TaskListDTO> getListById(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return ResponseEntity.ok(
-                taskListService.getListById(id, hardcodedUserId)
+                taskListService.getListById(id, userId)
         );
     }
 }
