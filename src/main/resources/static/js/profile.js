@@ -5,7 +5,7 @@ let currentProfile = null;
 // Loads the profile from the backend when the page opens.
 const loadProfile = async () => {
     try {
-        const response = await fetch("/user/profile");
+        const response = await apiFetch("/user/profile");
 
         if (!response.ok) {
             throw new Error("Failed to load profile");
@@ -187,7 +187,7 @@ const updateEmail = async () => {
 // Sends PATCH request for profile updates
 const updateProfile = async (updatedProfile) => {
     try {
-        const response = await fetch("/user/profile", {
+        const response = await apiFetch("/user/profile", {
             method: "PATCH",
             headers: {
                 "Content-Type": "application/json"
@@ -236,7 +236,7 @@ const updatePassword = async () => {
     }
 
     try {
-        const response = await fetch("/user/password", {
+        const response = await apiFetch("/user/password", {
             method: "PUT",
             headers: {
                 "Content-Type": "application/json"

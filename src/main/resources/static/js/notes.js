@@ -62,7 +62,7 @@ document.addEventListener("click", (event) => {
 
 const loadNotes = async () => {
     try {
-        const response = await fetch("/notes");
+        const response = await apiFetch("/notes");
 
         if (!response.ok) {
             throw new Error("Failed to load notes");
@@ -168,7 +168,7 @@ const renderNotes = (notes, searchQuery = "") => {
 
 const openNote = async (noteId) => {
     try {
-        const response = await fetch(`/notes/${noteId}`);
+        const response = await apiFetch(`/notes/${noteId}`);
 
         if (!response.ok) {
             throw new Error("Failed to load note");
@@ -532,7 +532,7 @@ const updateNote = async (noteId) => {
 
 const sendNoteRequest = async (url, method, noteData) => {
     try {
-        const response = await fetch(url, {
+        const response = await apiFetch(url, {
             method: method,
             headers: {
                 "Content-Type": "application/json"
@@ -583,7 +583,7 @@ const confirmDeleteNote = async () => {
 
 const deleteNote = async (noteId) => {
     try {
-        const response = await fetch(`/notes/${noteId}`, {
+        const response = await apiFetch(`/notes/${noteId}`, {
             method: "DELETE"
         });
 

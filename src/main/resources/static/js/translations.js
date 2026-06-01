@@ -7,6 +7,7 @@ const translations = {
         lists: "Lists",
         notes: "Notes",
         calendar: "Calendar",
+        logout: "Logout",
 
         name: "Name",
         email: "E-mail",
@@ -62,6 +63,7 @@ const translations = {
         lists: "Checklistor",
         notes: "Anteckningar",
         calendar: "Kalender",
+        logout: "Logga ut",
 
         name: "Namn",
         email: "E-post",

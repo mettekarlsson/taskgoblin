@@ -1,0 +1,43 @@
+const handleLogin = async () => {
+
+    const email =
+        document.getElementById("email").value;
+
+    const password =
+        document.getElementById("password").value;
+
+    const errorElement =
+        document.getElementById("login-error");
+
+    try {
+
+        await login(email, password);
+
+        window.location.href = "/index.html";
+
+    } catch (error) {
+
+        errorElement.textContent =
+            error.message;
+
+    }
+
+};
+
+const successMessage =
+    document.getElementById("login-message");
+
+if (
+    localStorage.getItem("registrationSuccess")
+) {
+
+    successMessage.textContent =
+        "Account created successfully. You can now log in.";
+
+    successMessage.classList.add("success");
+
+    localStorage.removeItem(
+        "registrationSuccess"
+    );
+
+}
