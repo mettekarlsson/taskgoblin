@@ -29,34 +29,34 @@ const renderProfileView = () => {
 
             <div class="profile-row">
                 <div>
-                    <span class="profile-label">Name:</span>
+                    <span class="profile-label">${t("name")}:</span>
                     <span class="profile-value">${currentProfile.name}</span>
                 </div>
 
                 <button class="profile-edit-btn" onclick="renderEditName()">
-                    Edit
+                    ${t("edit")}
                 </button>
             </div>
 
             <div class="profile-row">
                 <div>
-                    <span class="profile-label">E-mail:</span>
+                    <span class="profile-label">${t("email")}:</span>
                     <span class="profile-value">${currentProfile.email}</span>
                 </div>
 
                 <button class="profile-edit-btn" onclick="renderEditEmail()">
-                    Edit
+                    ${t("edit")}
                 </button>
             </div>
 
             <div class="profile-row">
                 <div>
-                    <span class="profile-label">Password:</span>
+                    <span class="profile-label">${t("password")}:</span>
                     <span class="profile-value">*******</span>
                 </div>
 
                 <button class="profile-edit-btn" onclick="renderEditPassword()">
-                    Edit
+                    ${t("edit")}
                 </button>
             </div>
 
@@ -80,7 +80,7 @@ const showProfileMessage = (message, type = "error") => {
 const renderEditName = () => {
     profileContent.innerHTML = `
         <div class="profile-card">
-            <label class="profile-label" for="name">Name:</label>
+            <label class="profile-label" for="name">${t("name")}:</label>
 
             <input
                 id="name"
@@ -92,8 +92,8 @@ const renderEditName = () => {
             <p id="profile-message" class="profile-message"></p>
 
             <div class="profile-actions">
-                <button class="profile-save-btn" onclick="updateName()">Save</button>
-                <button class="profile-cancel-btn" onclick="renderProfileView()">Cancel</button>
+                <button class="profile-save-btn" onclick="updateName()">${t("save")}</button>
+                <button class="profile-cancel-btn" onclick="renderProfileView()">${t("cancel")}</button>
             </div>
         </div>
     `;
@@ -104,7 +104,7 @@ const renderEditName = () => {
 const renderEditEmail = () => {
     profileContent.innerHTML = `
         <div class="profile-card">
-            <label class="profile-label" for="email">E-mail:</label>
+            <label class="profile-label" for="email">${t("email")}:</label>
 
             <input
                 id="email"
@@ -116,8 +116,8 @@ const renderEditEmail = () => {
             <p id="profile-message" class="profile-message"></p>
 
             <div class="profile-actions">
-                <button class="profile-save-btn" onclick="updateEmail()">Save</button>
-                <button class="profile-cancel-btn" onclick="renderProfileView()">Cancel</button>
+                <button class="profile-save-btn" onclick="updateEmail()">${t("save")}</button>
+                <button class="profile-cancel-btn" onclick="renderProfileView()">${t("cancel")}</button>
             </div>
         </div>
     `;
@@ -127,20 +127,20 @@ const renderEditEmail = () => {
 const renderEditPassword = () => {
     profileContent.innerHTML = `
         <div class="profile-card">
-            <label class="profile-label" for="current-password">Current password:</label>
+            <label class="profile-label" for="current-password">${t("currentPassword")}:</label>
             <input id="current-password" class="profile-input" type="password">
 
-            <label class="profile-label" for="new-password">New password:</label>
+            <label class="profile-label" for="new-password">${t("newPassword")}:</label>
             <input id="new-password" class="profile-input" type="password">
 
-            <label class="profile-label" for="confirm-new-password">Confirm new password:</label>
+            <label class="profile-label" for="confirm-new-password">${t("confirmPassword")}:</label>
             <input id="confirm-new-password" class="profile-input" type="password">
 
             <p id="profile-message" class="profile-message"></p>
 
             <div class="profile-actions">
-                <button class="profile-save-btn" onclick="updatePassword()">Save</button>
-                <button class="profile-cancel-btn" onclick="renderProfileView()">Cancel</button>
+                <button class="profile-save-btn" onclick="updatePassword()">${t("save")}</button>
+                <button class="profile-cancel-btn" onclick="renderProfileView()">${t("cancel")}</button>
             </div>
         </div>
     `;
@@ -165,9 +165,7 @@ const updateName = async () => {
     const name = document.getElementById("name").value.trim();
 
     if (!isValidFullName(name)) {
-        showProfileMessage(
-            "Full name must contain only letters and include first and last name"
-        );
+        showProfileMessage(t("fullNameValidation"));
         return;
     }
 
@@ -179,7 +177,7 @@ const updateEmail = async () => {
     const email = document.getElementById("email").value.trim().toLowerCase();
 
     if (!isValidEmail(email)) {
-        showProfileMessage("Email must be valid");
+        showProfileMessage(t("emailValidation"));
         return;
     }
 
@@ -199,7 +197,7 @@ const updateProfile = async (updatedProfile) => {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || "Failed to update profile");
+            throw new Error(error.message || t("failedToUpdateProfile"));
         }
 
         currentProfile = await response.json();
@@ -223,17 +221,17 @@ const updatePassword = async () => {
         document.getElementById("confirm-new-password").value;
 
     if (!currentPassword || !newPassword || !confirmNewPassword) {
-        showProfileMessage("All password fields are required");
+        showProfileMessage(t("allPasswordFieldsRequired"));
         return;
     }
 
     if (newPassword.length < 8) {
-        showProfileMessage("Password must be at least 8 characters");
+        showProfileMessage(t("passwordMinLength"));
         return;
     }
 
     if (newPassword !== confirmNewPassword) {
-        showProfileMessage("New passwords do not match");
+        showProfileMessage(t("passwordsDoNotMatch"));
         return;
     }
 
@@ -252,10 +250,10 @@ const updatePassword = async () => {
 
         if (!response.ok) {
             const error = await response.json();
-            throw new Error(error.message || "Failed to update password");
+            throw new Error(error.message || t("failedToUpdatePassword"));
         }
 
-        showProfileMessage("Password changed successfully", "success");
+        showProfileMessage(t("passwordChangedSuccessfully"), "success");
 
         setTimeout(() => {
             renderProfileView();
@@ -266,4 +264,6 @@ const updatePassword = async () => {
     }
 };
 
-loadProfile();
+const initPage = async () => {
+    await loadProfile();
+};

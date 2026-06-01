@@ -7,7 +7,10 @@
 
     <title>Calendar | TaskGoblin</title>
 
-    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/calendar.css">
 </head>
 <body>
 <header>
@@ -41,13 +44,13 @@
         <!-- Navigation -->
         <nav class="sidebar-links">
 
-            <a href="/index.html">Home</a>
-            <a href="/profile.html">Profile</a>
-            <a href="/tasks.html">Tasks</a>
-            <a href="/lists.html">Lists</a>
-            <a href="/notes.html">Notes</a>
-            <a href="/calendar.html">Calendar</a>
-            <a href="/settings.html">Settings</a>
+            <a href="/index.html" data-translate="home">Home</a>
+            <a href="/profile.html" data-translate="profile">Profile</a>
+            <a href="/tasks.html" data-translate="tasks">Tasks</a>
+            <a href="/lists.html" data-translate="lists">Lists</a>
+            <a href="/notes.html" data-translate="notes">Notes</a>
+            <a href="/calendar.html" data-translate="calendar">Calendar</a>
+            <a href="/settings.html" data-translate="settings">Settings</a>
 
         </nav>
 
@@ -65,7 +68,7 @@
     <!-- Calendar content -->
     <section class="calendar-container">
 
-        <h1>Calendar</h1>
+        <h1 data-translate="calendar">Calendar</h1>
 
         <div id="calendar-content">
             Loading calendar...
@@ -187,8 +190,11 @@
         <span></span>
     </button>
 </footer>
-<script src="/js/api.js"></script>
+
+<script src="/js/translations.js"></script>
+<script src="/js/app.js"></script>
 <script src="/js/menu.js"></script>
+<script src="/js/theme.js"></script>
 <script src="/js/calendar.js"></script>
 
 </body>

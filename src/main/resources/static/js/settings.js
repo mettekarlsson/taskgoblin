@@ -1,41 +1,13 @@
 const settingsCard =
     document.getElementById("settings-card");
 
-let currentSettings = null;
-
-const loadSettings = async () => {
-    try {
-
-        const response =
-            await fetch("/user/settings");
-
-        if (!response.ok) {
-            throw new Error("Failed to load settings");
-        }
-
-        currentSettings =
-            await response.json();
-
-        renderSettings(currentSettings);
-
-    } catch (error) {
-
-        settingsCard.innerHTML = `
-            <p class="settings-error">
-                ${error.message}
-            </p>
-        `;
-
-    }
-};
-
 const renderSettings = (settings) => {
 
     settingsCard.innerHTML = `
 
         <div class="settings-row">
             <span class="settings-label">
-                Default reminder
+                 ${t("defaultReminder")}
             </span>
 
             <select
@@ -48,7 +20,7 @@ const renderSettings = (settings) => {
 
     <option value="0"
         ${settings.defaultReminderMinutes === 0 ? "selected" : ""}>
-        Off
+        ${t("off")}
     </option>
 
     <option value="5"
@@ -68,12 +40,12 @@ const renderSettings = (settings) => {
 
     <option value="60"
         ${settings.defaultReminderMinutes === 60 ? "selected" : ""}>
-        1 hour
+         ${t("oneHour")}
     </option>
 
     <option value="1440"
         ${settings.defaultReminderMinutes === 1440 ? "selected" : ""}>
-        1 day
+        ${t("oneDay")}
     </option>
 
 </select>
@@ -81,7 +53,7 @@ const renderSettings = (settings) => {
 
         <div class="settings-row">
             <span class="settings-label">
-                Notifications
+                ${t("notifications")}
             </span>
 
             <button
@@ -96,7 +68,7 @@ const renderSettings = (settings) => {
 
         <div class="settings-row">
             <span class="settings-label">
-                Theme
+                ${t("theme")}
             </span>
 
             <select
@@ -107,19 +79,19 @@ const renderSettings = (settings) => {
             >
                 <option value="light"
                     ${settings.theme === "light" ? "selected" : ""}>
-                    Light
+                    ${t("light")}
                 </option>
 
                 <option value="dark"
                     ${settings.theme === "dark" ? "selected" : ""}>
-                    Dark
+                    ${t("dark")}
                 </option>
             </select>
         </div>
 
         <div class="settings-row">
             <span class="settings-label">
-                Language
+                ${t("language")}
             </span>
 
             <select
@@ -157,11 +129,19 @@ const updateSingleSetting = async (settingData) => {
         }
 
         currentSettings = await response.json();
+
+        if (settingData.theme !== undefined) {
+            applyTheme(currentSettings.theme);
+        }
+
         renderSettings(currentSettings);
+        translatePage();
 
     } catch (error) {
         alert(error.message);
     }
 };
 
-loadSettings();
+const initPage = () => {
+    renderSettings(currentSettings);
+};
