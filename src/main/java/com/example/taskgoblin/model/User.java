@@ -29,6 +29,9 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL) private UserSettings settings;
 
+    @Column(nullable = false, length = 50)
+    private String role;
+
     public User() {
     }
 
@@ -76,5 +79,11 @@ public class User {
         this.createdAt = createdAt;
     }
 
+    public String getRole() {
+        return role;
+    }
 
+    public void setRole(String role) {
+        this.role = role;
+    }
 }

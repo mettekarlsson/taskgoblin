@@ -4,9 +4,12 @@ import com.example.taskgoblin.dto.CreateNoteDTO;
 import com.example.taskgoblin.dto.NoteDTO;
 import com.example.taskgoblin.dto.UpdateNoteDTO;
 import com.example.taskgoblin.service.NoteService;
+import com.example.taskgoblin.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,19 +19,21 @@ import java.util.List;
 public class NoteController {
 
     private final NoteService noteService;
+    private final UserService userService;
 
-    public NoteController(NoteService noteService) {
+    public NoteController(NoteService noteService, UserService userService) {
         this.noteService = noteService;
+        this.userService = userService;
     }
 
     // GET /notes
     @GetMapping
-    public ResponseEntity<List<NoteDTO>> getAllNotes() {
-        Long hardcodedUserId = 1L; // placeholder tills inloggning är klar
-        return ResponseEntity.ok(noteService.getAllNotes(hardcodedUserId));
-
+    public ResponseEntity<List<NoteDTO>> getAllNotes(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        return ResponseEntity.ok(noteService.getAllNotes(userId));
     }
-
     // @PathVariable takes a value directly from the URL.
     //
     // Example:
@@ -37,9 +42,12 @@ public class NoteController {
 
     // GET /notes/1
     @GetMapping("/{id}")
-    public ResponseEntity<NoteDTO> getNote(@PathVariable Long id) {
-        Long hardcodedUserId = 1L; // placeholder tills inloggning är klar
-        return ResponseEntity.ok(noteService.getNote(id, hardcodedUserId));
+    public ResponseEntity<NoteDTO> getNote(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        return ResponseEntity.ok(noteService.getNote(id, userId));
     }
     // @Valid checks that the incoming request body follows
     // the validation constraints defined in CreateNoteDTO.
@@ -52,21 +60,23 @@ public class NoteController {
 
     // POST (create) /notes
     @PostMapping
-    public ResponseEntity<NoteDTO> addNote(@Valid @RequestBody CreateNoteDTO createNoteDto) {
-        Long hardcodedUserId = 1L;
-
+    public ResponseEntity<NoteDTO> addNote(
+            @Valid @RequestBody CreateNoteDTO createNoteDto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(noteService.createNote(hardcodedUserId, createNoteDto));
+                .body(noteService.createNote(userId, createNoteDto));
     }
 
     // DELETE /notes/1
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteNote(@PathVariable Long id) {
-
-        Long hardcodedUserId = 1L;
-
-        noteService.deleteNote(id, hardcodedUserId);
-
+    public ResponseEntity<String> deleteNote(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        noteService.deleteNote(id, userId);
         return ResponseEntity.ok("Note deleted successfully");
     }
 
@@ -74,12 +84,12 @@ public class NoteController {
     @PatchMapping("/{id}")
     public ResponseEntity<NoteDTO> updateNote(
             @PathVariable Long id,
-            @RequestBody UpdateNoteDTO updateNoteDTO
+            @RequestBody UpdateNoteDTO updateNoteDTO,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-        Long hardcodedUserId = 1L;
-
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         return ResponseEntity.ok(
-                noteService.updateNote(id, hardcodedUserId, updateNoteDTO)
+                noteService.updateNote(id, userId, updateNoteDTO)
         );
     }
 

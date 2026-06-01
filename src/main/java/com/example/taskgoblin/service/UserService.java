@@ -1,29 +1,52 @@
 package com.example.taskgoblin.service;
 
+import com.example.taskgoblin.dto.RegisterDTO;
 import com.example.taskgoblin.dto.UserProfileDTO;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.UserMapper;
 import com.example.taskgoblin.model.User;
 import com.example.taskgoblin.repository.UserRepository;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.taskgoblin.dto.ChangePasswordDTO;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.server.ResponseStatusException;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
-    public UserProfileDTO getProfile(Long id) {
+    public UserProfileDTO getUserById(Long id) {
         User user = userRepository.findById(id)
          .orElseThrow(() -> new ResourceNotFoundException("User"));
 
         return UserMapper.mapToUserProfileDto(user);
+    }
+
+    //find user to save in login-token
+    public User getUserByEmail(String email) {
+        return userRepository.findByEmail(email)
+                .orElseThrow(() -> new ResourceNotFoundException("User"));
+    }
+
+    // register new user
+    public UserProfileDTO register(RegisterDTO registerDto) {
+        User user = UserMapper.mapToUserEntity(registerDto);
+        user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
+        user.setRole("ROLE_USER");
+        user.setCreatedAt(LocalDateTime.now());
+        user.setStatus(true);
+        User savedUser = userRepository.save(user);
+        return UserMapper.mapToUserProfileDto(savedUser);
     }
 
     public UserProfileDTO updateProfile(Long id, UserProfileDTO dto) {

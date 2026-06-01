@@ -5,9 +5,12 @@ import com.example.taskgoblin.dto.TaskDTO;
 import com.example.taskgoblin.dto.UpdateDueDateDTO;
 import com.example.taskgoblin.dto.UpdateTaskDTO;
 import com.example.taskgoblin.service.TaskService;
+import com.example.taskgoblin.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -17,10 +20,12 @@ import java.util.List;
 public class TaskController {
 
     private final TaskService taskService;
+    private final UserService userService;
 
     // Constructor injection.
-    public TaskController(TaskService taskService) {
+    public TaskController(TaskService taskService, UserService userService) {
         this.taskService = taskService;
+        this.userService = userService;
     }
 
     /*
@@ -30,15 +35,14 @@ public class TaskController {
     */
     @PostMapping
     public ResponseEntity<TaskDTO> createTask(
-            @Valid @RequestBody CreateTaskDTO createTaskDTO
+            @Valid @RequestBody CreateTaskDTO createTaskDTO,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-
-        // Temporary hardcoded user until authentication is implemented.
-        Long hardcodedUserId = 1L;
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(taskService.createTask(hardcodedUserId, createTaskDTO));
+                .body(taskService.createTask(userId, createTaskDTO));
     }
 
     /*
@@ -47,13 +51,13 @@ public class TaskController {
      Returns all tasks that belong to the current user.
     */
     @GetMapping
-    public ResponseEntity<List<TaskDTO>> getAllTasks() {
-
-        // Temporary hardcoded user until authentication is implemented.
-        Long hardcodedUserId = 1L;
+    public ResponseEntity<List<TaskDTO>> getAllTasks(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return ResponseEntity.ok(
-                taskService.getAllTasks(hardcodedUserId)
+                taskService.getAllTasks(userId)
         );
     }
 
@@ -64,14 +68,13 @@ public class TaskController {
     */
     @GetMapping("/{id}")
     public ResponseEntity<TaskDTO> getTaskById(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-
-        // Temporary hardcoded user until authentication is implemented.
-        Long hardcodedUserId = 1L;
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return ResponseEntity.ok(
-                taskService.getTaskById(hardcodedUserId, id)
+                taskService.getTaskById(userId, id)
         );
     }
 
@@ -82,13 +85,12 @@ public class TaskController {
     */
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteTask(
-            @PathVariable Long id
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
-        // Temporary hardcoded user until authentication is implemented.
-        Long hardcodedUserId = 1L;
-
-        taskService.deleteTask(hardcodedUserId, id);
+        taskService.deleteTask(userId, id);
 
         return ResponseEntity.noContent().build();
     }
@@ -100,11 +102,10 @@ public class TaskController {
     @PutMapping("/{id}")
     public TaskDTO updateTask(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateTaskDTO updateTaskDTO
+            @Valid @RequestBody UpdateTaskDTO updateTaskDTO,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-
-        // Temporary hardcoded user id
-        Long userId = 1L;
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return taskService.updateTask(
                 id,
@@ -117,10 +118,11 @@ public class TaskController {
     Marks a task as completed.
     */
     @PatchMapping("/{id}/complete")
-    public TaskDTO completeTask(@PathVariable Long id) {
-
-        // Temporary hardcoded user id
-        Long userId = 1L;
+    public TaskDTO completeTask(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return taskService.completeTask(id, userId);
     }
@@ -130,10 +132,11 @@ public class TaskController {
  Reopens a completed task.
 */
     @PatchMapping("/{id}/reopen")
-    public TaskDTO reopenTask(@PathVariable Long id) {
-
-        // Temporary hardcoded user id
-        Long userId = 1L;
+    public TaskDTO reopenTask(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return taskService.reopenTask(id, userId);
     }
@@ -144,11 +147,10 @@ public class TaskController {
     @PatchMapping("/{id}/due-date")
     public TaskDTO updateDueDate(
             @PathVariable Long id,
-            @Valid @RequestBody UpdateDueDateDTO dto
+            @Valid @RequestBody UpdateDueDateDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails
     ) {
-
-        // Temporary hardcoded user id
-        Long userId = 1L;
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return taskService.updateDueDate(
                 id,
