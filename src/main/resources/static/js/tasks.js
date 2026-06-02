@@ -120,6 +120,13 @@ const renderTasks = () => {
                 </button>
             `
             }
+        
+        <button
+            class="task-delete-btn"
+            onclick="deleteTask(${task.id})"
+        >
+            ${t("delete")}
+        </button>
 
         <button
             class="task-toggle-btn"
@@ -260,6 +267,41 @@ const reopenTask = async (taskId) => {
         alert(error.message);
 
     }
+
+};
+
+// Deletes a task.
+const deleteTask = async (taskId) => {
+
+    const confirmed =
+        confirm(t("deleteTaskConfirm"));
+
+    if (!confirmed) {
+        return;
+    }
+
+    try {
+
+        const response =
+            await apiFetch(`/tasks/${taskId}`, {
+                method: "DELETE"
+            });
+
+        if (!response.ok) {
+            throw new Error(
+                t("failedToDeleteTask")
+            );
+        }
+
+        // Reloads tasks after deletion.
+        await loadTasks();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
 };
 
 

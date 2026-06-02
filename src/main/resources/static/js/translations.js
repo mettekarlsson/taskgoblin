@@ -76,6 +76,9 @@ const translations = {
 
         dueDate: "Due date",
         noDueDate: "No due date",
+
+        deleteTaskConfirm: "Delete this task?",
+        failedToDeleteTask: "Failed to delete task",
     },
 
 
@@ -157,6 +160,9 @@ const translations = {
 
         dueDate: "Förfallodatum",
         noDueDate: "Inget datum",
+
+        deleteTaskConfirm: "Ta bort denna uppgift?",
+        failedToDeleteTask: "Kunde inte ta bort uppgiften",
 
 
     }

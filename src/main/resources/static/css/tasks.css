@@ -84,6 +84,19 @@
     font-weight: 600;
 }
 
+.task-delete-btn {
+    border: none;
+    border-radius: 999px;
+
+    padding: 10px 16px;
+
+    background: var(--danger);
+    color: white;
+
+    cursor: pointer;
+    font-weight: 600;
+}
+
 .task-header-actions {
     display: flex;
     align-items: center;
