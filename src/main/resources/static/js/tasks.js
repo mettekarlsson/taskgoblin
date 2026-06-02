@@ -55,8 +55,25 @@ const renderTasks = () => {
         return;
     }
 
+    // Sorts active tasks before completed tasks.
+    const sortedTasks = [...currentTasks]
+        .sort((a, b) => {
+
+            if (a.status === "DONE" && b.status !== "DONE") {
+                return 1;
+            }
+
+            if (a.status !== "DONE" && b.status === "DONE") {
+                return -1;
+            }
+
+            return 0;
+
+        });
+
     taskContent.innerHTML =
-        currentTasks.map(task => `
+
+        sortedTasks.map(task => `
 
         <div class="task-card">
 
@@ -79,7 +96,7 @@ const renderTasks = () => {
 
             <div class="task-actions">
 
-                ${task.status === "COMPLETED"
+                ${task.status === "DONE"
             ? `
                         <button
                             class="task-action-btn"
