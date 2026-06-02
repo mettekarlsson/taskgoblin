@@ -1,16 +1,17 @@
 package com.example.taskgoblin.controller;
 
 
+import com.example.taskgoblin.dto.CreateTaskListDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
+import com.example.taskgoblin.dto.UpdateTaskListDTO;
 import com.example.taskgoblin.service.TaskListService;
 import com.example.taskgoblin.service.UserService;
+import jakarta.validation.Valid;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -19,20 +20,27 @@ import java.util.List;
 @RequestMapping("/lists")
 public class TaskListController {
 
+     /*
+     * Services
+     */
     private final TaskListService taskListService;
     private final UserService userService;
 
-    // Constructor injection
+
+     /*
+     * Constructor injection
+     */
     public TaskListController(TaskListService taskListService, UserService userService) {
         this.taskListService = taskListService;
         this.userService = userService;
     }
 
-    /*
-     GET /lists
 
-     Fetches all task lists for the current user.
-    */
+     /*
+     * Read operations
+     */
+
+     // GET /lists Fetches all task lists for the current user.
     @GetMapping
     public ResponseEntity<List<TaskListDTO>> getAllLists(
             @AuthenticationPrincipal UserDetails userDetails
@@ -44,11 +52,7 @@ public class TaskListController {
         );
     }
 
-    /*
-     GET /lists/{id}
-
-     Fetches a specific task list for the current user.
-    */
+    // GET /lists/{id}  Fetches a specific task list for the current user.
     @GetMapping("/{id}")
     public ResponseEntity<TaskListDTO> getListById(
             @PathVariable Long id,
@@ -59,5 +63,71 @@ public class TaskListController {
         return ResponseEntity.ok(
                 taskListService.getListById(id, userId)
         );
+    }
+
+
+     /*
+     * Create operations
+     */
+
+    // POST/lists
+    @PostMapping
+    public ResponseEntity<TaskListDTO> createList(
+            @Valid @RequestBody CreateTaskListDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        TaskListDTO createdList =
+                taskListService.createList(dto, userId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(createdList);
+    }
+
+
+     /*
+     * Update operations
+     */
+
+    // PUT/lists/{id}
+    @PutMapping("/{id}")
+    public ResponseEntity<TaskListDTO> updateList(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateTaskListDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        TaskListDTO updatedList =
+                taskListService.updateList(id, dto, userId);
+
+        return ResponseEntity.ok(updatedList);
+    }
+
+    /*
+     * Delete operations
+     */
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteList(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        taskListService.deleteList(id, userId);
+
+        return ResponseEntity.noContent().build();
     }
 }
