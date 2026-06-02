@@ -39,14 +39,14 @@ public class TaskList {
 
     private Integer intervalValue;
 
-    @Column(columnDefinition = "TINYINT(1)")
-    private Boolean isRecurring;
+    @Column(nullable = false, columnDefinition = "TINYINT(1)")
+    private boolean isRecurring;
 
-    @Column(nullable = false)
     private LocalDateTime lastInteractedAt;
 
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
-    private Boolean pinned;
+    private boolean pinned;
+
 
     public TaskList() {
     }
