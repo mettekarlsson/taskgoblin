@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateTaskListDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
+import com.example.taskgoblin.dto.UpdateTaskListDTO;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.TaskListMapper;
 import com.example.taskgoblin.model.Category;
@@ -18,10 +19,17 @@ import java.util.List;
 @Service
 public class TaskListService {
 
+    /*
+     * Repositories
+     */
     private final TaskListRepository taskListRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
+
+    /*
+     * Constructor injection
+     */
     public TaskListService(
             TaskListRepository taskListRepository,
             UserRepository userRepository,
@@ -32,6 +40,10 @@ public class TaskListService {
         this.categoryRepository = categoryRepository;
     }
 
+
+    /*
+     * Read operations
+     */
     public List<TaskListDTO> getAllListsForUser(Long userId) {
 
         List<TaskList> taskLists = taskListRepository.findByUserId(userId);
@@ -51,6 +63,10 @@ public class TaskListService {
         return TaskListMapper.mapToTaskListDTO(taskList);
     }
 
+
+    /*
+     * Create operations
+     */
     public TaskListDTO createList(
             CreateTaskListDTO dto,
             Long userId
@@ -84,5 +100,86 @@ public class TaskListService {
 
         return TaskListMapper
                 .mapToTaskListDTO(savedList);
+    }
+
+
+    /*
+     * Update operations
+     */
+    public TaskListDTO updateList(
+            Long listId,
+            UpdateTaskListDTO dto,
+            Long userId
+    ) {
+
+        // Fetches the task list that belongs to the current user.
+        // Prevents users from updating lists they do not own.
+        TaskList taskList = taskListRepository
+                .findByIdAndUserId(listId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list"));
+
+        // Updates the name only if a new value was provided.
+        if (dto.getName() != null) {
+            taskList.setName(dto.getName());
+        }
+
+        // Updates the color if provided.
+        if (dto.getColor() != null) {
+            taskList.setColor(dto.getColor());
+        }
+
+        // Updates the icon if provided.
+        if (dto.getIcon() != null) {
+            taskList.setIcon(dto.getIcon());
+        }
+
+        // Updates the due date if provided.
+        if (dto.getDueAt() != null) {
+            taskList.setDueAt(dto.getDueAt());
+        }
+
+        // Updates the pinned status if provided.
+        if (dto.getPinned() != null) {
+            taskList.setPinned(dto.getPinned());
+        }
+
+        // Updates recurring settings if provided.
+        if (dto.getIsRecurring() != null) {
+            taskList.setRecurring(dto.getIsRecurring());
+        }
+
+        // Updates the recurring frequency if provided.
+        if (dto.getFrequency() != null) {
+            taskList.setFrequency(dto.getFrequency());
+        }
+
+        // Updates the recurring interval value if provided.
+        if (dto.getIntervalValue() != null) {
+            taskList.setIntervalValue(dto.getIntervalValue());
+        }
+
+        // Updates the category if a category ID was provided.
+        if (dto.getCategoryId() != null) {
+
+            // Fetches the category from the database.
+            Category category = categoryRepository
+                    .findById(dto.getCategoryId())
+                    .orElseThrow(() ->
+                            new ResourceNotFoundException("Category"));
+
+            taskList.setCategory(category);
+        }
+
+        // Updates the timestamp for the latest interaction.
+        taskList.setLastInteractedAt(LocalDateTime.now());
+
+        // Saves the updated task list.
+        TaskList updatedList =
+                taskListRepository.save(taskList);
+
+        // Converts the updated entity into a response DTO.
+        return TaskListMapper
+                .mapToTaskListDTO(updatedList);
     }
 }
