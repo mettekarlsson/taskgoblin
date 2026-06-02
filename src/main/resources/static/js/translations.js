@@ -59,6 +59,12 @@ const translations = {
 
         currentSettings: "Current settings",
         loadingSettings: "Loading settings..."
+
+        // TASK
+        noTasksYet: "No tasks yet.",
+        failedToLoadTasks: "Failed to load tasks",
+        status: "Status",
+        priority: "Priority",
     },
 
     sv: {
@@ -121,6 +127,12 @@ const translations = {
 
         currentSettings: "Nuvarande inställningar",
         loadingSettings: "Laddar inställningar..."
+
+        // TASK
+        noTasksYet: "Inga uppgifter ännu.",
+        failedToLoadTasks: "Kunde inte ladda uppgifter",
+        status: "Status",
+        priority: "Prioritet",
     }
 };
 
@@ -139,3 +151,6 @@ const translatePage = () => {
                 t(element.dataset.translate);
         });
 };
+
+// Task
+

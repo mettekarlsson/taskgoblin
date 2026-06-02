@@ -1,1 +1,37 @@
-/* -------------------- */
+/* ----------------- */
+/*    Tasks page     */
+/* ----------------- */
+
+.task-page {
+    display: flex;
+    justify-content: center;
+}
+
+.task-container {
+    width: 100%;
+    max-width: 520px;
+}
+
+.task-container h1 {
+    color: var(--text);
+    margin-bottom: 24px;
+}
+
+.task-card {
+    background: var(--card);
+    border-radius: 18px;
+    padding: 20px;
+    margin-bottom: 16px;
+
+    box-shadow: 0 8px 20px var(--shadow);
+}
+
+.task-card h3 {
+    margin-bottom: 12px;
+    color: var(--text);
+}
+
+.task-card p {
+    color: var(--text);
+    margin-bottom: 8px;
+}
