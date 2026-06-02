@@ -3,6 +3,8 @@ const taskContent =
 
 // Stores tasks loaded from the backend.
 let currentTasks = [];
+// Stores which task card is currently expanded.
+let expandedTaskId = null;
 
 // Formats backend date into readable text.
 const formatDate = (dateString) => {
@@ -14,6 +16,19 @@ const formatDate = (dateString) => {
     return new Date(dateString)
         .toLocaleString();
 };
+
+// Expands or collapses a task card.
+const toggleTaskDetails = (taskId) => {
+
+    expandedTaskId =
+        expandedTaskId === taskId
+            ? null
+            : taskId;
+
+    renderTasks();
+
+};
+
 
 // Loads all tasks for the current user.
 const loadTasks = async () => {
@@ -72,54 +87,75 @@ const renderTasks = () => {
         });
 
     taskContent.innerHTML =
+        sortedTasks.map(task => {
 
-        sortedTasks.map(task => `
+            const isExpanded =
+                expandedTaskId === task.id;
 
-        <div class="task-card">
+            return `
 
-            <h3>${task.title}</h3>
+                <div class="task-card">
 
-            <p>
-                ${t("status")}:
-                ${task.status}
-            </p>
+                    <div class="task-header">
 
-            <p>
-                ${t("priority")}:
-                ${task.priority || "NONE"}
-            </p>
-            
-            <p>
-                ${t("dueDate")}:
-                ${formatDate(task.dueAt)}
-            </p>
+    <h3>${task.title}</h3>
 
-            <div class="task-actions">
+    <div class="task-header-actions">
 
-                ${task.status === "DONE"
-            ? `
-                        <button
-                            class="task-action-btn"
-                            onclick="reopenTask(${task.id})"
-                        >
-                            ${t("reopen")}
-                        </button>
-                    `
-            : `
-                        <button
-                            class="task-action-btn"
-                            onclick="completeTask(${task.id})"
-                        >
-                            ${t("complete")}
-                        </button>
-                    `
-        }
+        ${task.status === "DONE"
+                ? `
+                <button
+                    class="task-action-btn"
+                    onclick="reopenTask(${task.id})"
+                >
+                    ${t("reopen")}
+                </button>
+            `
+                : `
+                <button
+                    class="task-action-btn"
+                    onclick="completeTask(${task.id})"
+                >
+                    ${t("complete")}
+                </button>
+            `
+            }
 
-            </div>
+        <button
+            class="task-toggle-btn"
+            onclick="toggleTaskDetails(${task.id})"
+        >
+            ${isExpanded ? "−" : "+"}
+        </button>
 
-        </div>
+    </div>
 
-    `).join("");
+</div>
+
+                    ${isExpanded ? `
+
+                        <p>
+                            ${t("status")}:
+                            ${task.status}
+                        </p>
+
+                        <p>
+                            ${t("priority")}:
+                            ${task.priority || "NONE"}
+                        </p>
+
+                        <p>
+                            ${t("dueDate")}:
+                            ${formatDate(task.dueAt)}
+                        </p>
+
+                    ` : ""}
+
+                </div>
+
+            `;
+
+        }).join("");
 
 };
 
