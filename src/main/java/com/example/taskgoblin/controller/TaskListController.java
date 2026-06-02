@@ -111,4 +111,23 @@ public class TaskListController {
 
         return ResponseEntity.ok(updatedList);
     }
+
+    /*
+     * Delete operations
+     */
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteList(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        taskListService.deleteList(id, userId);
+
+        return ResponseEntity.noContent().build();
+    }
 }
