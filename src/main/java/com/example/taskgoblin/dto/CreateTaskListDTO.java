@@ -1,22 +1,28 @@
 package com.example.taskgoblin.dto;
 
+import com.example.taskgoblin.model.Frequency;
+import jakarta.validation.constraints.Positive;
+
 import java.time.LocalDateTime;
 
 public class CreateTaskListDTO {
 
+//    private Long categoryId;
     private String name;
     private String color;
     private String icon;
-    private Boolean pinned;
     private LocalDateTime dueAt;
+    private Boolean isRecurring;
+    private Frequency frequency;
+    @Positive(message = "Interval value must be greater than 0.")
+    private Integer intervalValue;
 
 
     public CreateTaskListDTO() {
     }
 
-    public CreateTaskListDTO(LocalDateTime dueAt, Boolean pinned, String icon, String color, String name) {
+    public CreateTaskListDTO(LocalDateTime dueAt, String icon, String color, String name) {
         this.dueAt = dueAt;
-        this.pinned = pinned;
         this.icon = icon;
         this.color = color;
         this.name = name;
@@ -44,14 +50,6 @@ public class CreateTaskListDTO {
 
     public void setIcon(String icon) {
         this.icon = icon;
-    }
-
-    public Boolean getPinned() {
-        return pinned;
-    }
-
-    public void setPinned(Boolean pinned) {
-        this.pinned = pinned;
     }
 
     public LocalDateTime getDueAt() {
