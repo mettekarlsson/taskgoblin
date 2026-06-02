@@ -58,13 +58,18 @@ const translations = {
         deleteNoteMessage: "This action cannot be undone.",
 
         currentSettings: "Current settings",
-        loadingSettings: "Loading settings..."
+        loadingSettings: "Loading settings...",
 
         // TASK
         noTasksYet: "No tasks yet.",
         failedToLoadTasks: "Failed to load tasks",
         status: "Status",
         priority: "Priority",
+
+        addTask: "Add task",
+        add: "Add",
+        taskTitleRequired: "Task title is required",
+        failedToCreateTask: "Failed to create task",
     },
 
     sv: {
@@ -126,13 +131,20 @@ const translations = {
         deleteNoteMessage: "Den här åtgärden kan inte ångras.",
 
         currentSettings: "Nuvarande inställningar",
-        loadingSettings: "Laddar inställningar..."
+        loadingSettings: "Laddar inställningar...",
 
         // TASK
         noTasksYet: "Inga uppgifter ännu.",
         failedToLoadTasks: "Kunde inte ladda uppgifter",
         status: "Status",
         priority: "Prioritet",
+
+        addTask: "Lägg till uppgift",
+        add: "Lägg till",
+        taskTitleRequired: "Uppgiftens titel krävs",
+        failedToCreateTask: "Kunde inte skapa uppgift",
+
+
     }
 };
 
@@ -150,7 +162,18 @@ const translatePage = () => {
             element.textContent =
                 t(element.dataset.translate);
         });
+
+    // Task
+    document
+        .querySelectorAll("[data-translate-placeholder]")
+        .forEach(element => {
+
+            element.placeholder =
+                t(element.dataset.translatePlaceholder);
+
+        });
+
 };
 
-// Task
+
 

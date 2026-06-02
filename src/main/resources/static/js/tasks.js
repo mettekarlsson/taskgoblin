@@ -70,4 +70,50 @@ const renderTasks = () => {
 // Runs automatically when the page loads.
 const initPage = async () => {
     await loadTasks();
+
+    // Creates a new task.
+    const createTask = async () => {
+
+        const title =
+            document.getElementById("task-title")
+                .value
+                .trim();
+
+        if (!title) {
+
+            alert(t("taskTitleRequired"));
+
+            return;
+        }
+
+        try {
+
+            const response =
+                await apiFetch("/tasks", {
+                    method: "POST",
+                    body: JSON.stringify({
+                        title
+                    })
+                });
+
+            if (!response.ok) {
+                throw new Error(
+                    t("failedToCreateTask")
+                );
+            }
+
+            // Clears the input field after successful creation.
+            document.getElementById("task-title")
+                .value = "";
+
+            // Reloads tasks from backend.
+            await loadTasks();
+
+        } catch (error) {
+
+            alert(error.message);
+
+        }
+
+    };
 };

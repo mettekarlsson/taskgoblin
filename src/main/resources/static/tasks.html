@@ -23,6 +23,24 @@
 
         <h1 data-translate="tasks">Tasks</h1>
 
+        <div class="task-create">
+
+            <input
+                    id="task-title"
+                    class="task-input"
+                    type="text"
+                    data-translate-placeholder="addTask"
+            >
+
+            <button
+                    class="task-add-btn"
+                    onclick="createTask()"
+                    data-translate="add"
+            >
+            </button>
+
+        </div>
+
         <div id="task-content">
             Loading tasks...
         </div>
