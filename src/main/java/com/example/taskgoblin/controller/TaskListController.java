@@ -1,16 +1,15 @@
 package com.example.taskgoblin.controller;
 
 
+import com.example.taskgoblin.dto.CreateTaskListDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
 import com.example.taskgoblin.service.TaskListService;
 import com.example.taskgoblin.service.UserService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -59,5 +58,24 @@ public class TaskListController {
         return ResponseEntity.ok(
                 taskListService.getListById(id, userId)
         );
+    }
+
+    // POST/lists
+    @PostMapping
+    public ResponseEntity<TaskListDTO> createList(
+            @RequestBody CreateTaskListDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        TaskListDTO createdList =
+                taskListService.createList(dto, userId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(createdList);
     }
 }
