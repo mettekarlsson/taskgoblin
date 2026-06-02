@@ -182,4 +182,25 @@ public class TaskListService {
         return TaskListMapper
                 .mapToTaskListDTO(updatedList);
     }
+
+
+    /*
+     * Delete operations
+     */
+
+    public void deleteList(
+            Long listId,
+            Long userId
+    ) {
+
+        // Fetches the task list that belongs to the current user.
+        // Prevents users from deleting lists they do not own.
+        TaskList taskList = taskListRepository
+                .findByIdAndUserId(listId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list"));
+
+        // Deletes the task list from the database.
+        taskListRepository.delete(taskList);
+    }
 }
