@@ -8,13 +8,22 @@ public class TaskListMapper {
 
 
     public static TaskListDTO mapToTaskListDTO(TaskList taskList) {
+
         return new TaskListDTO(
                 taskList.getId(),
+                taskList.getCategory() != null
+                        ? taskList.getCategory().getId()
+                        : null,
                 taskList.getName(),
                 taskList.getColor(),
                 taskList.getIcon(),
+                taskList.getDueAt(),
                 taskList.isPinned(),
-                taskList.getDueAt()
+                taskList.isRecurring(),
+                taskList.getFrequency(),
+                taskList.getIntervalValue(),
+                taskList.getCreatedAt(),
+                taskList.getLastInteractedAt()
         );
     }
 
