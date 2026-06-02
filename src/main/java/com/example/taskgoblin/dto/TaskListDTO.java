@@ -13,8 +13,8 @@ public class TaskListDTO {
     private String color;
     private String icon;
     private LocalDateTime dueAt;
-    private Boolean pinned;
-    private Boolean isRecurring;
+    private boolean pinned;
+    private boolean isRecurring;
     private Frequency frequency;
     private Integer intervalValue;
     private LocalDateTime createdAt;
@@ -63,11 +63,11 @@ public class TaskListDTO {
         return dueAt;
     }
 
-    public Boolean getPinned() {
+    public boolean getPinned() {
         return pinned;
     }
 
-    public Boolean getIsRecurring() {
+    public boolean getIsRecurring() {
         return isRecurring;
     }
 

@@ -5,6 +5,7 @@ import com.example.taskgoblin.dto.CreateTaskListDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
 import com.example.taskgoblin.service.TaskListService;
 import com.example.taskgoblin.service.UserService;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -63,7 +64,7 @@ public class TaskListController {
     // POST/lists
     @PostMapping
     public ResponseEntity<TaskListDTO> createList(
-            @RequestBody CreateTaskListDTO dto,
+            @Valid @RequestBody CreateTaskListDTO dto,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
 
