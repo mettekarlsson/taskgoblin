@@ -70,6 +70,9 @@ const translations = {
         add: "Add",
         taskTitleRequired: "Task title is required",
         failedToCreateTask: "Failed to create task",
+
+        complete: "Complete",
+        reopen: "Reopen",
     },
 
     sv: {
@@ -143,6 +146,9 @@ const translations = {
         add: "Lägg till",
         taskTitleRequired: "Uppgiftens titel krävs",
         failedToCreateTask: "Kunde inte skapa uppgift",
+
+        complete: "Klar",
+        reopen: "Återöppna",
 
 
     }

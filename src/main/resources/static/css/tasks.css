@@ -66,3 +66,21 @@
     color: var(--text);
     margin-bottom: 8px;
 }
+
+.task-actions {
+    margin-top: 16px;
+}
+
+.task-action-btn {
+    border: none;
+    border-radius: 999px;
+
+    padding: 10px 16px;
+
+    background: var(--primary);
+    color: white;
+
+    cursor: pointer;
+    font-weight: 600;
+}
+

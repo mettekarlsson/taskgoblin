@@ -47,23 +47,46 @@ const renderTasks = () => {
     taskContent.innerHTML =
         currentTasks.map(task => `
 
-            <div class="task-card">
+        <div class="task-card">
 
-                <h3>${task.title}</h3>
+            <h3>${task.title}</h3>
 
-                <p>
-                    ${t("status")}:
-                    ${task.status}
-                </p>
+            <p>
+                ${t("status")}:
+                ${task.status}
+            </p>
 
-                <p>
-                    ${t("priority")}:
-                    ${task.priority || "NONE"}
-                </p>
+            <p>
+                ${t("priority")}:
+                ${task.priority || "NONE"}
+            </p>
+
+            <div class="task-actions">
+
+                ${task.status === "COMPLETED"
+            ? `
+                        <button
+                            class="task-action-btn"
+                            onclick="reopenTask(${task.id})"
+                        >
+                            ${t("reopen")}
+                        </button>
+                    `
+            : `
+                        <button
+                            class="task-action-btn"
+                            onclick="completeTask(${task.id})"
+                        >
+                            ${t("complete")}
+                        </button>
+                    `
+        }
 
             </div>
 
-        `).join("");
+        </div>
+
+    `).join("");
 
 };
 
@@ -71,49 +94,107 @@ const renderTasks = () => {
 const initPage = async () => {
     await loadTasks();
 
-    // Creates a new task.
-    const createTask = async () => {
-
-        const title =
-            document.getElementById("task-title")
-                .value
-                .trim();
-
-        if (!title) {
-
-            alert(t("taskTitleRequired"));
-
-            return;
-        }
-
-        try {
-
-            const response =
-                await apiFetch("/tasks", {
-                    method: "POST",
-                    body: JSON.stringify({
-                        title
-                    })
-                });
-
-            if (!response.ok) {
-                throw new Error(
-                    t("failedToCreateTask")
-                );
-            }
-
-            // Clears the input field after successful creation.
-            document.getElementById("task-title")
-                .value = "";
-
-            // Reloads tasks from backend.
-            await loadTasks();
-
-        } catch (error) {
-
-            alert(error.message);
-
-        }
-
-    };
 };
+
+
+// Creates a new task.
+const createTask = async () => {
+
+    const title =
+        document.getElementById("task-title")
+            .value
+            .trim();
+
+    if (!title) {
+
+        alert(t("taskTitleRequired"));
+
+        return;
+    }
+
+    try {
+
+        const response =
+            await apiFetch("/tasks", {
+                method: "POST",
+                body: JSON.stringify({
+                    title
+                })
+            });
+
+        if (!response.ok) {
+            throw new Error(
+                t("failedToCreateTask")
+            );
+        }
+
+        // Clears the input field after successful creation.
+        document.getElementById("task-title")
+            .value = "";
+
+        // Reloads tasks from backend.
+        await loadTasks();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+};
+
+
+// Marks a task as completed.
+const completeTask = async (taskId) => {
+
+    try {
+
+        const response =
+            await apiFetch(`/tasks/${taskId}/complete`, {
+                method: "PATCH"
+            });
+
+        if (!response.ok) {
+            throw new Error("Failed to complete task");
+        }
+
+        // Reload tasks after update.
+        await loadTasks();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+
+};
+
+
+// Reopens a completed task.
+const reopenTask = async (taskId) => {
+
+    try {
+
+        const response =
+            await apiFetch(`/tasks/${taskId}/reopen`, {
+                method: "PATCH"
+            });
+
+        if (!response.ok) {
+            throw new Error("Failed to reopen task");
+        }
+
+        // Reload tasks after update.
+        await loadTasks();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+};
+
+
+
+
+
+
