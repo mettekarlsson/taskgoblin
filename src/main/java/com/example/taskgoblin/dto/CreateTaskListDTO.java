@@ -7,7 +7,8 @@ import java.time.LocalDateTime;
 
 public class CreateTaskListDTO {
 
-//    private Long categoryId;
+
+    private Long categoryId;
     private String name;
     private String color;
     private String icon;
@@ -21,11 +22,23 @@ public class CreateTaskListDTO {
     public CreateTaskListDTO() {
     }
 
-    public CreateTaskListDTO(LocalDateTime dueAt, String icon, String color, String name) {
-        this.dueAt = dueAt;
-        this.icon = icon;
-        this.color = color;
+    public CreateTaskListDTO(Long categoryId, String name, String color, String icon, LocalDateTime dueAt, Boolean isRecurring, Frequency frequency, Integer intervalValue) {
+        this.categoryId = categoryId;
         this.name = name;
+        this.color = color;
+        this.icon = icon;
+        this.dueAt = dueAt;
+        this.isRecurring = isRecurring;
+        this.frequency = frequency;
+        this.intervalValue = intervalValue;
+    }
+
+    public Long getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getName() {
@@ -58,6 +71,30 @@ public class CreateTaskListDTO {
 
     public void setDueAt(LocalDateTime dueAt) {
         this.dueAt = dueAt;
+    }
+
+    public Boolean getIsRecurring() {
+        return isRecurring;
+    }
+
+    public void setIsRecurring(Boolean recurring) {
+        isRecurring = recurring;
+    }
+
+    public Frequency getFrequency() {
+        return frequency;
+    }
+
+    public void setFrequency(Frequency frequency) {
+        this.frequency = frequency;
+    }
+
+    public Integer getIntervalValue() {
+        return intervalValue;
+    }
+
+    public void setIntervalValue(Integer intervalValue) {
+        this.intervalValue = intervalValue;
     }
 }
 

@@ -29,16 +29,20 @@ public class TaskListMapper {
 
 
     public static TaskList mapToTaskList(CreateTaskListDTO dto) {
+
         TaskList taskList = new TaskList();
 
         taskList.setName(dto.getName());
         taskList.setColor(dto.getColor());
         taskList.setIcon(dto.getIcon());
-        taskList.setPinned(
-                dto.getPinned() != null ? dto.getPinned() : false
-        );
         taskList.setDueAt(dto.getDueAt());
-
+        taskList.setRecurring(
+                dto.getIsRecurring() != null
+                        ? dto.getIsRecurring()
+                        : false
+        );
+        taskList.setFrequency(dto.getFrequency());
+        taskList.setIntervalValue(dto.getIntervalValue());
         return taskList;
     }
 }
