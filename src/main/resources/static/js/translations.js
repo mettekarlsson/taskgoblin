@@ -73,7 +73,12 @@ const translations = {
 
         complete: "Complete",
         reopen: "Reopen",
+
+        dueDate: "Due date",
+        noDueDate: "No due date",
     },
+
+
 
     sv: {
         home: "Hem",
@@ -149,6 +154,9 @@ const translations = {
 
         complete: "Klar",
         reopen: "Återöppna",
+
+        dueDate: "Förfallodatum",
+        noDueDate: "Inget datum",
 
 
     }

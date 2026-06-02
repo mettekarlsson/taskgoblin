@@ -4,6 +4,17 @@ const taskContent =
 // Stores tasks loaded from the backend.
 let currentTasks = [];
 
+// Formats backend date into readable text.
+const formatDate = (dateString) => {
+
+    if (!dateString) {
+        return t("noDueDate");
+    }
+
+    return new Date(dateString)
+        .toLocaleString();
+};
+
 // Loads all tasks for the current user.
 const loadTasks = async () => {
 
@@ -59,6 +70,11 @@ const renderTasks = () => {
             <p>
                 ${t("priority")}:
                 ${task.priority || "NONE"}
+            </p>
+            
+            <p>
+                ${t("dueDate")}:
+                ${formatDate(task.dueAt)}
             </p>
 
             <div class="task-actions">
