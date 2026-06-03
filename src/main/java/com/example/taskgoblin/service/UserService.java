@@ -7,12 +7,13 @@ import com.example.taskgoblin.mapper.UserMapper;
 import com.example.taskgoblin.model.Language;
 import com.example.taskgoblin.model.User;
 import com.example.taskgoblin.model.UserSettings;
-import com.example.taskgoblin.repository.UserRepository;
-import com.example.taskgoblin.repository.UserSettingsRepository;
+import com.example.taskgoblin.repository.*;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import com.example.taskgoblin.dto.ChangePasswordDTO;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDateTime;
@@ -23,11 +24,21 @@ public class UserService {
     private final UserRepository userRepository;
     private final UserSettingsRepository userSettingsRepository;
     private final PasswordEncoder passwordEncoder;
+    private final TaskRepository taskRepository;
+    private final NoteRepository noteRepository;
+    private final CalendarRepository calendarRepository;
+    private final TaskListRepository taskListRepository;
+    private final CompletionHistoryRepository completionHistoryRepository;
 
-    public UserService(UserRepository userRepository, UserSettingsRepository userSettingsRepository, PasswordEncoder passwordEncoder) {
+    public UserService(UserRepository userRepository, UserSettingsRepository userSettingsRepository, PasswordEncoder passwordEncoder, TaskRepository taskRepository, NoteRepository noteRepository, CalendarRepository calendarRepository, TaskListRepository taskListRepository, CompletionHistoryRepository completionHistoryRepository) {
         this.userRepository = userRepository;
         this.userSettingsRepository = userSettingsRepository;
         this.passwordEncoder = passwordEncoder;
+        this.taskRepository = taskRepository;
+        this.noteRepository = noteRepository;
+        this.calendarRepository = calendarRepository;
+        this.taskListRepository = taskListRepository;
+        this.completionHistoryRepository = completionHistoryRepository;
     }
 
     public UserProfileDTO getUserById(Long id) {
@@ -135,4 +146,20 @@ public class UserService {
             // Save the updated password in the database.
             userRepository.save(user);
         }
+
+    @Transactional
+    public void deleteUser(Long id) {
+
+        User user = userRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("User"));
+
+        completionHistoryRepository.deleteByUserId(id);
+        taskRepository.deleteByUserId(id);
+        noteRepository.deleteByUserId(id);
+        calendarRepository.deleteByUserId(id);
+        taskListRepository.deleteByUserId(id);
+
+        userRepository.delete(user);
     }
+    }
+

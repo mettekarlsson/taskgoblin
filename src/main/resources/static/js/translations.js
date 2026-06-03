@@ -55,6 +55,10 @@ const translations = {
         dark: "Dark",
         enabled: "Enabled",
         disabled: "Disabled",
+        dangerZone: "Danger zone",
+        deleteAccountText:
+            "Delete your account and all associated data permanently.",
+        deleteAccount: "Delete account",
 
         notesSubtitle: "Quick thoughts and reminders.",
         newNote: "Add note",
@@ -149,7 +153,10 @@ const translations = {
         dark: "Mörkt",
         enabled: "På",
         disabled: "Av",
-
+        dangerZone: "Riskzon",
+        deleteAccountText:
+            "Ta bort ditt konto och all tillhörande data permanent.",
+        deleteAccount: "Ta bort konto",
 
         notesSubtitle: "Snabba tankar och påminnelser.",
         newNote: "Ny anteckning",

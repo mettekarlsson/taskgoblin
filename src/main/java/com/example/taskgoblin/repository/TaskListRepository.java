@@ -16,4 +16,6 @@ public interface TaskListRepository
             Long userId
     );
 
+    void deleteByUserId(Long userId);
+
 }

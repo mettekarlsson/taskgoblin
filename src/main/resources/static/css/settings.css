@@ -109,4 +109,48 @@
     cursor: pointer;
 }
 
+.settings-danger-zone {
+    margin-top: 24px;
+
+    padding: 20px;
+
+    background: var(--note-red-bg);
+
+    border-radius: 16px;
+}
+
+.settings-danger-zone h2 {
+    margin-bottom: 10px;
+
+    color: var(--danger);
+
+    font-size: 1.1rem;
+}
+
+.settings-danger-zone p {
+    margin-bottom: 16px;
+
+    color: var(--text);
+
+    line-height: 1.5;
+}
+
+.settings-delete-btn {
+    width: 50%;
+
+    display: block;
+    margin: 0 auto;
+
+    border: none;
+    border-radius: 999px;
+
+    padding: 12px 18px;
+
+    background: var(--danger);
+    color: white;
+
+    font-weight: 700;
+    cursor: pointer;
+}
+
 /* -------------------- */
