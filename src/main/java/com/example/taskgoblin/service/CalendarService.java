@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
+import com.example.taskgoblin.dto.UpdateEventDTO;
 import com.example.taskgoblin.exception.InvalidEventException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.EventMapper;
@@ -72,5 +73,65 @@ public class CalendarService {
                 .orElseThrow(() -> new ResourceNotFoundException("Event"));
 
         calendarRepository.delete(event);
+    }
+
+    //update event
+    public EventDTO updateEvent(Long eventId, Long userId, UpdateEventDTO updateEventDTO) {
+
+        Event event = calendarRepository.findByIdAndUserId(eventId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event"));
+
+        boolean contentWasUpdated = false;
+
+        if (updateEventDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(updateEventDTO.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category"));
+            event.setCategory(category);
+        }
+
+        if (updateEventDTO.getTitle() != null) {
+            event.setTitle(updateEventDTO.getTitle());
+            contentWasUpdated = true;
+        }
+        if (updateEventDTO.getDescription() != null) {
+            event.setDescription(updateEventDTO.getDescription());
+            contentWasUpdated = true;
+        }
+        if (updateEventDTO.getStartTime() != null) {
+            event.setStartTime(updateEventDTO.getStartTime());
+            contentWasUpdated = true;
+        }
+        if (updateEventDTO.getEndTime() != null) {
+            event.setEndTime(updateEventDTO.getEndTime());
+            contentWasUpdated = true;
+        }
+        if (updateEventDTO.getLocation() != null) {
+            event.setLocation(updateEventDTO.getLocation());
+            contentWasUpdated = true;
+        }
+        if (updateEventDTO.getIsAllDay() != null) {
+            event.setIsAllDay(updateEventDTO.getIsAllDay());
+            contentWasUpdated = true;
+        }
+        if (updateEventDTO.getIsRecurring() != null) {
+            event.setIsRecurring(updateEventDTO.getIsRecurring());
+            contentWasUpdated = true;
+        }
+        if (updateEventDTO.getFrequency() != null) {
+            event.setFrequency(Frequency.valueOf(updateEventDTO.getFrequency().toUpperCase()));
+            contentWasUpdated = true;
+        }
+        if (updateEventDTO.getIntervalValue() != null) {
+            event.setIntervalValue(updateEventDTO.getIntervalValue());
+            contentWasUpdated = true;
+        }
+
+        if (contentWasUpdated == true){
+            event.setUpdatedAt(LocalDateTime.now());
+        }
+
+        Event updatedEvent = calendarRepository.save(event);
+
+        return EventMapper.mapToEventDto(updatedEvent);
     }
 }

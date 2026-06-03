@@ -2,6 +2,7 @@ package com.example.taskgoblin.controller;
 
 import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
+import com.example.taskgoblin.dto.UpdateEventDTO;
 import com.example.taskgoblin.service.CalendarService;
 import com.example.taskgoblin.service.UserService;
 import jakarta.validation.Valid;
@@ -24,6 +25,7 @@ public class CalendarController {
         this.calendarService = calendarService;
         this.userService = userService;
     }
+
 
     //get all events
     @GetMapping
@@ -48,5 +50,18 @@ public class CalendarController {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         calendarService.deleteEvent(id, userId);
         return ResponseEntity.ok("Event deleted successfully");
+    }
+
+    //update an event
+    @PatchMapping("/{eventId}")
+    public ResponseEntity<EventDTO> updateEvent(
+            @PathVariable Long eventId,
+            @RequestBody UpdateEventDTO updateEventDTO,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        return ResponseEntity.ok(
+                calendarService.updateEvent(eventId, userId, updateEventDTO)
+        );
     }
 }

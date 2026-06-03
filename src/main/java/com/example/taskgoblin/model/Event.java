@@ -133,7 +133,7 @@ public class Event {
         return isAllDay;
     }
 
-    public void setAllDay(boolean allDay) {
+    public void setIsAllDay(boolean allDay) {
         isAllDay = allDay;
     }
 
@@ -141,7 +141,7 @@ public class Event {
         return isRecurring;
     }
 
-    public void setRecurring(boolean recurring) {
+    public void setIsRecurring(boolean recurring) {
         isRecurring = recurring;
     }
 

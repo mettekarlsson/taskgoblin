@@ -33,8 +33,8 @@ public class EventMapper {
         event.setStartTime(createEventDTO.getStartTime());
         event.setEndTime(createEventDTO.getEndTime());
         event.setLocation(createEventDTO.getLocation());
-        event.setAllDay(createEventDTO.getIsAllDay());
-        event.setRecurring(createEventDTO.getIsRecurring());
+        event.setIsAllDay(createEventDTO.getIsAllDay());
+        event.setIsRecurring(createEventDTO.getIsRecurring());
         event.setIntervalValue(createEventDTO.getIntervalValue());
 
         return event;
