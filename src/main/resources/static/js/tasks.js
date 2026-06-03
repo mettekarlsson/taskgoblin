@@ -67,6 +67,9 @@ const renderTasks = () => {
             <p>${t("noTasksYet")}</p>
         `;
 
+        const priorityClass =
+            task.priority?.toLowerCase() || "none";
+
         return;
     }
 
@@ -92,52 +95,75 @@ const renderTasks = () => {
             const isExpanded =
                 expandedTaskId === task.id;
 
+            const priorityClass =
+                task.priority?.toLowerCase() || "none";
+
             return `
 
-                <div class="task-card">
+                <div class="task-row">
 
-                    <div class="task-header">
+                <div class="task-row-content">
 
-    <h3>${task.title}</h3>
+    <div class="task-main-info">
 
-    <div class="task-header-actions">
+        <div class="task-row-top">
 
-        ${task.status === "DONE"
+            <h3 class="task-row-title">
+                ${task.title}
+            </h3>
+
+            <div class="task-header-actions">
+
+                ${task.status === "DONE"
                 ? `
-                <button
-                    class="task-action-btn"
-                    onclick="reopenTask(${task.id})"
-                >
-                    ${t("reopen")}
-                </button>
-            `
+                    <button
+                        class="task-action-btn"
+                        onclick="reopenTask(${task.id})"
+                    >
+                        ${t("reopen")}
+                    </button>
+                `
                 : `
-                <button
-                    class="task-action-btn"
-                    onclick="completeTask(${task.id})"
-                >
-                    ${t("complete")}
-                </button>
-            `
+                    <button
+                        class="task-action-btn"
+                        onclick="completeTask(${task.id})"
+                    >
+                        ${t("complete")}
+                    </button>
+                `
             }
-        
-        <button
-            class="task-delete-btn"
-            onclick="deleteTask(${task.id})"
-        >
-            ${t("delete")}
-        </button>
 
-        <button
-            class="task-toggle-btn"
-            onclick="toggleTaskDetails(${task.id})"
-        >
-            ${isExpanded ? "−" : "+"}
-        </button>
+                <button
+                    class="task-delete-btn"
+                    onclick="deleteTask(${task.id})"
+                >
+                    ${t("delete")}
+                </button>
 
-    </div>
+                <button
+                    class="task-toggle-btn"
+                    onclick="toggleTaskDetails(${task.id})"
+                >
+                    ${isExpanded ? "−" : "+"}
+                </button>
 
-</div>
+            </div>
+
+        </div>
+
+        <div class="task-row-meta">
+
+            <p class="task-row-date">
+                ${formatDate(task.dueAt)}
+            </p>
+
+            <span class="priority-badge ${priorityClass}">
+                ${task.priority || "NONE"}
+            </span>
+
+        </div>
+
+    </div>    
 
                     ${isExpanded ? `
 
@@ -147,17 +173,14 @@ const renderTasks = () => {
                         </p>
 
                         <p>
-                            ${t("priority")}:
-                            ${task.priority || "NONE"}
-                        </p>
-
-                        <p>
                             ${t("dueDate")}:
                             ${formatDate(task.dueAt)}
                         </p>
 
                     ` : ""}
 
+                </div>
+                
                 </div>
 
             `;

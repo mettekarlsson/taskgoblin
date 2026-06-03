@@ -3,7 +3,7 @@ const translations = {
         home: "Home",
         profile: "Profile",
         settings: "Settings",
-        tasks: "To-Do",
+        tasks: "Tasks",
         lists: "Lists",
         notes: "Notes",
         calendar: "Calendar",
@@ -24,6 +24,16 @@ const translations = {
         cancel: "Cancel",
         back: "Back",
         delete: "Delete",
+
+        title: "Title",
+        content: "Content",
+        color: "Color",
+        defaultColor: "Default",
+        created: "Created",
+        updated: "Updated",
+        today: "Today",
+        yesterday: "Yesterday",
+
 
         fullNameValidation: "Full name must contain only letters and include first and last name",
         emailValidation: "Email must be valid",
@@ -46,7 +56,8 @@ const translations = {
         enabled: "Enabled",
         disabled: "Disabled",
 
-        newNote: "New note",
+        notesSubtitle: "Quick thoughts and reminders.",
+        newNote: "Add note",
         editNote: "Edit note",
         deleteNote: "Delete note",
         searchNotes: "Search notes...",
@@ -87,7 +98,7 @@ const translations = {
         home: "Hem",
         profile: "Profil",
         settings: "Inställningar",
-        tasks: "To-Do",
+        tasks: "To-Do's",
         lists: "Checklistor",
         notes: "Anteckningar",
         calendar: "Kalender",
@@ -108,6 +119,15 @@ const translations = {
         cancel: "Avbryt",
         back: "Tillbaka",
         delete: "Radera",
+
+        title: "Titel",
+        content: "Innehåll",
+        color: "Färg",
+        defaultColor: "Standard",
+        created: "Skapad",
+        updated: "Uppdaterad",
+        today: "Idag",
+        yesterday: "Igår",
 
         fullNameValidation: "Fullständigt namn får bara innehålla bokstäver och måste innehålla både för- och efternamn",
         emailValidation: "E-postadressen måste vara giltig",
@@ -130,6 +150,8 @@ const translations = {
         enabled: "På",
         disabled: "Av",
 
+
+        notesSubtitle: "Snabba tankar och påminnelser.",
         newNote: "Ny anteckning",
         editNote: "Redigera anteckning",
         deleteNote: "Ta bort anteckning",

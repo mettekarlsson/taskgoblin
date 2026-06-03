@@ -21,22 +21,64 @@
     <!-- Note content -->
     <section class="task-container">
 
-        <h1 data-translate="tasks">Tasks</h1>
+        <div class="task-topbar">
 
-        <div class="task-create">
+            <div>
 
-            <input
-                    id="task-title"
-                    class="task-input"
-                    type="text"
-                    data-translate-placeholder="addTask"
+                <h1 class="task-title"
+                    data-translate="tasks"
+                >
+                    Tasks
+                </h1>
+
+                <p class="task-subtitle"
+                   data-translate="taskSubtitle"
+                >
+                    Keep track of your tasks.
+                </p>
+
+            </div>
+
+            <div class="task-top-actions">
+
+                <button class="task-search-btn">
+                    🔍
+                </button>
+
+                <button class="task-new-btn"
+                        data-translate="newTask"
+                >
+                    + New task
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="task-filters">
+
+            <button class="task-filter active"
+                    data-translate="all"
             >
+                All
+            </button>
 
-            <button
-                    class="task-add-btn"
-                    onclick="createTask()"
-                    data-translate="add"
+            <button class="task-filter"
+                    data-translate="today"
             >
+                Today
+            </button>
+
+            <button class="task-filter"
+                    data-translate="upcoming"
+            >
+                Upcoming
+            </button>
+
+            <button class="task-filter"
+                    data-translate="completed"
+            >
+                Completed
             </button>
 
         </div>
