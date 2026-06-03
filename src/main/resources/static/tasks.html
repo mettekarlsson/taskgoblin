@@ -21,22 +21,50 @@
     <!-- Note content -->
     <section class="task-container">
 
-        <h1 data-translate="tasks">Tasks</h1>
+        <div class="task-topbar">
 
-        <div class="task-create">
+            <div>
 
-            <input
-                    id="task-title"
-                    class="task-input"
-                    type="text"
-                    data-translate-placeholder="addTask"
-            >
+                <h1 class="task-title">
+                    Mina tasks
+                </h1>
 
-            <button
-                    class="task-add-btn"
-                    onclick="createTask()"
-                    data-translate="add"
-            >
+                <p class="task-subtitle">
+                    Håll koll på dina uppgifter.
+                </p>
+
+            </div>
+
+            <div class="task-top-actions">
+
+                <button class="task-search-btn">
+                    🔍
+                </button>
+
+                <button class="task-new-btn">
+                    + New task
+                </button>
+
+            </div>
+
+        </div>
+
+        <div class="task-filters">
+
+            <button class="task-filter active">
+                All
+            </button>
+
+            <button class="task-filter">
+                Today
+            </button>
+
+            <button class="task-filter">
+                Upcoming
+            </button>
+
+            <button class="task-filter">
+                Completed
             </button>
 
         </div>
