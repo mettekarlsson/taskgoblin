@@ -279,3 +279,38 @@
     background: var(--surface);
     color: var(--text-muted);
 }
+
+/* ----------------- */
+/*  Priority badges  */
+/* ----------------- */
+
+.priority-badge {
+    width: fit-content;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.priority-badge.high {
+    background: rgba(255, 120, 120, 0.18);
+    color: #c53b3b;
+}
+
+.priority-badge.medium {
+    background: rgba(255, 190, 90, 0.18);
+    color: #b06b00;
+}
+
+.priority-badge.low {
+    background: rgba(120, 200, 120, 0.18);
+    color: #2d7c2d;
+}
+
+.priority-badge.none {
+    background: var(--surface);
+    color: var(--text-muted);
+}

@@ -95,6 +95,9 @@ const renderTasks = () => {
             const isExpanded =
                 expandedTaskId === task.id;
 
+            const priorityClass =
+                task.priority?.toLowerCase() || "none";
+
             return `
 
                 <div class="task-row">
@@ -112,7 +115,7 @@ const renderTasks = () => {
     </p>
     
     <span class="priority-badge ${priorityClass}">
-        ${task.priority || "NONE"}
+    ${task.priority || "NONE"}
     </span>
 
 </div>
@@ -161,11 +164,6 @@ const renderTasks = () => {
                         <p>
                             ${t("status")}:
                             ${task.status}
-                        </p>
-
-                        <p>
-                            ${t("priority")}:
-                            ${task.priority || "NONE"}
                         </p>
 
                         <p>
