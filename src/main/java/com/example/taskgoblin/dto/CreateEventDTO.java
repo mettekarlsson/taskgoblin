@@ -1,28 +1,40 @@
 package com.example.taskgoblin.dto;
 
-import com.example.taskgoblin.model.Category;
-import com.example.taskgoblin.model.Frequency;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
-public class EventDTO {
+public class CreateEventDTO {
 
-    //final pga ingen set-er
-    private final Long id;
+    private Long categoryId;
 
-    private Category category;
+    @NotBlank(message = "Title cannot be empty")
+    @Size(max = 200, message = "Title cannot be longer than 200 characters.")
     private String title;
+
     private String description;
+
+    @NotNull(message = "Start time cannot be null")
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
+    @Size(max = 255, message = "Location cannot exceed 255 characters")
     private String location;
+
+    @NotNull(message = "Is all day cannot be null")
     private Boolean isAllDay;
+
+    @NotNull(message = "Is recurring cannot be null")
     private Boolean isRecurring;
-    private Frequency frequency;
+
+    private String frequency;
     private Integer intervalValue;
 
-    public EventDTO(Long id, Category category, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String location, Boolean isAllDay, Boolean isRecurring, Frequency frequency, Integer intervalValue) {
-        this.id = id;
-        this.category = category;
+
+    public CreateEventDTO(Long categoryId, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String location, Boolean isAllDay, Boolean isRecurring, String frequency, Integer intervalValue) {
+        this.categoryId = categoryId;
         this.title = title;
         this.description = description;
         this.startTime = startTime;
@@ -34,16 +46,12 @@ public class EventDTO {
         this.intervalValue = intervalValue;
     }
 
-    public Long getId() {
-        return id;
+    public Long getCategoryId() {
+        return categoryId;
     }
 
-    public Category getCategory() {
-        return category;
-    }
-
-    public void setCategory(Category category) {
-        this.category = category;
+    public void setCategoryId(Long categoryId) {
+        this.categoryId = categoryId;
     }
 
     public String getTitle() {
@@ -94,19 +102,19 @@ public class EventDTO {
         isAllDay = allDay;
     }
 
-    public Boolean getRecurring() {
+    public Boolean getIsRecurring() {
         return isRecurring;
     }
 
-    public void setRecurring(Boolean recurring) {
+    public void setIsRecurring(Boolean recurring) {
         isRecurring = recurring;
     }
 
-    public Frequency getFrequency() {
+    public String getFrequency() {
         return frequency;
     }
 
-    public void setFrequency(Frequency frequency) {
+    public void setFrequency(String frequency) {
         this.frequency = frequency;
     }
 

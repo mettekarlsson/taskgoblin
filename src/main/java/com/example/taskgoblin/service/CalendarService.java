@@ -1,30 +1,67 @@
 package com.example.taskgoblin.service;
 
+import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
-import com.example.taskgoblin.dto.NoteDTO;
+import com.example.taskgoblin.exception.InvalidEventException;
+import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.EventMapper;
-import com.example.taskgoblin.mapper.NoteMapper;
-import com.example.taskgoblin.model.Event;
-import com.example.taskgoblin.model.Note;
+import com.example.taskgoblin.model.*;
 import com.example.taskgoblin.repository.CalendarRepository;
+import com.example.taskgoblin.repository.CategoryRepository;
+import com.example.taskgoblin.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class CalendarService {
 
     private final CalendarRepository calendarRepository;
+    private final UserRepository userRepository;
+    private final CategoryRepository categoryRepository;
 
-    public CalendarService(CalendarRepository calendarRepository) {
+    public CalendarService(CalendarRepository calendarRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
         this.calendarRepository = calendarRepository;
+        this.userRepository = userRepository;
+        this.categoryRepository = categoryRepository;
     }
 
-    public List<EventDTO> getAllEvents(Long id) {
-        List<Event> events = calendarRepository.findByUserId(id);
+    //view all events
+    public List<EventDTO> getAllEvents(Long userId) {
+        List<Event> events = calendarRepository.findByUserId(userId);
 
         return events.stream()
                 .map(EventMapper::mapToEventDto)
                 .toList();
     }
+
+    //create new event
+    public EventDTO createEvent(Long userId, CreateEventDTO createEventDTO) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User"));
+
+        Event event = EventMapper.mapToEventEntity(createEventDTO);
+        event.setUser(user);
+        event.setCreatedAt(LocalDateTime.now());
+
+        //sets category if it exists
+        if (createEventDTO.getCategoryId() != null) {
+            Category category = categoryRepository.findById(createEventDTO.getCategoryId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Category"));
+            event.setCategory(category);
+        }
+
+        //if isRecurring is true, frequency must be set.
+        if (createEventDTO.getIsRecurring()) {
+            if (createEventDTO.getFrequency() == null) {
+                throw new InvalidEventException("Frequency must be set when event is recurring");
+            }
+            event.setFrequency(Frequency.valueOf(createEventDTO.getFrequency().toUpperCase()));
+        }
+
+        Event savedEvent = calendarRepository.save(event);
+        return EventMapper.mapToEventDto(savedEvent);
+    }
+
 }
