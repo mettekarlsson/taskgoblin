@@ -101,8 +101,8 @@ const renderNotes = (notes, searchQuery = "") => {
         <p class="notes-empty">
             ${
             searchQuery
-                ? "No notes match your search."
-                : "No notes yet."
+                ? t("noNotesMatchSearch")
+                : t("noNotesYet")
         }
         </p>
     `;
@@ -134,11 +134,11 @@ const renderNotes = (notes, searchQuery = "") => {
 
 <div class="note-action-menu" id="note-menu-${note.id}">
     <button onclick="renderEditNoteForm(event, ${note.id})">
-        Edit note
+        ${t("editNote")}
     </button>
 
     <button onclick="openDeleteModal(event, ${note.id})">
-        Delete note
+        ${t("deleteNote")}
     </button>
 </div>
 
@@ -278,14 +278,18 @@ const togglePinned = async (event, noteId) => {
 
 const renderSingleNote = (note) => {
     document.querySelector(".notes-header").style.display = "none";
+
+    const noteColor =
+        getNoteColor(note.color || DEFAULT_NOTE_COLOR);
+
     notesGrid.innerHTML = `
-        <section
-            class="note-detail-card"
-            style="
-                background: ${note.color || DEFAULT_NOTE_COLOR};
-                --note-bg: ${note.color || DEFAULT_NOTE_COLOR};
-            "
-        >
+<section
+    class="note-detail-card"
+    style="
+        background: ${noteColor};
+        --note-bg: ${noteColor};
+    "
+>
 
             <div class="note-detail-header">
 
@@ -293,14 +297,14 @@ const renderSingleNote = (note) => {
                     class="note-cancel-btn"
                     onclick="closeNoteDetail()"
                 >
-                    ← Back
+                    ← ${t("back")}
                 </button>
 
 <button
     class="note-save-btn"
     onclick="renderEditNoteForm(null, ${note.id})"
 >
-    Edit
+    ${t("edit")}
 </button>
 
             </div>
@@ -313,12 +317,12 @@ const renderSingleNote = (note) => {
     <div class="note-detail-meta">
 
         <span>
-            Created:
+            ${t("created")}:
             ${formatDetailDate(note.createdAt)}
         </span>
 
         <span>
-            Updated:
+            ${t("updated")}:
             ${formatDetailDate(
         note.lastInteractedAt || note.createdAt
     )}
@@ -330,7 +334,7 @@ const renderSingleNote = (note) => {
     class="note-delete-btn"
     onclick="openDeleteModal(null, ${note.id})"
 >
-    Delete
+    ${t("delete")}
 </button>
 
 </div>
@@ -368,22 +372,22 @@ const renderCreateNoteForm = () => {
     notesGrid.innerHTML = `
         <section class="note-form-card">
 
-            <h2>New note</h2>
+            <h2>${t("newNote")}</h2>
 
-            <label for="note-title">Title</label>
+           <label for="note-title">${t("title")}</label>
             <input id="note-title" class="note-input" type="text">
 
-            <label for="note-content">Content</label>
+            <label for="note-content">${t("content")}</label>
             <textarea id="note-content" class="note-textarea"></textarea>
 
-<label>Color</label>
+<label>${t("color")}</label>
 
 <div class="note-color-options">
 
     <button type="button"
             class="note-color-chip selected"
             data-color="#F8F3F7">
-        Default
+        ${t("defaultColor")}
     </button>
 
     <button type="button"
@@ -411,14 +415,14 @@ const renderCreateNoteForm = () => {
             <p id="note-message" class="note-message"></p>
 
             <div class="note-form-actions">
-                <button class="note-save-btn" onclick="createNote()">
-                    Save
-                </button>
+    <button class="note-save-btn" onclick="createNote()">
+        ${t("save")}
+    </button>
 
-                <button class="note-cancel-btn" onclick="renderNotes(currentNotes)">
-                    Cancel
-                </button>
-            </div>
+    <button class="note-cancel-btn" onclick="renderNotes(currentNotes)">
+        ${t("cancel")}
+    </button>
+</div>
 
         </section>
     `;
@@ -436,9 +440,9 @@ const renderEditNoteForm = (event, noteId) => {
     notesGrid.innerHTML = `
         <section class="note-form-card">
 
-            <h2>Edit note</h2>
+            <h2>${t("editNote")}</h2>
 
-            <label for="note-title">Title</label>
+            <label for="note-title">${t("title")}</label>
             <input 
                 id="note-title" 
                 class="note-input" 
@@ -446,17 +450,17 @@ const renderEditNoteForm = (event, noteId) => {
                 value="${note.title || ""}"
             >
 
-            <label for="note-content">Content</label>
+            <label for="note-content">${t("content")}</label>
             <textarea id="note-content" class="note-textarea">${note.content}</textarea>
 
-            <label>Color</label>
+            <label>${t("color")}</label>
 
             <div class="note-color-options">
 
                 <button type="button"
         class="note-color-chip ${selectedColor === "#F8F3F7" ? "selected" : ""}"
         data-color="#F8F3F7">
-    Default
+    ${t("defaultColor")}
 </button>
 
 <button type="button"
@@ -483,14 +487,14 @@ const renderEditNoteForm = (event, noteId) => {
             <p id="note-message" class="note-message"></p>
 
             <div class="note-form-actions">
-                <button class="note-save-btn" onclick="updateNote(${note.id})">
-                    Save
-                </button>
+    <button class="note-save-btn" onclick="updateNote(${note.id})">
+        ${t("save")}
+    </button>
 
-                <button class="note-cancel-btn" onclick="renderNotes(currentNotes)">
-                    Cancel
-                </button>
-            </div>
+    <button class="note-cancel-btn" onclick="renderNotes(currentNotes)">
+        ${t("cancel")}
+    </button>
+</div>
 
         </section>
     `;
@@ -502,7 +506,7 @@ const createNote = async () => {
     const color = selectedColor;
 
     if (!content) {
-        showNoteMessage("Content cannot be empty.");
+        showNoteMessage(t("contentCannotBeEmpty"));
         return;
     }
 
@@ -519,7 +523,7 @@ const updateNote = async (noteId) => {
     const color = selectedColor;
 
     if (!content) {
-        showNoteMessage("Content cannot be empty.");
+        showNoteMessage(t("contentCannotBeEmpty"));
         return;
     }
 
@@ -621,11 +625,11 @@ const formatNoteDate = (dateString) => {
     const diffInDays = Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
     if (diffInDays === 0) {
-        return "Today";
+        return t("today");
     }
 
     if (diffInDays === 1) {
-        return "Yesterday";
+        return t("yesterday");
     }
 
     return date.toLocaleDateString("sv-SE", {
