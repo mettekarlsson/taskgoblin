@@ -94,11 +94,21 @@ const renderTasks = () => {
 
             return `
 
-                <div class="task-card">
+                <div class="task-row">
 
-                    <div class="task-header">
+                    <div class="task-row-content">
 
-    <h3>${task.title}</h3>
+    <div class="task-main-info">
+
+    <h3 class="task-row-title">
+        ${task.title}
+    </h3>
+
+    <p class="task-row-date">
+        ${formatDate(task.dueAt)}
+    </p>
+
+</div>
 
     <div class="task-header-actions">
 
