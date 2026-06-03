@@ -39,5 +39,18 @@ if (
     localStorage.removeItem(
         "registrationSuccess"
     );
+}
 
+if (
+    localStorage.getItem("accountDeleted")
+) {
+
+    successMessage.textContent =
+        "Your account has been deleted.";
+
+    successMessage.classList.add("success");
+
+    localStorage.removeItem(
+        "accountDeleted"
+    );
 }

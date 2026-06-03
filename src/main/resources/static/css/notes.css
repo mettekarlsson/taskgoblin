@@ -338,57 +338,33 @@
 
     border-radius: 999px;
 
-    background: #F8F3F7;
+    background: var(--note-default-bg);
 
-    color: var(--text);
+    color: var(--note-accent-text);
 
     font-weight: 700;
 }
 
 .note-color-chip[data-color="#FFF8DD"] {
-    background: #FFF8DD;
+    background: var(--note-yellow-bg);
 }
 
 .note-color-chip[data-color="#E8F5E9"] {
-    background: #E8F5E9;
+    background: var(--note-green-bg);
 }
 
 .note-color-chip[data-color="#DCE7F4"] {
-    background: #DCE7F4;
+    background: var(--note-blue-bg);
 }
 
 .note-color-chip[data-color="#FDE2E4"] {
-    background: #FDE2E4;
+    background: var(--note-red-bg);
 }
 
 .note-color-chip[data-color="#EDE0EF"] {
-    background: #EDE0EF;
+    background: var(--note-lilac-bg);
 }
 
-/* Dark theme overrides */
-body.dark-theme .note-color-chip[data-color="#F8F3F7"] {
-    background: #4A4350;
-}
-
-body.dark-theme .note-color-chip[data-color="#FFF8DD"] {
-    background: #5A5330;
-}
-
-body.dark-theme .note-color-chip[data-color="#E8F5E9"] {
-    background: #344536;
-}
-
-body.dark-theme .note-color-chip[data-color="#DCE7F4"] {
-    background: #34465A;
-}
-
-body.dark-theme .note-color-chip[data-color="#FDE2E4"] {
-    background: #5A3C40;
-}
-
-body.dark-theme .note-color-chip[data-color="#EDE0EF"] {
-    background: #4D3B55;
-}
 body.dark-theme .note-card h2,
 body.dark-theme .note-detail-card h2 {
     color: #FFFFFF;

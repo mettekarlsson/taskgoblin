@@ -30,6 +30,33 @@
 
 </main>
 
+<div id="delete-user-modal" class="modal">
+    <div class="modal-content">
+        <h2>Delete account?</h2>
+
+        <p>
+            This will permanently delete your account and all your data.
+            This action cannot be undone.
+        </p>
+
+        <div class="modal-actions">
+            <button
+                    class="modal-cancel-btn"
+                    onclick="closeDeleteUserModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                    class="modal-confirm-btn"
+                    onclick="deleteUser()"
+            >
+                Delete
+            </button>
+        </div>
+    </div>
+</div>
+
 <footer id="app-footer"></footer>
 
 <script src="/js/auth.js"></script>

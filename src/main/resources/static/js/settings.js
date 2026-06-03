@@ -112,6 +112,19 @@ const renderSettings = (settings) => {
             </select>
         </div>
 
+<div class="settings-danger-zone">
+    <h2>${t("dangerZone")}</h2>
+
+    <p>${t("deleteAccountText")}</p>
+
+    <button
+        class="settings-delete-btn"
+        onclick="openDeleteUserModal()"
+    >
+        ${t("deleteAccount")}
+    </button>
+</div>
+
     `;
 };
 const updateSingleSetting = async (settingData) => {
@@ -136,6 +149,41 @@ const updateSingleSetting = async (settingData) => {
 
         renderSettings(currentSettings);
         translatePage();
+
+    } catch (error) {
+        alert(error.message);
+    }
+};
+
+const openDeleteUserModal = () => {
+    document
+        .getElementById("delete-user-modal")
+        .classList.add("open");
+};
+
+const closeDeleteUserModal = () => {
+    document
+        .getElementById("delete-user-modal")
+        .classList.remove("open");
+};
+
+const deleteUser = async () => {
+    try {
+        const response = await apiFetch("/user", {
+            method: "DELETE"
+        });
+
+        if (!response.ok) {
+            throw new Error("Failed to delete account");
+        }
+
+        localStorage.setItem(
+            "accountDeleted",
+            "true"
+        );
+
+        localStorage.removeItem("token");
+        window.location.href = "/login.html";
 
     } catch (error) {
         alert(error.message);

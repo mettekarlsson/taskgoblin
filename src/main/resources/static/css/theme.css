@@ -26,6 +26,15 @@
 
     --note-text: #111;
     --note-text-muted: rgba(17, 17, 17, 0.7);
+
+    --note-default-bg: #F8F3F7;
+    --note-yellow-bg: #FFF8DD;
+    --note-green-bg: #E8F5E9;
+    --note-blue-bg: #DCE7F4;
+    --note-red-bg: #FDE2E4;
+    --note-lilac-bg: #EDE0EF;
+
+    --note-accent-text: #27330F;
 }
 
 body.dark-theme {
@@ -52,5 +61,14 @@ body.dark-theme {
 
     --note-text: #111;
     --note-text-muted: rgba(17, 17, 17, 0.7);
+
+    --note-default-bg: #4A4350;
+    --note-yellow-bg: #5A5330;
+    --note-green-bg: #344536;
+    --note-blue-bg: #34465A;
+    --note-red-bg: #5A3C40;
+    --note-lilac-bg: #4D3B55;
+
+    --note-accent-text: #F6F1EB;
 }
 /* -------------------- */

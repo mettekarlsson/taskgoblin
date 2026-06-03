@@ -55,6 +55,19 @@ public class UserController {
         return ResponseEntity.ok("Password changed successfully");
     }
 
+    @DeleteMapping
+    public ResponseEntity<Void> deleteUser(
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        userService.deleteUser(userId);
+
+        return ResponseEntity.noContent().build();
+    }
+
     @GetMapping("/settings")
     public ResponseEntity<UserSettingsDTO> getUserSettings(
             @AuthenticationPrincipal UserDetails userDetails

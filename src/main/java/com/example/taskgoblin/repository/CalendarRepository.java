@@ -13,4 +13,6 @@ public interface CalendarRepository extends JpaRepository<Event, Long> {
     List<Event> findByUserId(Long userId);
 
     Optional<Event> findByIdAndUserId(Long eventId, Long userId);
+
+    void deleteByUserId(Long userId);
 }
