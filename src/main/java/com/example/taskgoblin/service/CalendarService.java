@@ -64,4 +64,13 @@ public class CalendarService {
         return EventMapper.mapToEventDto(savedEvent);
     }
 
+
+    //delete event
+    public void deleteEvent(Long eventId, Long userId) {
+
+        Event event = calendarRepository.findByIdAndUserId(eventId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event"));
+
+        calendarRepository.delete(event);
+    }
 }

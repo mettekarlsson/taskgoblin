@@ -38,4 +38,15 @@ public class CalendarController {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         return ResponseEntity.status(HttpStatus.CREATED).body(calendarService.createEvent(userId, createEventDTO));
     }
+
+    //delete an event
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteNote(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        calendarService.deleteEvent(id, userId);
+        return ResponseEntity.ok("Event deleted successfully");
+    }
 }
