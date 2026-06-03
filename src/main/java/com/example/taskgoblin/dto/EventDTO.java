@@ -1,68 +1,41 @@
-package com.example.taskgoblin.model;
+package com.example.taskgoblin.dto;
 
-import jakarta.persistence.*;
-
+import com.example.taskgoblin.model.Category;
+import com.example.taskgoblin.model.Frequency;
 import java.time.LocalDateTime;
 
-@Entity
-@Table(name = "events")
-public class Event {
+public class EventDTO {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    //final pga ingen set-er
+    private final Long id;
 
-    @ManyToOne
-    @JoinColumn(name = "user_id", nullable = false)
-    private User user;
-
-    @ManyToOne
-    @JoinColumn(name = "category_id")
     private Category category;
-
-    @Column(nullable = false, length = 200)
     private String title;
-
-    @Column(columnDefinition = "TEXT")
     private String description;
-
-    @Column(nullable = false)
     private LocalDateTime startTime;
-
     private LocalDateTime endTime;
-
-    @Column(length = 255)
     private String location;
-
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean isAllDay;
-
-    @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private Boolean isRecurring;
-
-    @Enumerated(EnumType.STRING)
     private Frequency frequency;
-
     private Integer intervalValue;
 
-    @Column(nullable = false)
-    private LocalDateTime createdAt;
-
-    private LocalDateTime updatedAt;
-
-    public Event() {
+    public EventDTO(Long id, Category category, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String location, Boolean isAllDay, Boolean isRecurring, Frequency frequency, Integer intervalValue) {
+        this.id = id;
+        this.category = category;
+        this.title = title;
+        this.description = description;
+        this.startTime = startTime;
+        this.endTime = endTime;
+        this.location = location;
+        this.isAllDay = isAllDay;
+        this.isRecurring = isRecurring;
+        this.frequency = frequency;
+        this.intervalValue = intervalValue;
     }
 
     public Long getId() {
         return id;
-    }
-
-    public User getUser() {
-        return user;
-    }
-
-    public void setUser(User user) {
-        this.user = user;
     }
 
     public Category getCategory() {
@@ -113,35 +86,19 @@ public class Event {
         this.location = location;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getUpdatedAt() {
-        return updatedAt;
-    }
-
-    public void setUpdatedAt(LocalDateTime updatedAt) {
-        this.updatedAt = updatedAt;
-    }
-
-    public boolean getIsAllDay() {
+    public Boolean getIsAllDay() {
         return isAllDay;
     }
 
-    public void setIsAllDay(boolean allDay) {
+    public void setIsAllDay(Boolean allDay) {
         isAllDay = allDay;
     }
 
-    public boolean getIsRecurring() {
+    public Boolean getRecurring() {
         return isRecurring;
     }
 
-    public void setIsRecurring(boolean recurring) {
+    public void setRecurring(Boolean recurring) {
         isRecurring = recurring;
     }
 
