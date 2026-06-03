@@ -126,7 +126,7 @@ public class CalendarService {
             contentWasUpdated = true;
         }
 
-        if (contentWasUpdated == true){
+        if (contentWasUpdated){
             event.setUpdatedAt(LocalDateTime.now());
         }
 
