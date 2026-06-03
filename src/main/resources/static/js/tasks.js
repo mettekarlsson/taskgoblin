@@ -102,62 +102,68 @@ const renderTasks = () => {
 
                 <div class="task-row">
 
-                    <div class="task-row-content">
+                <div class="task-row-content">
 
     <div class="task-main-info">
 
-    <h3 class="task-row-title">
-        ${task.title}
-    </h3>
+        <div class="task-row-top">
 
-    <p class="task-row-date">
-        ${formatDate(task.dueAt)}
-    </p>
-    
-    <span class="priority-badge ${priorityClass}">
-    ${task.priority || "NONE"}
-    </span>
+            <h3 class="task-row-title">
+                ${task.title}
+            </h3>
 
-</div>
+            <div class="task-header-actions">
 
-    <div class="task-header-actions">
-
-        ${task.status === "DONE"
+                ${task.status === "DONE"
                 ? `
-                <button
-                    class="task-action-btn"
-                    onclick="reopenTask(${task.id})"
-                >
-                    ${t("reopen")}
-                </button>
-            `
+                    <button
+                        class="task-action-btn"
+                        onclick="reopenTask(${task.id})"
+                    >
+                        ${t("reopen")}
+                    </button>
+                `
                 : `
-                <button
-                    class="task-action-btn"
-                    onclick="completeTask(${task.id})"
-                >
-                    ${t("complete")}
-                </button>
-            `
+                    <button
+                        class="task-action-btn"
+                        onclick="completeTask(${task.id})"
+                    >
+                        ${t("complete")}
+                    </button>
+                `
             }
-        
-        <button
-            class="task-delete-btn"
-            onclick="deleteTask(${task.id})"
-        >
-            ${t("delete")}
-        </button>
 
-        <button
-            class="task-toggle-btn"
-            onclick="toggleTaskDetails(${task.id})"
-        >
-            ${isExpanded ? "−" : "+"}
-        </button>
+                <button
+                    class="task-delete-btn"
+                    onclick="deleteTask(${task.id})"
+                >
+                    ${t("delete")}
+                </button>
 
-    </div>
+                <button
+                    class="task-toggle-btn"
+                    onclick="toggleTaskDetails(${task.id})"
+                >
+                    ${isExpanded ? "−" : "+"}
+                </button>
 
-</div>
+            </div>
+
+        </div>
+
+        <div class="task-row-meta">
+
+            <p class="task-row-date">
+                ${formatDate(task.dueAt)}
+            </p>
+
+            <span class="priority-badge ${priorityClass}">
+                ${task.priority || "NONE"}
+            </span>
+
+        </div>
+
+    </div>    
 
                     ${isExpanded ? `
 
@@ -173,6 +179,8 @@ const renderTasks = () => {
 
                     ` : ""}
 
+                </div>
+                
                 </div>
 
             `;
