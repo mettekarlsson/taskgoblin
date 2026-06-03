@@ -53,15 +53,15 @@ public class CalendarController {
     }
 
     //update an event
-    @PatchMapping("/{eventId}")
+    @PatchMapping("/{id}")
     public ResponseEntity<EventDTO> updateEvent(
-            @PathVariable Long eventId,
+            @PathVariable Long id,
             @RequestBody UpdateEventDTO updateEventDTO,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         return ResponseEntity.ok(
-                calendarService.updateEvent(eventId, userId, updateEventDTO)
+                calendarService.updateEvent(id, userId, updateEventDTO)
         );
     }
 }
