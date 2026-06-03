@@ -22,7 +22,7 @@
 
         <div>
             <h1 data-translate="notes">Notes</h1>
-            <p>Quick thoughts and reminders.</p>
+            <p data-translate="notesSubtitle">Quick thoughts and reminders.</p>
         </div>
 
         <div class="notes-header-actions">
@@ -34,7 +34,8 @@
             </button>
 
             <button class="new-note-btn" onclick="renderCreateNoteForm()">
-                + New note
+                <span class="new-note-plus">+</span>
+                <span data-translate="newNote">New note</span>
             </button>
         </div>
 
@@ -46,6 +47,7 @@
                 id="notes-search"
                 class="notes-search-input"
                 type="text"
+                data-translate-placeholder="searchNotes"
                 placeholder="Search notes..."
         >
 

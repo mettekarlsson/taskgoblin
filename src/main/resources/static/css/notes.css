@@ -71,17 +71,20 @@
 
 .new-note-btn {
     height: 48px;
+    width: 135px;
 
     border: none;
     border-radius: 14px;
 
-    padding: 0 16px;
+    padding: 0 5px;
 
     background: var(--primary);
     color: white;
 
     font-weight: 700;
     cursor: pointer;
+
+    white-space: nowrap;
 
     box-shadow: 0 4px 12px var(--shadow);
 }
@@ -342,9 +345,29 @@
     font-weight: 700;
 }
 
+.note-color-chip[data-color="#FFF8DD"] {
+    background: #FFF8DD;
+}
+
+.note-color-chip[data-color="#E8F5E9"] {
+    background: #E8F5E9;
+}
+
+.note-color-chip[data-color="#DCE7F4"] {
+    background: #DCE7F4;
+}
+
+.note-color-chip[data-color="#FDE2E4"] {
+    background: #FDE2E4;
+}
+
+.note-color-chip[data-color="#EDE0EF"] {
+    background: #EDE0EF;
+}
+
+/* Dark theme overrides */
 body.dark-theme .note-color-chip[data-color="#F8F3F7"] {
     background: #4A4350;
-    color: var(--text);
 }
 
 body.dark-theme .note-color-chip[data-color="#FFF8DD"] {
@@ -366,7 +389,20 @@ body.dark-theme .note-color-chip[data-color="#FDE2E4"] {
 body.dark-theme .note-color-chip[data-color="#EDE0EF"] {
     background: #4D3B55;
 }
+body.dark-theme .note-card h2,
+body.dark-theme .note-detail-card h2 {
+    color: #FFFFFF;
+}
 
+body.dark-theme .note-card p,
+body.dark-theme .note-detail-card p {
+    color: #E8E8E8;
+}
+
+body.dark-theme .note-date,
+body.dark-theme .note-detail-meta {
+    color: rgba(255, 255, 255, 0.7);
+}
 .note-form-actions {
     display: flex;
     gap: 12px;
@@ -519,11 +555,6 @@ body.dark-theme .note-color-chip[data-color="#EDE0EF"] {
 
     .notes-header-actions {
         flex-shrink: 0;
-    }
-
-    .new-note-btn {
-        padding: 0 12px;
-        font-size: 0.85rem;
     }
 
     .notes-grid {
