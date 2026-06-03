@@ -67,6 +67,9 @@ const renderTasks = () => {
             <p>${t("noTasksYet")}</p>
         `;
 
+        const priorityClass =
+            task.priority?.toLowerCase() || "none";
+
         return;
     }
 
@@ -107,6 +110,10 @@ const renderTasks = () => {
     <p class="task-row-date">
         ${formatDate(task.dueAt)}
     </p>
+    
+    <span class="priority-badge ${priorityClass}">
+        ${task.priority || "NONE"}
+    </span>
 
 </div>
 

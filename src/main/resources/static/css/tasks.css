@@ -196,3 +196,86 @@
     background: var(--primary);
     color: white;
 }
+
+/* ----------------- */
+/*   Task rows       */
+/* ----------------- */
+
+.task-row {
+    background: var(--card);
+
+    border-radius: 24px;
+
+    padding: 24px 28px;
+    margin-bottom: 18px;
+
+    box-shadow: 0 8px 20px var(--shadow);
+}
+
+.task-row-content {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 24px;
+}
+
+.task-main-info {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.task-row-title {
+    margin: 0;
+
+    color: var(--text);
+
+    font-size: 24px;
+    font-weight: 700;
+}
+
+.task-row-date {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 16px;
+}
+
+.task-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.priority-badge {
+    width: fit-content;
+
+    padding: 6px 12px;
+
+    border-radius: 999px;
+
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.priority-badge.high {
+    background: rgba(255, 120, 120, 0.18);
+    color: #c53b3b;
+}
+
+.priority-badge.medium {
+    background: rgba(255, 190, 90, 0.18);
+    color: #b06b00;
+}
+
+.priority-badge.low {
+    background: rgba(120, 200, 120, 0.18);
+    color: #2d7c2d;
+}
+
+.priority-badge.none {
+    background: var(--surface);
+    color: var(--text-muted);
+}
