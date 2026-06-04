@@ -47,6 +47,13 @@ public class TaskList {
     @Column(nullable = false, columnDefinition = "TINYINT(1)")
     private boolean pinned;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private TaskListStatus status;
+
+    private LocalDateTime completedAt;
+
+    private LocalDateTime lastCompletedAt;
 
     public TaskList() {
     }
@@ -149,5 +156,29 @@ public class TaskList {
 
     public void setPinned(boolean pinned) {
         this.pinned = pinned;
+    }
+
+    public TaskListStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TaskListStatus status) {
+        this.status = status;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public void setCompletedAt(LocalDateTime completedAt) {
+        this.completedAt = completedAt;
+    }
+
+    public LocalDateTime getLastCompletedAt() {
+        return lastCompletedAt;
+    }
+
+    public void setLastCompletedAt(LocalDateTime lastCompletedAt) {
+        this.lastCompletedAt = lastCompletedAt;
     }
 }

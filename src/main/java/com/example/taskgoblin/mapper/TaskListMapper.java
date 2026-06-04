@@ -3,6 +3,7 @@ package com.example.taskgoblin.mapper;
 import com.example.taskgoblin.dto.CreateTaskListDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
 import com.example.taskgoblin.model.TaskList;
+import com.example.taskgoblin.model.TaskListStatus;
 
 public class TaskListMapper {
 
@@ -23,7 +24,10 @@ public class TaskListMapper {
                 taskList.getFrequency(),
                 taskList.getIntervalValue(),
                 taskList.getCreatedAt(),
-                taskList.getLastInteractedAt()
+                taskList.getLastInteractedAt(),
+                taskList.getStatus(),
+                taskList.getCompletedAt(),
+                taskList.getLastCompletedAt()
         );
     }
 
@@ -43,6 +47,7 @@ public class TaskListMapper {
         );
         taskList.setFrequency(dto.getFrequency());
         taskList.setIntervalValue(dto.getIntervalValue());
+        taskList.setStatus(TaskListStatus.TODO);
         return taskList;
     }
 }

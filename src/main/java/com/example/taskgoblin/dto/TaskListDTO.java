@@ -1,6 +1,7 @@
 package com.example.taskgoblin.dto;
 
 import com.example.taskgoblin.model.Frequency;
+import com.example.taskgoblin.model.TaskListStatus;
 
 
 import java.time.LocalDateTime;
@@ -19,12 +20,33 @@ public class TaskListDTO {
     private Integer intervalValue;
     private LocalDateTime createdAt;
     private LocalDateTime lastInteractedAt;
+    private TaskListStatus status;
+    private LocalDateTime completedAt;
+    private LocalDateTime lastCompletedAt;
 
 
     public TaskListDTO() {
     }
 
-    public TaskListDTO(Long id, Long categoryId, String name, String color, String icon, LocalDateTime dueAt, Boolean pinned, Boolean isRecurring, Frequency frequency, Integer intervalValue, LocalDateTime createdAt, LocalDateTime lastInteractedAt) {
+    public TaskListDTO(
+            Long id,
+            Long categoryId,
+            String name,
+            String color,
+            String icon,
+            LocalDateTime dueAt,
+            boolean pinned,
+            boolean isRecurring,
+            Frequency frequency,
+            Integer intervalValue,
+            LocalDateTime createdAt,
+            LocalDateTime lastInteractedAt,
+            TaskListStatus status,
+            LocalDateTime completedAt,
+            LocalDateTime lastCompletedAt
+            ) {
+
+
         this.id = id;
         this.categoryId = categoryId;
         this.name = name;
@@ -37,7 +59,11 @@ public class TaskListDTO {
         this.intervalValue = intervalValue;
         this.createdAt = createdAt;
         this.lastInteractedAt = lastInteractedAt;
+        this.status = status;
+        this.completedAt = completedAt;
+        this.lastCompletedAt = lastCompletedAt;
     }
+
 
     public Long getId() {
         return id;
@@ -85,5 +111,17 @@ public class TaskListDTO {
 
     public LocalDateTime getLastInteractedAt() {
         return lastInteractedAt;
+    }
+
+    public TaskListStatus getStatus() {
+        return status;
+    }
+
+    public LocalDateTime getCompletedAt() {
+        return completedAt;
+    }
+
+    public LocalDateTime getLastCompletedAt() {
+        return lastCompletedAt;
     }
 }
