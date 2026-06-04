@@ -2,6 +2,7 @@ package com.example.taskgoblin.controller;
 
 
 import com.example.taskgoblin.dto.CreateTaskListDTO;
+import com.example.taskgoblin.dto.TaskDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
 import com.example.taskgoblin.dto.UpdateTaskListDTO;
 import com.example.taskgoblin.service.TaskListService;
@@ -110,6 +111,28 @@ public class TaskListController {
                 taskListService.updateList(id, dto, userId);
 
         return ResponseEntity.ok(updatedList);
+    }
+
+
+    @PatchMapping("/{id}/complete")
+    public TaskListDTO completeList(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+
+        return taskListService.completeList(id, userId);
+    }
+
+
+    @PatchMapping("/{id}/reopen")
+    public TaskListDTO reopenList(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+
+        return taskListService.reopenList(id, userId);
     }
 
     /*

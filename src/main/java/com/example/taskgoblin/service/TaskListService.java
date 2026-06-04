@@ -3,11 +3,11 @@ package com.example.taskgoblin.service;
 import com.example.taskgoblin.dto.CreateTaskListDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
 import com.example.taskgoblin.dto.UpdateTaskListDTO;
+import com.example.taskgoblin.exception.AlreadyCompletedException;
+import com.example.taskgoblin.exception.AlreadyOpenException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.TaskListMapper;
-import com.example.taskgoblin.model.Category;
-import com.example.taskgoblin.model.TaskList;
-import com.example.taskgoblin.model.User;
+import com.example.taskgoblin.model.*;
 import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.TaskListRepository;
 import com.example.taskgoblin.repository.UserRepository;
@@ -181,6 +181,75 @@ public class TaskListService {
         // Converts the updated entity into a response DTO.
         return TaskListMapper
                 .mapToTaskListDTO(updatedList);
+    }
+
+
+    public TaskListDTO completeList(Long listId, Long userId) {
+
+        // Find task list and validate ownership
+        TaskList taskList = taskListRepository
+                .findByIdAndUserId(listId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list"));
+
+        // Prevent completing an already completed list
+        if (taskList.getStatus() == TaskListStatus.DONE) {
+
+            throw new AlreadyCompletedException(
+                    "Task list is already completed"
+            );
+        }
+
+        // Update task list status
+        taskList.setStatus(TaskListStatus.DONE);
+
+        // Set completion timestamps
+        taskList.setCompletedAt(LocalDateTime.now());
+        taskList.setLastCompletedAt(LocalDateTime.now());
+
+        // Update interaction timestamp
+        taskList.setLastInteractedAt(LocalDateTime.now());
+
+        // Save updated task list
+        TaskList updatedList =
+                taskListRepository.save(taskList);
+
+        // Convert updated entity into DTO
+        return TaskListMapper.mapToTaskListDTO(updatedList);
+    }
+
+
+    public TaskListDTO reopenList(Long listId, Long userId) {
+
+        // Find task list and validate ownership
+        TaskList taskList = taskListRepository
+                .findByIdAndUserId(listId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list"));
+
+        // Prevent reopening an already open list
+        if (taskList.getStatus() != TaskListStatus.DONE) {
+
+            throw new AlreadyOpenException(
+                    "Only completed task lists can be reopened"
+            );
+        }
+
+        // Restore task list status
+        taskList.setStatus(TaskListStatus.TODO);
+
+        // Clear completion timestamp
+        taskList.setCompletedAt(null);
+
+        // Update interaction timestamp
+        taskList.setLastInteractedAt(LocalDateTime.now());
+
+        // Save updated task list
+        TaskList updatedList =
+                taskListRepository.save(taskList);
+
+        // Convert updated entity into DTO
+        return TaskListMapper.mapToTaskListDTO(updatedList);
     }
 
 
