@@ -375,6 +375,85 @@ const openUpdateTaskModal = (taskId) => {
 
 };
 
+// Shows or hides additional task fields.
+const toggleTaskDetailsForm = () => {
+
+    const container =
+        document.getElementById(
+            "task-extra-fields"
+        );
+
+    if (container.innerHTML !== "") {
+
+        container.innerHTML = "";
+
+        return;
+    }
+
+    container.innerHTML = `
+        <p>Priority</p>
+        <p>Due date</p>
+        <p>Reminder</p>
+    `;
+};
+
+//_______________________________________________________//
+// Renders the create task form.
+const renderCreateTaskForm = () => {
+
+    // Hide task filters when showing the form.
+    document.querySelector(".task-filters").style.display = "none";
+
+    taskContent.innerHTML = `
+
+        <section class="task-form-card">
+
+            <h2>${t("newTask")}</h2>
+
+            <label for="task-title">
+                ${t("task")}
+            </label>
+
+            <input
+                id="task-title"
+                class="task-input"
+                type="text"
+            >
+            
+            <button
+                class="task-details-btn"
+                onclick="toggleTaskDetailsForm()"
+            >
+                ${t("addMoreDetails")}
+            </button>
+            
+            <div id="task-extra-fields"></div>
+
+            <p id="task-message"></p>
+
+            <div class="task-form-actions">
+
+                <button
+                    class="task-save-btn"
+                    onclick="createTask()"
+                >
+                    ${t("save")}
+                </button>
+
+                <button
+                    class="task-cancel-btn"
+                    onclick="loadTasks()"
+                >
+                    ${t("cancel")}
+                </button>
+
+            </div>
+
+        </section>
+
+    `;
+};
+
 
 
 
