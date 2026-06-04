@@ -67,125 +67,148 @@ const renderTasks = () => {
             <p>${t("noTasksYet")}</p>
         `;
 
-        const priorityClass =
-            task.priority?.toLowerCase() || "none";
-
         return;
     }
 
-    // Sorts active tasks before completed tasks.
-    const sortedTasks = [...currentTasks]
-        .sort((a, b) => {
+    // Splits active and completed tasks.
+    const activeTasks =
+        currentTasks.filter(
+            task => task.status !== "DONE"
+        );
 
-            if (a.status === "DONE" && b.status !== "DONE") {
-                return 1;
-            }
+    const completedTasks =
+        currentTasks.filter(
+            task => task.status === "DONE"
+        );
 
-            if (a.status !== "DONE" && b.status === "DONE") {
-                return -1;
-            }
+    // Renders a single task row.
+    const renderTaskRow = (task) => {
 
-            return 0;
+        const isExpanded =
+            expandedTaskId === task.id;
 
-        });
+        const priorityClass =
+            task.priority?.toLowerCase() || "none";
 
-    taskContent.innerHTML =
-        sortedTasks.map(task => {
+        return `
 
-            const isExpanded =
-                expandedTaskId === task.id;
-
-            const priorityClass =
-                task.priority?.toLowerCase() || "none";
-
-            return `
-
-                <div class="task-row">
+            <div class="task-row">
 
                 <div class="task-row-content">
 
-    <div class="task-main-info">
+                    <div class="task-main-info">
 
-        <div class="task-row-top">
+                        <div class="task-row-top">
 
-            <h3 class="task-row-title">
-                ${task.title}
-            </h3>
+                            <h3 class="task-row-title">
+                                ${task.title}
+                            </h3>
 
-            <div class="task-header-actions">
+                            <div class="task-header-actions">
 
-                ${task.status === "DONE"
-                ? `
-                    <button
-                        class="task-action-btn"
-                        onclick="reopenTask(${task.id})"
-                    >
-                        ${t("reopen")}
-                    </button>
-                `
-                : `
-                    <button
-                        class="task-action-btn"
-                        onclick="completeTask(${task.id})"
-                    >
-                        ${t("complete")}
-                    </button>
-                `
-            }
+                                ${task.status === "DONE"
+            ? `
+                                        <button
+                                            class="task-action-btn"
+                                            onclick="reopenTask(${task.id})"
+                                        >
+                                            ${t("reopen")}
+                                        </button>
+                                    `
+            : `
+                                        <button
+                                            class="task-action-btn"
+                                            onclick="completeTask(${task.id})"
+                                        >
+                                            ${t("complete")}
+                                        </button>
+                                    `
+        }
 
-                <button
-                    class="task-delete-btn"
-                    onclick="deleteTask(${task.id})"
-                >
-                    ${t("delete")}
-                </button>
+                                <button
+                                    class="task-delete-btn"
+                                    onclick="deleteTask(${task.id})"
+                                >
+                                    ${t("delete")}
+                                </button>
 
-                <button
-                    class="task-toggle-btn"
-                    onclick="toggleTaskDetails(${task.id})"
-                >
-                    ${isExpanded ? "−" : "+"}
-                </button>
+                                <button
+                                    class="task-toggle-btn"
+                                    onclick="toggleTaskDetails(${task.id})"
+                                >
+                                    ${isExpanded ? "−" : "+"}
+                                </button>
+
+                            </div>
+
+                        </div>
+
+                        <div class="task-row-meta">
+
+                            <p class="task-row-date">
+                                ${formatDate(task.dueAt)}
+                            </p>
+
+                            <span class="priority-badge ${priorityClass}">
+                                ${task.priority || "NONE"}
+                            </span>
+
+                        </div>
+
+                        ${isExpanded ? `
+
+                            <div class="task-expanded-info">
+
+                                <p>
+                                    ${t("status")}:
+                                    ${task.status}
+                                </p>
+
+                                <p>
+                                    ${t("dueDate")}:
+                                    ${formatDate(task.dueAt)}
+                                </p>
+
+                            </div>
+
+                        ` : ""}
+
+                    </div>
+
+                </div>
 
             </div>
 
+        `;
+    };
+
+    taskContent.innerHTML = `
+
+        <div class="task-section">
+
+            <h2 class="task-section-title">
+                ${t("today")}
+            </h2>
+
+            ${activeTasks
+        .map(renderTaskRow)
+        .join("")}
+
         </div>
 
-        <div class="task-row-meta">
+        <div class="task-section">
 
-            <p class="task-row-date">
-                ${formatDate(task.dueAt)}
-            </p>
+            <h2 class="task-section-title">
+                ${t("completed")}
+            </h2>
 
-            <span class="priority-badge ${priorityClass}">
-                ${task.priority || "NONE"}
-            </span>
+            ${completedTasks
+        .map(renderTaskRow)
+        .join("")}
 
         </div>
 
-    </div>    
-
-                    ${isExpanded ? `
-
-                        <p>
-                            ${t("status")}:
-                            ${task.status}
-                        </p>
-
-                        <p>
-                            ${t("dueDate")}:
-                            ${formatDate(task.dueAt)}
-                        </p>
-
-                    ` : ""}
-
-                </div>
-                
-                </div>
-
-            `;
-
-        }).join("");
+    `;
 
 };
 
