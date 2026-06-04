@@ -94,6 +94,16 @@ const translations = {
 
         deleteTaskConfirm: "Delete this task?",
         failedToDeleteTask: "Failed to delete task",
+
+        taskSubtitle: "Keep track of your tasks.",
+        all: "All",
+        upcoming: "Upcoming",
+        completed: "Completed",
+        newTask: "+ New task",
+        searchTasks: "Search tasks...",
+
+        updateTask: "Update task",
+        deleteTask: "Delete task",
     },
 
 
@@ -192,6 +202,16 @@ const translations = {
 
         deleteTaskConfirm: "Ta bort denna uppgift?",
         failedToDeleteTask: "Kunde inte ta bort uppgiften",
+
+        taskSubtitle: "Håll koll på dina uppgifter.",
+        all: "Alla",
+        upcoming: "Kommande",
+        completed: "Klara",
+        newTask: "+ Ny uppgift",
+        searchTasks: "Sök uppgifter...",
+
+        updateTask: "Uppdatera uppgift",
+        deleteTask: "Ta bort uppgift",
 
 
     }
