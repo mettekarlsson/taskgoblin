@@ -104,6 +104,9 @@ const translations = {
 
         updateTask: "Update task",
         deleteTask: "Delete task",
+
+        task: "Task",
+        addMoreDetails: "Add more details",
     },
 
 
@@ -212,6 +215,9 @@ const translations = {
 
         updateTask: "Uppdatera uppgift",
         deleteTask: "Ta bort uppgift",
+
+        task: "Uppgift",
+        addMoreDetails: "Visa fler detaljer",
 
 
     }
