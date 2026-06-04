@@ -311,10 +311,12 @@
 
 .task-row-top {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
     gap: 24px;
+}
+
+.task-header-actions {
+    margin-left: auto;
 }
 
 .task-row-meta {
@@ -368,7 +370,7 @@
     position: absolute;
 
     right: 8px;
-    bottom: 30px;
+    top: 32px;
 
     width: 140px;
 

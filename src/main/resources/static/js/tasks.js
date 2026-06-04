@@ -369,6 +369,12 @@ const deleteTask = async (taskId) => {
 
 };
 
+const openUpdateTaskModal = (taskId) => {
+
+    alert(`Update task ${taskId}`);
+
+};
+
 
 
 
