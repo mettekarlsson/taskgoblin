@@ -101,6 +101,9 @@ const translations = {
         completed: "Completed",
         newTask: "+ New task",
         searchTasks: "Search tasks...",
+
+        updateTask: "Update task",
+        deleteTask: "Delete task",
     },
 
 
@@ -206,6 +209,9 @@ const translations = {
         completed: "Klara",
         newTask: "+ Ny uppgift",
         searchTasks: "Sök uppgifter...",
+
+        updateTask: "Uppdatera uppgift",
+        deleteTask: "Ta bort uppgift",
 
 
     }

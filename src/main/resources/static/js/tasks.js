@@ -4,7 +4,6 @@ const taskContent =
 // Stores tasks loaded from the backend.
 let currentTasks = [];
 // Stores which task card is currently expanded.
-let expandedTaskId = null;
 
 // Formats backend date into readable text.
 const formatDate = (dateString) => {
@@ -17,15 +16,30 @@ const formatDate = (dateString) => {
         .toLocaleString();
 };
 
-// Expands or collapses a task card.
-const toggleTaskDetails = (taskId) => {
+const toggleTaskMenu = (event, taskId) => {
 
-    expandedTaskId =
-        expandedTaskId === taskId
-            ? null
-            : taskId;
+    event.stopPropagation();
 
-    renderTasks();
+    document
+        .querySelectorAll(".task-action-menu")
+        .forEach(menu => {
+
+            if (
+                menu.id !==
+                `task-menu-${taskId}`
+            ) {
+
+                menu.classList.remove("open");
+
+            }
+
+        });
+
+    document
+        .getElementById(
+            `task-menu-${taskId}`
+        )
+        .classList.toggle("open");
 
 };
 
@@ -84,9 +98,6 @@ const renderTasks = () => {
     // Renders a single task row.
     const renderTaskRow = (task) => {
 
-        const isExpanded =
-            expandedTaskId === task.id;
-
         const priorityClass =
             task.priority?.toLowerCase() || "none";
 
@@ -100,78 +111,86 @@ const renderTasks = () => {
 
                         <div class="task-row-top">
 
-                            <h3 class="task-row-title">
-                                ${task.title}
-                            </h3>
+    <div class="task-title-group">
 
-                            <div class="task-header-actions">
+        <button
+            class="task-status-btn
+                ${task.status === "DONE"
+            ? "completed"
+            : ""}"
+            onclick="
+                ${task.status === "DONE"
+            ? `reopenTask(${task.id})`
+            : `completeTask(${task.id})`}
+            "
+        >
+            ${task.status === "DONE"
+            ? "✓"
+            : "○"}
+        </button>
 
-                                ${task.status === "DONE"
-            ? `
-                                        <button
-                                            class="task-action-btn"
-                                            onclick="reopenTask(${task.id})"
-                                        >
-                                            ${t("reopen")}
-                                        </button>
-                                    `
-            : `
-                                        <button
-                                            class="task-action-btn"
-                                            onclick="completeTask(${task.id})"
-                                        >
-                                            ${t("complete")}
-                                        </button>
-                                    `
-        }
+        <h3 class="task-row-title">
+            ${task.title}
+        </h3>
 
-                                <button
-                                    class="task-delete-btn"
-                                    onclick="deleteTask(${task.id})"
-                                >
-                                    ${t("delete")}
-                                </button>
+    </div>
 
-                                <button
-                                    class="task-toggle-btn"
-                                    onclick="toggleTaskDetails(${task.id})"
-                                >
-                                    ${isExpanded ? "−" : "+"}
-                                </button>
+                            <div class="task-row-meta">
 
-                            </div>
+                                <span class="priority-badge ${priorityClass}">
+                                    ${task.priority || "NONE"}
+                                </span>
 
-                        </div>
-
-                        <div class="task-row-meta">
-
-                            <p class="task-row-date">
-                                ${formatDate(task.dueAt)}
-                            </p>
-
-                            <span class="priority-badge ${priorityClass}">
-                                ${task.priority || "NONE"}
-                            </span>
-
-                        </div>
-
-                        ${isExpanded ? `
-
-                            <div class="task-expanded-info">
-
-                                <p>
-                                    ${t("status")}:
-                                    ${task.status}
-                                </p>
-
-                                <p>
-                                    ${t("dueDate")}:
+                                <p class="task-row-date">
                                     ${formatDate(task.dueAt)}
                                 </p>
 
                             </div>
 
-                        ` : ""}
+                            <div class="task-header-actions">
+
+    <div class="task-menu-container">
+
+        <button
+            class="task-menu-btn"
+            onclick="
+                toggleTaskMenu(
+                    event,
+                    ${task.id}
+                )
+            "
+        >
+            ⋮
+        </button>
+
+        <div
+            class="task-action-menu"
+            id="task-menu-${task.id}"
+        >
+
+            <button
+                onclick="
+                    openUpdateTaskModal(${task.id})
+                "
+            >
+                ${t("updateTask")}
+            </button>
+
+            <button
+                onclick="
+                    deleteTask(${task.id})
+                "
+            >
+                ${t("deleteTask")}
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+                        
+                    
 
                     </div>
 

@@ -231,17 +231,11 @@
 }
 
 .task-row-content {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-
-    gap: 24px;
+    width: 100%;
 }
 
 .task-main-info {
-    display: flex;
-    flex-direction: column;
-    gap: 8px;
+    width: 100%;
 }
 
 .task-row-title {
@@ -299,41 +293,6 @@
 }
 
 /* ----------------- */
-/*  Priority badges  */
-/* ----------------- */
-
-.priority-badge {
-    width: fit-content;
-
-    padding: 6px 12px;
-
-    border-radius: 999px;
-
-    font-size: 14px;
-    font-weight: 700;
-}
-
-.priority-badge.high {
-    background: rgba(255, 120, 120, 0.18);
-    color: #c53b3b;
-}
-
-.priority-badge.medium {
-    background: rgba(255, 190, 90, 0.18);
-    color: #b06b00;
-}
-
-.priority-badge.low {
-    background: rgba(120, 200, 120, 0.18);
-    color: #2d7c2d;
-}
-
-.priority-badge.none {
-    background: var(--surface);
-    color: var(--text-muted);
-}
-
-/* ----------------- */
 /*   Task sections   */
 /* ----------------- */
 
@@ -348,4 +307,124 @@
 
     font-size: 28px;
     font-weight: 700;
+}
+
+.task-row-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    gap: 24px;
+}
+
+.task-row-meta {
+    display: flex;
+    align-items: center;
+
+    gap: 12px;
+
+    margin-top: 8px;
+}
+
+.task-status-btn {
+    border: none;
+    background: transparent;
+
+    font-size: 28px;
+
+    cursor: pointer;
+
+    color: var(--text-muted);
+}
+
+.task-status-btn.completed {
+    color: var(--primary);
+}
+
+.task-title-group {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.task-menu-btn {
+    border: none;
+    background: transparent;
+
+    font-size: 24px;
+
+    cursor: pointer;
+
+    padding: 4px 8px;
+
+    color: var(--text);
+}
+
+.task-menu-container {
+    position: relative;
+}
+
+.task-action-menu {
+    position: absolute;
+
+    right: 8px;
+    bottom: 30px;
+
+    width: 140px;
+
+    display: none;
+
+    background: var(--surface);
+
+    border-radius: 12px;
+
+    overflow: visible;
+
+    box-shadow: 0 8px 18px var(--shadow-strong);
+
+    z-index: 20;
+}
+
+.task-action-menu.open {
+    display: block;
+}
+
+.task-action-menu::after {
+    content: "";
+
+    position: absolute;
+
+    right: 16px;
+    bottom: -6px;
+
+    width: 6px;
+    height: 14px;
+
+    background: var(--surface);
+
+    border-radius: 2px;
+
+    transform: rotate(-60deg);
+
+    z-index: -1;
+}
+
+.task-action-menu button {
+    width: 100%;
+
+    border: none;
+    background: transparent;
+
+    padding: 12px 14px;
+
+    color: var(--text);
+
+    font-weight: 700;
+    text-align: left;
+
+    cursor: pointer;
+}
+
+.task-action-menu button:hover {
+    background: var(--hover-soft);
 }
