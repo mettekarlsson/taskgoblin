@@ -113,6 +113,26 @@ public class GlobalExceptionHandler {
                 .body(ex.getMessage());
     }
 
+    @ExceptionHandler(AlreadyCompletedException.class)
+    public ResponseEntity<String> handleAlreadyCompletedException(
+            AlreadyCompletedException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
+
+    @ExceptionHandler(AlreadyOpenException.class)
+    public ResponseEntity<String> handleAlreadyOpenException(
+            AlreadyOpenException ex
+    ) {
+
+        return ResponseEntity
+                .status(HttpStatus.CONFLICT)
+                .body(ex.getMessage());
+    }
+
     @ExceptionHandler(InvalidEventException.class)
     public ResponseEntity<ErrorResponse> handleInvalidEvent(
             InvalidEventException ex
