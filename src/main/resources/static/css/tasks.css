@@ -430,3 +430,94 @@
 .task-action-menu button:hover {
     background: var(--hover-soft);
 }
+
+
+/* ----------------- */
+/*   Task form       */
+/* ----------------- */
+
+.task-form-card {
+    max-width: 900px;
+
+    background: var(--surface);
+
+    border-radius: 24px;
+
+    padding: 32px;
+
+    box-shadow: 0 8px 20px var(--shadow);
+}
+
+.task-form-card h2 {
+    margin-bottom: 24px;
+}
+
+.task-form-card label {
+    display: block;
+
+    margin-bottom: 8px;
+    margin-top: 20px;
+
+    font-weight: 600;
+}
+
+.task-form-actions {
+    display: flex;
+
+    gap: 12px;
+
+    margin-top: 24px;
+}
+
+.task-save-btn {
+    border: none;
+
+    padding: 12px 20px;
+
+    border-radius: 12px;
+
+    background: var(--primary);
+
+    color: white;
+
+    cursor: pointer;
+}
+
+.task-cancel-btn {
+    border: 1px solid var(--border);
+
+    padding: 12px 20px;
+
+    border-radius: 12px;
+
+    background: var(--surface);
+
+    color: var(--text);
+
+    cursor: pointer;
+}
+
+.task-form-card .task-input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* Toggle additional task fields. */
+.task-details-btn {
+    border: none;
+
+    background: transparent;
+
+    margin-top: 12px;
+    margin-bottom: 12px;
+
+    color: var(--text-muted);
+
+    cursor: pointer;
+
+    font-size: 0.95rem;
+}
+
+.task-details-btn:hover {
+    text-decoration: underline;
+}
