@@ -86,6 +86,21 @@ public class TaskListController {
         );
     }
 
+    @GetMapping("/{id}/progress")
+    public ResponseEntity<TaskListProgressDTO> getListProgress(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        return ResponseEntity.ok(
+                taskListService.getListProgress(id, userId)
+        );
+    }
+
 
      /*
      * Create operations
