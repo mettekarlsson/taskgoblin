@@ -1,9 +1,6 @@
 package com.example.taskgoblin.service;
 
-import com.example.taskgoblin.dto.CreateTaskListDTO;
-import com.example.taskgoblin.dto.TaskListDTO;
-import com.example.taskgoblin.dto.UpdateDueDateDTO;
-import com.example.taskgoblin.dto.UpdateTaskListDTO;
+import com.example.taskgoblin.dto.*;
 import com.example.taskgoblin.exception.AlreadyCompletedException;
 import com.example.taskgoblin.exception.AlreadyOpenException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
@@ -11,6 +8,7 @@ import com.example.taskgoblin.mapper.TaskListMapper;
 import com.example.taskgoblin.model.*;
 import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.TaskListRepository;
+import com.example.taskgoblin.repository.TaskRepository;
 import com.example.taskgoblin.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
@@ -24,6 +22,7 @@ public class TaskListService {
      * Repositories
      */
     private final TaskListRepository taskListRepository;
+    private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
 
@@ -33,10 +32,12 @@ public class TaskListService {
      */
     public TaskListService(
             TaskListRepository taskListRepository,
+            TaskRepository taskRepository,
             UserRepository userRepository,
             CategoryRepository categoryRepository
     ) {
         this.taskListRepository = taskListRepository;
+        this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
     }
@@ -62,6 +63,40 @@ public class TaskListService {
                         new ResourceNotFoundException("Task list not found"));
 
         return TaskListMapper.mapToTaskListDTO(taskList);
+    }
+
+    // Show progress in List
+    public TaskListProgressDTO getListProgress(
+            Long listId,
+            Long userId
+    ) {
+
+        // Verify ownership
+        taskListRepository
+                .findByIdAndUserId(listId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list not found"));
+
+        List<Task> tasks = taskRepository.findByListId(listId);
+
+        int totalTasks = tasks.size();
+
+        int completedTasks = (int) tasks.stream()
+                .filter(task -> task.getStatus() == TaskStatus.DONE)
+                .count();
+
+        int progressPercentage = 0;
+
+        if (totalTasks > 0) {
+            progressPercentage =
+                    (completedTasks * 100) / totalTasks;
+        }
+
+        return new TaskListProgressDTO(
+                totalTasks,
+                completedTasks,
+                progressPercentage
+        );
     }
 
 

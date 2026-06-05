@@ -101,6 +101,25 @@ public class TaskService {
                 .toList();
     }
 
+    // Retrieves all tasks that belong to a specific list
+    public List<TaskDTO> getTasksByListId(
+            Long listId,
+            Long userId
+    ) {
+
+        // Verify list ownership
+        taskListRepository
+                .findByIdAndUserId(listId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list not found"));
+
+        List<Task> tasks = taskRepository.findByListId(listId);
+
+        return tasks.stream()
+                .map(TaskMapper::mapToTaskDto)
+                .toList();
+    }
+
     // Retrieves a specific task that belongs to a user.
     public TaskDTO getTaskById(Long userId, Long taskId) {
 

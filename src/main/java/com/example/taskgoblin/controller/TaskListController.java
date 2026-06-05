@@ -3,6 +3,7 @@ package com.example.taskgoblin.controller;
 
 import com.example.taskgoblin.dto.*;
 import com.example.taskgoblin.service.TaskListService;
+import com.example.taskgoblin.service.TaskService;
 import com.example.taskgoblin.service.UserService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -22,14 +23,20 @@ public class TaskListController {
      * Services
      */
     private final TaskListService taskListService;
+    private final TaskService taskService;
     private final UserService userService;
 
 
      /*
      * Constructor injection
      */
-    public TaskListController(TaskListService taskListService, UserService userService) {
+    public TaskListController(
+            TaskListService taskListService,
+            TaskService taskService,
+            UserService userService) {
+
         this.taskListService = taskListService;
+        this.taskService = taskService;
         this.userService = userService;
     }
 
@@ -63,6 +70,37 @@ public class TaskListController {
         );
     }
 
+    // GET /lists/{id}/tasks - Fetched tasks for a specific list
+    @GetMapping("/{listId}/tasks")
+    public ResponseEntity<List<TaskDTO>> getTasksInList(
+            @PathVariable Long listId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        return ResponseEntity.ok(
+                taskService.getTasksByListId(listId, userId)
+        );
+    }
+
+    @GetMapping("/{id}/progress")
+    public ResponseEntity<TaskListProgressDTO> getListProgress(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        return ResponseEntity.ok(
+                taskListService.getListProgress(id, userId)
+        );
+    }
+
 
      /*
      * Create operations
@@ -87,6 +125,24 @@ public class TaskListController {
                 .body(createdList);
     }
 
+    // Create task in a list
+    @PostMapping("/{listId}/tasks")
+    public ResponseEntity<TaskDTO> createTaskInList(
+            @PathVariable Long listId,
+            @Valid @RequestBody CreateTaskDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        dto.setListId(listId);
+
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(taskService.createTask(userId, dto));
+    }
 
      /*
      * Update operations
