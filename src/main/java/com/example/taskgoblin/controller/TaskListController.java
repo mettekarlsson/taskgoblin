@@ -70,6 +70,22 @@ public class TaskListController {
         );
     }
 
+    // GET /lists/{id}/tasks - Fetched tasks for a specific list
+    @GetMapping("/{listId}/tasks")
+    public ResponseEntity<List<TaskDTO>> getTasksInList(
+            @PathVariable Long listId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        return ResponseEntity.ok(
+                taskService.getTasksByListId(listId, userId)
+        );
+    }
+
 
      /*
      * Create operations
