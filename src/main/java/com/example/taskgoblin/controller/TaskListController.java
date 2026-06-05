@@ -1,10 +1,7 @@
 package com.example.taskgoblin.controller;
 
 
-import com.example.taskgoblin.dto.CreateTaskListDTO;
-import com.example.taskgoblin.dto.TaskDTO;
-import com.example.taskgoblin.dto.TaskListDTO;
-import com.example.taskgoblin.dto.UpdateTaskListDTO;
+import com.example.taskgoblin.dto.*;
 import com.example.taskgoblin.service.TaskListService;
 import com.example.taskgoblin.service.UserService;
 import jakarta.validation.Valid;
@@ -133,6 +130,20 @@ public class TaskListController {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
 
         return taskListService.reopenList(id, userId);
+    }
+
+    @PatchMapping("/{id}/due-date")
+    public TaskListDTO updateDueDate(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateDueDateDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        return taskListService.updateDueDate(id, dto, userId);
     }
 
     /*

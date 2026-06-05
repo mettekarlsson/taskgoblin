@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateTaskListDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
+import com.example.taskgoblin.dto.UpdateDueDateDTO;
 import com.example.taskgoblin.dto.UpdateTaskListDTO;
 import com.example.taskgoblin.exception.AlreadyCompletedException;
 import com.example.taskgoblin.exception.AlreadyOpenException;
@@ -249,6 +250,27 @@ public class TaskListService {
                 taskListRepository.save(taskList);
 
         // Convert updated entity into DTO
+        return TaskListMapper.mapToTaskListDTO(updatedList);
+    }
+
+    public TaskListDTO updateDueDate(
+            Long listId,
+            UpdateDueDateDTO dto,
+            Long userId
+    ) {
+
+        TaskList taskList = taskListRepository
+                .findByIdAndUserId(listId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list"));
+
+        taskList.setDueAt(dto.getDueAt());
+
+        taskList.setLastInteractedAt(LocalDateTime.now());
+
+        TaskList updatedList =
+                taskListRepository.save(taskList);
+
         return TaskListMapper.mapToTaskListDTO(updatedList);
     }
 
