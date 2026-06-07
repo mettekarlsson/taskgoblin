@@ -1,8 +1,6 @@
 package com.example.taskgoblin.controller;
 
-import com.example.taskgoblin.dto.CategoryDTO;
-import com.example.taskgoblin.dto.CreateCategoryDTO;
-import com.example.taskgoblin.dto.NoteDTO;
+import com.example.taskgoblin.dto.*;
 import com.example.taskgoblin.service.CategoryService;
 import com.example.taskgoblin.service.UserService;
 import jakarta.validation.Valid;
@@ -37,7 +35,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-     /*
+    /*
      * Read operations
      */
 
@@ -67,11 +65,47 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> createCategory(
             @Valid @RequestBody CreateCategoryDTO createCategoryDTO,
             @AuthenticationPrincipal UserDetails userDetails
-            ) {
-            Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(categoryService.createCategory(userId, createCategoryDTO));
-            }
+    }
+
+    /*
+     * Update operations
+     */
+
+    // PATCH/categories/{id}
+    @PatchMapping("/{id}")
+    public ResponseEntity<CategoryDTO> updateCategory(
+            @PathVariable Long id,
+            @Valid @RequestBody UpdateCategoryDTO dto,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        CategoryDTO updatedCategory =
+                categoryService.updateCategory(id, dto, userId);
+
+        return ResponseEntity.ok(updatedCategory);
+    }
 
 
+    /*
+     * Delete operations
+     */
+
+    // DELETE /categories/1
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCategory(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        categoryService.deleteCategory(id, userId);
+        return ResponseEntity.ok("Category deleted successfully");
+    }
 }
