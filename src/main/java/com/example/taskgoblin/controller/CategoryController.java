@@ -41,6 +41,17 @@ public class CategoryController {
      * Read operations
      */
 
+    // Returns a specific category for the authenticated user
+    @GetMapping("/{id}")
+    public ResponseEntity<CategoryDTO> getCategory(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        return ResponseEntity.ok(categoryService.getCategory(id, userId));
+    }
+
+    // Returns all categories for the authenticated user
     @GetMapping
     public ResponseEntity<List<CategoryDTO>> getAllCategories(
             @AuthenticationPrincipal UserDetails userDetails

@@ -41,8 +41,17 @@ public class CategoryService {
      * Read operations
      */
 
-    public List<CategoryDTO> getAllCategories(Long id) {
-        List<Category> categories = categoryRepository.findByUserId(id);
+    // Returns a specific category for a user
+    public CategoryDTO getCategory(Long categoryId, Long userId) {
+        Category category = categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category"));
+
+        return CategoryMapper.mapToCategoryDto(category);
+    }
+
+    // Returns all categories for a user
+    public List<CategoryDTO> getAllCategories(Long userId) {
+        List<Category> categories = categoryRepository.findByUserId(userId);
 
         return categories.stream()
                 .map(CategoryMapper::mapToCategoryDto)
