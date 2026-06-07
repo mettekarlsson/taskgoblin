@@ -59,7 +59,7 @@ public class CategoryService {
     }
 
      /*
-     * Create
+     * Create operations
      */
 
     // Creates and saves a new category for a specific user.
@@ -71,6 +71,19 @@ public class CategoryService {
 
         Category savedCategory = categoryRepository.save(category);
         return CategoryMapper.mapToCategoryDto(savedCategory);
+    }
+
+    /*
+     * Delete operations
+     */
+
+    // Deletes a category for a specific user.
+    public void deleteCategory(Long categoryId, Long userId) {
+
+        Category category = categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Category"));
+
+        categoryRepository.delete(category);
     }
 
 }

@@ -37,7 +37,7 @@ public class CategoryController {
         this.categoryService = categoryService;
     }
 
-     /*
+    /*
      * Read operations
      */
 
@@ -67,11 +67,25 @@ public class CategoryController {
     public ResponseEntity<CategoryDTO> createCategory(
             @Valid @RequestBody CreateCategoryDTO createCategoryDTO,
             @AuthenticationPrincipal UserDetails userDetails
-            ) {
-            Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(categoryService.createCategory(userId, createCategoryDTO));
-            }
+    }
 
 
+    /*
+     * Delete operations
+     */
+
+    // DELETE /categories/1
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> deleteCategory(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        categoryService.deleteCategory(id, userId);
+        return ResponseEntity.ok("Category deleted successfully");
+    }
 }
