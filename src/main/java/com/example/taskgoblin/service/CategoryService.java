@@ -2,13 +2,18 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CategoryDTO;
 import com.example.taskgoblin.dto.CreateCategoryDTO;
+import com.example.taskgoblin.dto.NoteDTO;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.CategoryMapper;
+import com.example.taskgoblin.mapper.NoteMapper;
 import com.example.taskgoblin.model.Category;
+import com.example.taskgoblin.model.Note;
 import com.example.taskgoblin.model.User;
 import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.UserRepository;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 
 @Service
@@ -33,6 +38,18 @@ public class CategoryService {
     }
 
     /*
+     * Read operations
+     */
+
+    public List<CategoryDTO> getAllCategories(Long id) {
+        List<Category> categories = categoryRepository.findByUserId(id);
+
+        return categories.stream()
+                .map(CategoryMapper::mapToCategoryDto)
+                .toList();
+    }
+
+     /*
      * Create
      */
 
