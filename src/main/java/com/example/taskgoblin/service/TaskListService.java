@@ -3,6 +3,7 @@ package com.example.taskgoblin.service;
 import com.example.taskgoblin.dto.*;
 import com.example.taskgoblin.exception.AlreadyCompletedException;
 import com.example.taskgoblin.exception.AlreadyOpenException;
+import com.example.taskgoblin.exception.InvalidRecurringTaskException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.TaskListMapper;
 import com.example.taskgoblin.model.*;
@@ -228,30 +229,57 @@ public class TaskListService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Task list"));
 
-        // Prevent completing an already completed list
-        if (taskList.getStatus() == TaskListStatus.DONE) {
+        // Prevent completing an already completed
+        // non-recurring list
+        if (!taskList.isRecurring()
+                && taskList.getStatus() == TaskListStatus.DONE) {
 
             throw new AlreadyCompletedException(
                     "Task list is already completed"
             );
         }
 
-        // Update task list status
-        taskList.setStatus(TaskListStatus.DONE);
+        // Current timestamp used for all updates
+        LocalDateTime now =
+                LocalDateTime.now();
 
-        // Set completion timestamps
-        taskList.setCompletedAt(LocalDateTime.now());
-        taskList.setLastCompletedAt(LocalDateTime.now());
+        // Handle recurring lists differently
+        if (taskList.isRecurring()) {
+
+            // Store latest completion timestamp
+            taskList.setLastCompletedAt(now);
+
+            // Move list to next occurrence
+            taskList.setDueAt(
+                    calculateNextDueAt(taskList)
+            );
+
+            // Keep recurring list active
+            taskList.setStatus(TaskListStatus.TODO);
+
+            // Recurring lists are never permanently completed
+            taskList.setCompletedAt(null);
+
+        } else {
+
+            // Mark list as completed
+            taskList.setStatus(TaskListStatus.DONE);
+
+            // Store completion timestamps
+            taskList.setCompletedAt(now);
+            taskList.setLastCompletedAt(now);
+        }
 
         // Update interaction timestamp
-        taskList.setLastInteractedAt(LocalDateTime.now());
+        taskList.setLastInteractedAt(now);
 
         // Save updated task list
         TaskList updatedList =
                 taskListRepository.save(taskList);
 
         // Convert updated entity into DTO
-        return TaskListMapper.mapToTaskListDTO(updatedList);
+        return TaskListMapper
+                .mapToTaskListDTO(updatedList);
     }
 
 
@@ -262,6 +290,14 @@ public class TaskListService {
                 .findByIdAndUserId(listId, userId)
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Task list"));
+
+        // Recurring lists are not permanently completed
+        if (taskList.isRecurring()) {
+
+            throw new InvalidRecurringTaskException(
+                    "Recurring task lists cannot be reopened."
+            );
+        }
 
         // Prevent reopening an already open list
         if (taskList.getStatus() != TaskListStatus.DONE) {
@@ -274,8 +310,9 @@ public class TaskListService {
         // Restore task list status
         taskList.setStatus(TaskListStatus.TODO);
 
-        // Clear completion timestamp
+        // Clear completion timestamps
         taskList.setCompletedAt(null);
+        taskList.setLastCompletedAt(null);
 
         // Update interaction timestamp
         taskList.setLastInteractedAt(LocalDateTime.now());
@@ -285,7 +322,8 @@ public class TaskListService {
                 taskListRepository.save(taskList);
 
         // Convert updated entity into DTO
-        return TaskListMapper.mapToTaskListDTO(updatedList);
+        return TaskListMapper
+                .mapToTaskListDTO(updatedList);
     }
 
     public TaskListDTO updateDueDate(
@@ -328,5 +366,53 @@ public class TaskListService {
 
         // Deletes the task list from the database.
         taskListRepository.delete(taskList);
+    }
+
+    /*
+ ---- HELPER -----
+ Calculates the next occurrence for a recurring task list.
+
+ Used when a recurring task list is completed to move
+ the due date forward according to frequency
+ and interval settings.
+*/
+    private LocalDateTime calculateNextDueAt(
+            TaskList taskList
+    ) {
+
+        // Start from current due date
+        LocalDateTime nextDueAt =
+                taskList.getDueAt();
+
+        // Continue until next occurrence is in the future
+        do {
+
+            nextDueAt =
+                    switch (taskList.getFrequency()) {
+
+                        case DAILY ->
+                                nextDueAt.plusDays(
+                                        taskList.getIntervalValue()
+                                );
+
+                        case WEEKLY ->
+                                nextDueAt.plusWeeks(
+                                        taskList.getIntervalValue()
+                                );
+
+                        case MONTHLY ->
+                                nextDueAt.plusMonths(
+                                        taskList.getIntervalValue()
+                                );
+
+                        case YEARLY ->
+                                nextDueAt.plusYears(
+                                        taskList.getIntervalValue()
+                                );
+                    };
+
+        } while (!nextDueAt.isAfter(LocalDateTime.now()));
+
+        return nextDueAt;
     }
 }

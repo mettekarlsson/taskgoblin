@@ -20,6 +20,10 @@ public class CompletionHistory {
     @JoinColumn(name = "task_id")
     private Task task;
 
+    @ManyToOne
+    @JoinColumn(name = "list_id")
+    private TaskList list;
+
     @Column(nullable = false)
     private LocalDateTime completedAt;
 
@@ -44,6 +48,14 @@ public class CompletionHistory {
 
     public void setTask(Task task) {
         this.task = task;
+    }
+
+    public TaskList getList() {
+        return list;
+    }
+
+    public void setList(TaskList list) {
+        this.list = list;
     }
 
     public LocalDateTime getCompletedAt() {

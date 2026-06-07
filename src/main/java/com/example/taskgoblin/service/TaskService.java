@@ -189,43 +189,86 @@ public class TaskService {
     }
 
     // Marks a task as completed
-    public TaskDTO completeTask(Long taskId, Long userId) {
+    public TaskDTO completeTask(
+            Long taskId,
+            Long userId
+    ) {
 
         // Find task and validate ownership
-        Task task = getTaskByIdAndUserId(taskId, userId);
+        Task task =
+                getTaskByIdAndUserId(
+                        taskId,
+                        userId
+                );
 
-        // Prevent completing an already completed task
-        if (task.getStatus() == TaskStatus.DONE) {
+        // Prevent completing an already completed
+        // non-recurring task
+        if (!task.isRecurring()
+                && task.getStatus() == TaskStatus.DONE) {
 
             throw new TaskAlreadyCompletedException(
                     "Task is already completed"
             );
         }
 
-        // Update task status
-        task.setStatus(TaskStatus.DONE);
+        // Current timestamp used for all updates
+        LocalDateTime now =
+                LocalDateTime.now();
 
-        // Set completion timestamps
-        task.setCompletedAt(LocalDateTime.now());
-        task.setLastCompletedAt(LocalDateTime.now());
+        // Handle recurring tasks differently
+        if (task.isRecurring()) {
+
+            // Store latest completion timestamp
+            task.setLastCompletedAt(now);
+
+            // Move task to next occurrence
+            task.setDueAt(
+                    calculateNextDueAt(task)
+            );
+
+            // Keep recurring task active
+            task.setStatus(TaskStatus.TODO);
+
+            // Recurring tasks are never permanently completed
+            task.setCompletedAt(null);
+
+        } else {
+
+            // Mark task as completed
+            task.setStatus(TaskStatus.DONE);
+
+            // Store completion timestamps
+            task.setCompletedAt(now);
+            task.setLastCompletedAt(now);
+        }
 
         // Update system timestamp
-        task.setUpdatedAt(LocalDateTime.now());
+        task.setUpdatedAt(now);
 
         // Save updated task
-        Task updatedTask = taskRepository.save(task);
+        Task updatedTask =
+                taskRepository.save(task);
 
         // Convert updated entity into DTO
-        return TaskMapper.mapToTaskDto(updatedTask);
+        return TaskMapper
+                .mapToTaskDto(updatedTask);
     }
 
 
 
-    // Reopens a completed task
+    // Reopens a completed non-recurring task
     public TaskDTO reopenTask(Long taskId, Long userId) {
 
         // Find task and validate ownership
         Task task = getTaskByIdAndUserId(taskId, userId);
+
+        // Recurring tasks are not permanently completed
+        if (task.isRecurring()) {
+
+            throw new InvalidRecurringTaskException(
+                    "Recurring tasks cannot be reopened."
+            );
+        }
 
         // Prevent reopening an already open task
         if (task.getStatus() == TaskStatus.TODO) {
@@ -241,6 +284,9 @@ public class TaskService {
         // Clear completion timestamp
         task.setCompletedAt(null);
 
+        // Clear latest completion timestamp
+        task.setLastCompletedAt(null);
+
         // Update system timestamp
         task.setUpdatedAt(LocalDateTime.now());
 
@@ -250,7 +296,6 @@ public class TaskService {
         // Convert updated entity into DTO
         return TaskMapper.mapToTaskDto(updatedTask);
     }
-
 
 
     // Updates the due date of a task
@@ -365,6 +410,53 @@ public class TaskService {
                 );
             }
         }
+    }
+
+
+    /*
+    Calculates the next occurrence for a recurring task.
+     Used when a recurring task is completed to move
+    the due date forward according to frequency
+    and interval settings.
+    */
+    private LocalDateTime calculateNextDueAt(
+            Task task
+    ) {
+
+        // Start from current due date
+        LocalDateTime nextDueAt =
+                task.getDueAt();
+
+        // Continue until next occurrence is in the future
+        do {
+
+            nextDueAt =
+                    switch (task.getFrequency()) {
+
+                        case DAILY ->
+                                nextDueAt.plusDays(
+                                        task.getIntervalValue()
+                                );
+
+                        case WEEKLY ->
+                                nextDueAt.plusWeeks(
+                                        task.getIntervalValue()
+                                );
+
+                        case MONTHLY ->
+                                nextDueAt.plusMonths(
+                                        task.getIntervalValue()
+                                );
+
+                        case YEARLY ->
+                                nextDueAt.plusYears(
+                                        task.getIntervalValue()
+                                );
+                    };
+
+        } while (!nextDueAt.isAfter(LocalDateTime.now()));
+
+        return nextDueAt;
     }
 
     /*
