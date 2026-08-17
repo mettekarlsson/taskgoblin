@@ -51,7 +51,6 @@ public class Task {
 
     private LocalDateTime updatedAt;
 
-    @Column(nullable = false)
     private LocalDateTime completedAt;
 
     private LocalDateTime lastCompletedAt;
