@@ -107,7 +107,7 @@
     display: flex;
     flex-direction: column;
 
-    --note-bg: #F8F3F7;
+    --note-bg: #EEE5D9;
 }
 
 .note-card h2 {
@@ -143,7 +143,7 @@
     background: linear-gradient(
             to bottom,
             rgba(255,255,255,0),
-            var(--note-bg, #F8F3F7)
+            var(--note-bg, #EEE5D9)
     );
 }
 
@@ -331,16 +331,18 @@
     transform: scale(1.08);
 }
 
-.note-color-chip[data-color="#F8F3F7"] {
+.note-color-chip[data-color="#EEE5D9"] {
     width: auto;
+    min-width: 110px;
+    height: 44px;
 
-    padding: 0 12px;
+    padding: 0 18px;
 
     border-radius: 999px;
 
     background: var(--note-default-bg);
 
-    color: var(--note-accent-text);
+    color: var(--text);
 
     font-weight: 700;
 }
