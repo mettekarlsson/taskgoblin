@@ -1,6 +1,6 @@
 const notesGrid = document.getElementById("notes-grid");
 
-const DEFAULT_NOTE_COLOR = "#F8F3F7";
+const DEFAULT_NOTE_COLOR = "#EEE5D9";
 
 let selectedColor = DEFAULT_NOTE_COLOR;
 
@@ -16,8 +16,8 @@ const getNoteColor = (color) => {
 
     switch (color) {
 
-        case "#F8F3F7":
-            return "#4A4350";
+        case "#EEE5D9":
+            return "#2B2E22";
 
         case "#FFF8DD":
             return "#5A5330";
@@ -386,7 +386,7 @@ const renderCreateNoteForm = () => {
 
     <button type="button"
             class="note-color-chip selected"
-            data-color="#F8F3F7">
+            data-color="#EEE5D9">
         ${t("defaultColor")}
     </button>
 
@@ -458,8 +458,8 @@ const renderEditNoteForm = (event, noteId) => {
             <div class="note-color-options">
 
                 <button type="button"
-        class="note-color-chip ${selectedColor === "#F8F3F7" ? "selected" : ""}"
-        data-color="#F8F3F7">
+        class="note-color-chip ${selectedColor === "#EEE5D9" ? "selected" : ""}"
+        data-color="#EEE5D9">
     ${t("defaultColor")}
 </button>
 
