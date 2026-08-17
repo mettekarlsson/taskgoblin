@@ -554,7 +554,9 @@ const openDeleteListModal = (
     listId
 ) => {
 
-    event.stopPropagation();
+    if (event) {
+        event.stopPropagation();
+    }
 
     listToDeleteId = listId;
 
@@ -750,6 +752,222 @@ const renderCreateListForm = () => {
     `;
 };
 
+const renderEditListForm = (event, listId) => {
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const list =
+        currentLists.find(list => list.id === listId);
+
+    if (!list) {
+        return;
+    }
+
+    document.querySelector(".lists-header").style.display = "none";
+
+    selectedListColor =
+        list.color || DEFAULT_LIST_COLOR;
+
+    selectedListIcon =
+        list.icon || "clipboard";
+
+    listsGrid.innerHTML = `
+        <section class="list-form-card">
+
+            <h2>Edit list</h2>
+
+            <label for="list-name">Name</label>
+            <input
+                id="list-name"
+                class="list-input"
+                type="text"
+                value="${list.name || ""}"
+            >
+
+            <label>Color</label>
+
+            <div class="list-color-options">
+                ${renderListColorChips()}
+            </div>
+
+            <label>Icon</label>
+
+            <button
+                type="button"
+                id="selected-list-icon-btn"
+                class="list-icon-picker-btn"
+                onclick="toggleIconPicker()"
+            >
+                ${getListIconEmoji(selectedListIcon)} Choose icon
+            </button>
+
+            <div
+                id="list-icon-picker"
+                class="list-icon-picker"
+            >
+                ${renderIconOptions()}
+            </div>
+
+            <label for="list-due-at">Due date</label>
+            <input
+                id="list-due-at"
+                class="list-input"
+                type="date"
+                value="${formatDateInputValue(list.dueAt)}"
+            >
+
+            <label class="list-checkbox-row">
+                <input
+                    id="list-is-recurring"
+                    type="checkbox"
+                    onchange="toggleRecurringOptions()"
+                    ${list.isRecurring ? "checked" : ""}
+                >
+                Recurring list
+            </label>
+
+            <div
+                id="list-recurring-options"
+                class="list-recurring-options ${list.isRecurring ? "open" : ""}"
+            >
+
+                <label for="list-interval-value">
+                    Repeat every
+                </label>
+
+                <div class="list-recurring-row">
+
+                    <input
+                        id="list-interval-value"
+                        class="list-input"
+                        type="number"
+                        min="1"
+                        value="${list.intervalValue || 1}"
+                    >
+
+                    <select
+                        id="list-frequency"
+                        class="list-input"
+                    >
+                        <option value="DAILY" ${list.frequency === "DAILY" ? "selected" : ""}>
+                            Day
+                        </option>
+
+                        <option value="WEEKLY" ${list.frequency === "WEEKLY" ? "selected" : ""}>
+                            Week
+                        </option>
+
+                        <option value="MONTHLY" ${list.frequency === "MONTHLY" ? "selected" : ""}>
+                            Month
+                        </option>
+
+                        <option value="YEARLY" ${list.frequency === "YEARLY" ? "selected" : ""}>
+                            Year
+                        </option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <p id="list-message" class="list-message"></p>
+
+            <div class="list-form-actions">
+
+                <button
+                    class="list-save-btn"
+                    onclick="updateList(${list.id})"
+                >
+                    Save
+                </button>
+
+                <button
+                    class="list-cancel-btn"
+                    onclick="openList(${list.id})"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+        </section>
+    `;
+};
+
+const updateList = async (listId) => {
+    const name =
+        document.getElementById("list-name").value.trim();
+
+    const dueDate =
+        document.getElementById("list-due-at").value;
+
+    const dueAt =
+        dueDate
+            ? `${dueDate}T00:00:00`
+            : null;
+
+    const isRecurring =
+        document.getElementById("list-is-recurring").checked;
+
+    const frequency =
+        isRecurring
+            ? document.getElementById("list-frequency").value
+            : null;
+
+    const intervalValue =
+        isRecurring
+            ? Number(document.getElementById("list-interval-value").value)
+            : null;
+
+    if (!name) {
+        document.getElementById("list-message").textContent =
+            "List name cannot be empty";
+        return;
+    }
+
+    if (isRecurring && !dueAt) {
+        document.getElementById("list-message").textContent =
+            "Recurring lists need a due date";
+        return;
+    }
+
+    const listData = {
+        name,
+        color: selectedListColor,
+        icon: selectedListIcon,
+        dueAt,
+        isRecurring,
+        frequency,
+        intervalValue
+    };
+
+    try {
+        const response = await apiFetch(`/lists/${listId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(listData)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+
+            throw new Error(
+                error.message || "Failed to update list"
+            );
+        }
+
+        await loadLists();
+        await openList(listId);
+
+    } catch (error) {
+        document.getElementById("list-message").textContent =
+            error.message;
+    }
+};
+
 const LIST_ICONS = [
     { value: "clipboard", emoji: "📋" },
     { value: "star", emoji: "⭐" },
@@ -916,6 +1134,14 @@ const createTaskInList = async (listId) => {
         document.getElementById("list-message").textContent =
             error.message;
     }
+};
+
+const formatDateInputValue = (dateString) => {
+    if (!dateString) {
+        return "";
+    }
+
+    return dateString.split("T")[0];
 };
 
 const formatListDate = (dateString) => {
