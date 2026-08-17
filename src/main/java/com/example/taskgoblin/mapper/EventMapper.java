@@ -1,5 +1,6 @@
 package com.example.taskgoblin.mapper;
 
+import com.example.taskgoblin.dto.CategoryDTO;
 import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
 import com.example.taskgoblin.model.Event;
@@ -8,9 +9,20 @@ public class EventMapper {
 
     //map from entity to dto
     public static EventDTO mapToEventDto(Event event) {
+
+        CategoryDTO categoryDTO = null;
+        if (event.getCategory() != null) {
+            categoryDTO = new CategoryDTO(
+                    event.getCategory().getId(),
+                    event.getCategory().getName(),
+                    event.getCategory().getColor(),
+                    event.getCategory().getIcon()
+            );
+        }
+
         return new EventDTO(
                 event.getId(),
-                event.getCategory(),
+                categoryDTO,
                 event.getTitle(),
                 event.getDescription(),
                 event.getStartTime(),
@@ -20,7 +32,6 @@ public class EventMapper {
                 event.getIsRecurring(),
                 event.getFrequency(),
                 event.getIntervalValue()
-
         );
     }
 

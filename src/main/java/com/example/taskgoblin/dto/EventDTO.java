@@ -1,6 +1,5 @@
 package com.example.taskgoblin.dto;
 
-import com.example.taskgoblin.model.Category;
 import com.example.taskgoblin.model.Frequency;
 import java.time.LocalDateTime;
 
@@ -9,7 +8,7 @@ public class EventDTO {
     //final pga ingen set-er
     private final Long id;
 
-    private Category category;
+    private CategoryDTO category;
     private String title;
     private String description;
     private LocalDateTime startTime;
@@ -20,7 +19,7 @@ public class EventDTO {
     private Frequency frequency;
     private Integer intervalValue;
 
-    public EventDTO(Long id, Category category, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String location, Boolean isAllDay, Boolean isRecurring, Frequency frequency, Integer intervalValue) {
+    public EventDTO(Long id, CategoryDTO category, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String location, Boolean isAllDay, Boolean isRecurring, Frequency frequency, Integer intervalValue) {
         this.id = id;
         this.category = category;
         this.title = title;
@@ -38,13 +37,9 @@ public class EventDTO {
         return id;
     }
 
-    public Category getCategory() {
-        return category;
-    }
+    public CategoryDTO getCategory() { return category; }
 
-    public void setCategory(Category category) {
-        this.category = category;
-    }
+    public void setCategory(CategoryDTO category) { this.category = category; }
 
     public String getTitle() {
         return title;
@@ -94,11 +89,11 @@ public class EventDTO {
         isAllDay = allDay;
     }
 
-    public Boolean getRecurring() {
+    public Boolean getIsRecurring() {
         return isRecurring;
     }
 
-    public void setRecurring(Boolean recurring) {
+    public void setIsRecurring(Boolean recurring) {
         isRecurring = recurring;
     }
 

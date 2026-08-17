@@ -12,6 +12,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @RestController
@@ -27,10 +28,26 @@ public class CalendarController {
     }
 
 
-    //get all events
+    //no longer relevant, i incoorporated this endpoint in the one below, to include both all events and date range
+//    //get all events
+//    @GetMapping
+//    public ResponseEntity<List<EventDTO>> getAllEvents(@AuthenticationPrincipal UserDetails userDetails) {
+//        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+//        return ResponseEntity.ok(calendarService.getAllEvents(userId));
+//    }
+
+    //get all events OR get events between certain date-range
     @GetMapping
-    public ResponseEntity<List<EventDTO>> getAllEvents(@AuthenticationPrincipal UserDetails userDetails) {
+    public ResponseEntity<List<EventDTO>> getEvents(
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+
+        if (startDate != null && endDate != null) {
+            return ResponseEntity.ok(calendarService.getEventsByDateRange(userId, startDate, endDate));
+        }
         return ResponseEntity.ok(calendarService.getAllEvents(userId));
     }
 

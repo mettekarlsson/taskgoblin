@@ -134,4 +134,12 @@ public class CalendarService {
 
         return EventMapper.mapToEventDto(updatedEvent);
     }
+
+    //view events between certain dates
+    public List<EventDTO> getEventsByDateRange (Long userId, LocalDateTime start, LocalDateTime end) {
+        List<Event> events = calendarRepository.findByUserIdAndStartTimeBetween(userId, start, end);
+        return events.stream()
+                .map(EventMapper::mapToEventDto)
+                .toList();
+    }
 }
