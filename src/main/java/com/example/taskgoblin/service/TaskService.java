@@ -206,7 +206,7 @@ public class TaskService {
         if (!task.isRecurring()
                 && task.getStatus() == TaskStatus.DONE) {
 
-            throw new TaskAlreadyCompletedException(
+            throw new AlreadyCompletedException(
                     "Task is already completed"
             );
         }
@@ -273,7 +273,7 @@ public class TaskService {
         // Prevent reopening an already open task
         if (task.getStatus() == TaskStatus.TODO) {
 
-            throw new TaskAlreadyOpenException(
+            throw new AlreadyOpenException(
                     "Task is already open"
             );
         }
