@@ -144,6 +144,9 @@ const translations = {
 
         task: "Task",
         tasksCount: "tasks",
+        recurringTask: "Recurring task",
+        recurringTaskNeedsDueDate:
+            "A recurring task needs a due date.",
 
         addMoreDetails: "Add more details",
         lessDetails: "Less details",
@@ -320,6 +323,9 @@ const translations = {
 
         task: "Uppgift",
         tasksCount: "uppgifter",
+        recurringTask: "Återkommande uppgift",
+        recurringTaskNeedsDueDate:
+            "En återkommande uppgift behöver ett förfallodatum.",
 
         addMoreDetails: "Visa fler detaljer",
         lessDetails: "Färre detaljer",

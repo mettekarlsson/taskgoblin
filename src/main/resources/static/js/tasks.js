@@ -404,6 +404,7 @@ const renderTasks = (tasks = currentTasks) => {
                 </div>
 
             </div>
+         </div>
 
         `;
     };
@@ -582,6 +583,26 @@ const createTask = async () => {
             ? `${dueDate}T00:00:00`
             : null;
 
+    const isRecurringInput =
+        document.getElementById("task-is-recurring");
+
+    const isRecurring =
+        isRecurringInput
+            ? isRecurringInput.checked
+            : false;
+
+    const frequency =
+        isRecurring
+            ? document.getElementById("task-frequency").value
+            : null;
+
+    const intervalValue =
+        isRecurring
+            ? Number(
+                document.getElementById("task-interval-value").value
+            )
+            : null;
+
     if (!title) {
 
         alert(t("taskTitleRequired"));
@@ -589,16 +610,37 @@ const createTask = async () => {
         return;
     }
 
+    if (isRecurring && !dueAt) {
+
+        alert(
+            t("recurringTaskNeedsDueDate")
+        );
+
+        return;
+    }
+
     try {
+
+        const taskData = {
+            title,
+            priority,
+            dueAt,
+            isRecurring
+        };
+
+        if (isRecurring) {
+            taskData.frequency = frequency;
+            taskData.intervalValue = intervalValue;
+        }
 
         const response =
             await apiFetch("/tasks", {
                 method: "POST",
-                body: JSON.stringify({
-                    title,
-                    priority,
-                    dueAt
-                })
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify(taskData)
             });
 
         if (!response.ok) {
@@ -804,11 +846,77 @@ const toggleTaskDetailsForm = () => {
             >
 
         </div>
+        
+        <label class="task-checkbox-row">
+    <input
+        id="task-is-recurring"
+        type="checkbox"
+        onchange="toggleTaskRecurringOptions()"
+    >
+    ${t("recurringTask")}
+</label>
+
+<div
+    id="task-recurring-options"
+    class="task-recurring-options"
+>
+
+    <label for="task-interval-value">
+        ${t("repeatEvery")}
+    </label>
+
+    <div class="task-recurring-row">
+
+        <input
+            id="task-interval-value"
+            class="task-input"
+            type="number"
+            min="1"
+            value="1"
+        >
+
+        <select
+            id="task-frequency"
+            class="task-input"
+        >
+            <option value="DAILY">
+                ${t("day")}
+            </option>
+
+            <option value="WEEKLY">
+                ${t("week")}
+            </option>
+
+            <option value="MONTHLY">
+                ${t("month")}
+            </option>
+
+            <option value="YEARLY">
+                ${t("year")}
+            </option>
+        </select>
+
+    </div>
+
+</div>
 
     `;
 
     button.textContent =
         `${t("lessDetails")} ⌃`;
+};
+
+const toggleTaskRecurringOptions = () => {
+
+    const isRecurring =
+        document
+            .getElementById("task-is-recurring")
+            .checked;
+
+    document
+        .getElementById("task-recurring-options")
+        .classList
+        .toggle("open", isRecurring);
 };
 
 const selectTaskPriority = (button) => {

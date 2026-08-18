@@ -366,6 +366,35 @@
 }
 
 /* ---------------- */
+/*     Recurring    */
+/* ---------------- */
+.task-checkbox-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    margin-bottom: 16px;
+
+    color: var(--text);
+
+    font-weight: 700;
+}
+
+.task-recurring-options {
+    display: none;
+}
+
+.task-recurring-options.open {
+    display: block;
+}
+
+.task-recurring-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+/* ---------------- */
 /*     Task menu    */
 /* ---------------- */
 
