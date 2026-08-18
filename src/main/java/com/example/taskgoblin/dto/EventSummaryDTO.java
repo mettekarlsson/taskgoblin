@@ -50,11 +50,11 @@ public class EventSummaryDTO {
         this.endTime = endTime;
     }
 
-    public Boolean getAllDay() {
+    public Boolean getIsAllDay() {
         return isAllDay;
     }
 
-    public void setAllDay(Boolean allDay) {
+    public void setIsAllDay(Boolean allDay) {
         isAllDay = allDay;
     }
 

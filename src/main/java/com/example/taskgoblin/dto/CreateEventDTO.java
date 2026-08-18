@@ -33,6 +33,9 @@ public class CreateEventDTO {
     private Integer intervalValue;
 
 
+    public CreateEventDTO() {
+    }
+
     public CreateEventDTO(Long categoryId, String title, String description, LocalDateTime startTime, LocalDateTime endTime, String location, Boolean isAllDay, Boolean isRecurring, String frequency, Integer intervalValue) {
         this.categoryId = categoryId;
         this.title = title;
