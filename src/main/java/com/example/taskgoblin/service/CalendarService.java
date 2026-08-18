@@ -62,6 +62,12 @@ public class CalendarService {
         event.setUser(user);
         event.setCreatedAt(LocalDateTime.now());
 
+        // Validates that end time is not before start time
+        if (createEventDTO.getEndTime() != null &&
+                createEventDTO.getEndTime().isBefore(createEventDTO.getStartTime())) {
+            throw new InvalidEventException("End time cannot be before start time");
+        }
+
         //sets category if it exists
         if (createEventDTO.getCategoryId() != null) {
             Category category = categoryRepository.findById(createEventDTO.getCategoryId())
@@ -127,6 +133,12 @@ public class CalendarService {
             event.setEndTime(updateEventDTO.getEndTime());
             contentWasUpdated = true;
         }
+
+        // Validates that end time is not before start time
+        if (event.getEndTime() != null && event.getEndTime().isBefore(event.getStartTime())) {
+            throw new InvalidEventException("End time cannot be before start time");
+        }
+
         if (updateEventDTO.getLocation() != null) {
             event.setLocation(updateEventDTO.getLocation());
             contentWasUpdated = true;
@@ -140,7 +152,13 @@ public class CalendarService {
             contentWasUpdated = true;
         }
         if (updateEventDTO.getFrequency() != null) {
-            event.setFrequency(Frequency.valueOf(updateEventDTO.getFrequency().toUpperCase()));
+            // Validates frequency value even though frontend restricts input via dropdown.
+            // Guards against direct API calls (e.g. via Postman) with invalid values.
+            try {
+                event.setFrequency(Frequency.valueOf(updateEventDTO.getFrequency().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new InvalidEventException("Invalid frequency: " + updateEventDTO.getFrequency() + ". Must be DAILY, WEEKLY, MONTHLY or YEARLY");
+            }
             contentWasUpdated = true;
         }
         if (updateEventDTO.getIntervalValue() != null) {
