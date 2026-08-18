@@ -298,7 +298,7 @@ const translations = {
         taskSubtitle: "Håll koll på dina uppgifter.",
         all: "Alla",
         upcoming: "Kommande",
-        completed: "Klara",
+        completed: "Genomförda",
         newTask: "+ Ny uppgift",
         searchTasks: "Sök uppgifter...",
 
