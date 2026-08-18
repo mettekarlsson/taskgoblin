@@ -16,20 +16,80 @@
 
 <header id="app-header"></header>
 
-<main class="list-page">
+<main class="lists-page">
 
-    <!-- List content -->
-    <section class="list-container">
+    <section class="lists-header">
 
-        <h1 data-translate="lists">Lists</h1>
+        <div>
+            <h1 data-translate="lists">Lists</h1>
+            <p class="lists-subtitle" data-translate="listsSubtitle">
+                Keep your routines and tasks organized.
+            </p>
+        </div>
 
-        <div id="list-content">
-            Loading lists...
+        <div class="lists-header-actions">
+            <button
+                    class="lists-search-btn"
+                    onclick="toggleListSearch()"
+            >
+                🔍
+            </button>
+
+            <button class="new-list-btn" onclick="renderCreateListForm()">
+                <span data-translate="addList">+ Add list</span>
+            </button>
         </div>
 
     </section>
 
+    <section class="lists-search-view" id="lists-search-view">
+        <input
+                id="lists-search"
+                class="lists-search-input"
+                type="text"
+                placeholder="Search lists..."
+        >
+    </section>
+
+    <section id="lists-grid" class="lists-grid">
+        Loading lists...
+    </section>
+
 </main>
+
+<div class="modal" id="delete-list-modal">
+
+    <div class="modal-content">
+
+        <h2>
+            Delete list?
+        </h2>
+
+        <p>
+            This action cannot be undone.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                    class="modal-cancel-btn"
+                    onclick="closeDeleteListModal()"
+            >
+                Cancel
+            </button>
+
+            <button
+                    class="modal-confirm-btn"
+                    onclick="confirmDeleteList()"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 <footer id="app-footer"></footer>
 
