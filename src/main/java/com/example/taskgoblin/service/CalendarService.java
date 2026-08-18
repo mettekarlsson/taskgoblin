@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
+import com.example.taskgoblin.dto.EventSummaryDTO;
 import com.example.taskgoblin.dto.UpdateEventDTO;
 import com.example.taskgoblin.exception.InvalidEventException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
@@ -28,13 +29,28 @@ public class CalendarService {
         this.categoryRepository = categoryRepository;
     }
 
-    //view all events
-    public List<EventDTO> getAllEvents(Long userId) {
+    //view all events in calendar
+    public List<EventSummaryDTO> getAllEvents(Long userId) {
         List<Event> events = calendarRepository.findByUserId(userId);
 
         return events.stream()
-                .map(EventMapper::mapToEventDto)
+                .map(EventMapper::mapToEventSummaryDto)
                 .toList();
+    }
+
+    //view events between certain dates in calendar
+    public List<EventSummaryDTO> getEventsByDateRange (Long userId, LocalDateTime start, LocalDateTime end) {
+        List<Event> events = calendarRepository.findByUserIdAndStartTimeBetween(userId, start, end);
+        return events.stream()
+                .map(EventMapper::mapToEventSummaryDto)
+                .toList();
+    }
+
+    //view detailed information of specific event
+    public EventDTO getEventById(Long userId, Long id) {
+        Event event = calendarRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Event"));
+        return EventMapper.mapToEventDto(event);
     }
 
     //create new event
@@ -45,6 +61,12 @@ public class CalendarService {
         Event event = EventMapper.mapToEventEntity(createEventDTO);
         event.setUser(user);
         event.setCreatedAt(LocalDateTime.now());
+
+        // Validates that end time is not before start time
+        if (createEventDTO.getEndTime() != null &&
+                createEventDTO.getEndTime().isBefore(createEventDTO.getStartTime())) {
+            throw new InvalidEventException("End time cannot be before start time");
+        }
 
         //sets category if it exists
         if (createEventDTO.getCategoryId() != null) {
@@ -58,7 +80,13 @@ public class CalendarService {
             if (createEventDTO.getFrequency() == null) {
                 throw new InvalidEventException("Frequency must be set when event is recurring");
             }
-            event.setFrequency(Frequency.valueOf(createEventDTO.getFrequency().toUpperCase()));
+            // Validates frequency value even though frontend restricts input via dropdown.
+            // Guards against direct API calls (e.g. via Postman) with invalid values.
+            try {
+                event.setFrequency(Frequency.valueOf(createEventDTO.getFrequency().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new InvalidEventException("Invalid frequency: " + createEventDTO.getFrequency() + ". Must be DAILY, WEEKLY, MONTHLY or YEARLY");
+            }
         }
 
         Event savedEvent = calendarRepository.save(event);
@@ -105,6 +133,12 @@ public class CalendarService {
             event.setEndTime(updateEventDTO.getEndTime());
             contentWasUpdated = true;
         }
+
+        // Validates that end time is not before start time
+        if (event.getEndTime() != null && event.getEndTime().isBefore(event.getStartTime())) {
+            throw new InvalidEventException("End time cannot be before start time");
+        }
+
         if (updateEventDTO.getLocation() != null) {
             event.setLocation(updateEventDTO.getLocation());
             contentWasUpdated = true;
@@ -118,7 +152,13 @@ public class CalendarService {
             contentWasUpdated = true;
         }
         if (updateEventDTO.getFrequency() != null) {
-            event.setFrequency(Frequency.valueOf(updateEventDTO.getFrequency().toUpperCase()));
+            // Validates frequency value even though frontend restricts input via dropdown.
+            // Guards against direct API calls (e.g. via Postman) with invalid values.
+            try {
+                event.setFrequency(Frequency.valueOf(updateEventDTO.getFrequency().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new InvalidEventException("Invalid frequency: " + updateEventDTO.getFrequency() + ". Must be DAILY, WEEKLY, MONTHLY or YEARLY");
+            }
             contentWasUpdated = true;
         }
         if (updateEventDTO.getIntervalValue() != null) {

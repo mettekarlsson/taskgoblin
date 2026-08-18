@@ -62,6 +62,25 @@ public class TaskController {
     }
 
     /*
+ GET /tasks/category/{id}
+
+ Returns all tasks that belong to a specific category
+ for the current user.
+*/
+    @GetMapping("/category/{id}")
+    public ResponseEntity<List<TaskDTO>> getTasksByCategory(
+            @PathVariable("id") Long categoryId,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+
+        return ResponseEntity.ok(
+                taskService.getTasksByCategoryId(categoryId, userId)
+        );
+    }
+
+
+    /*
      GET /tasks/{id}
 
      Returns a specific task that belongs to the current user.
