@@ -1,9 +1,27 @@
 const taskContent =
     document.getElementById("task-content");
 
-// Stores tasks loaded from the backend.
 let currentTasks = [];
-// Stores which task card is currently expanded.
+
+let currentTaskFilter = "all";
+
+const setTaskFilter = (filter) => {
+
+    currentTaskFilter = filter;
+
+    document
+        .querySelectorAll(".task-filter")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.filter === filter
+            );
+
+        });
+
+    renderTasks();
+};
 
 // Formats backend date into readable text.
 const formatDate = (dateString) => {
@@ -14,6 +32,69 @@ const formatDate = (dateString) => {
 
     return new Date(dateString)
         .toLocaleString();
+};
+
+const getStartOfToday = () => {
+
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    return today;
+};
+
+
+const getStartOfTomorrow = () => {
+
+    const tomorrow = getStartOfToday();
+
+    tomorrow.setDate(
+        tomorrow.getDate() + 1
+    );
+
+    return tomorrow;
+};
+
+
+const isTaskOverdue = (task) => {
+
+    if (!task.dueAt) {
+        return false;
+    }
+
+    const dueDate =
+        new Date(task.dueAt);
+
+    return dueDate < getStartOfToday();
+};
+
+
+const isTaskDueToday = (task) => {
+
+    if (!task.dueAt) {
+        return false;
+    }
+
+    const dueDate =
+        new Date(task.dueAt);
+
+    return (
+        dueDate >= getStartOfToday() &&
+        dueDate < getStartOfTomorrow()
+    );
+};
+
+
+const isTaskUpcoming = (task) => {
+
+    if (!task.dueAt) {
+        return false;
+    }
+
+    const dueDate =
+        new Date(task.dueAt);
+
+    return dueDate >= getStartOfTomorrow();
 };
 
 const toggleTaskMenu = (event, taskId) => {
@@ -56,8 +137,13 @@ const loadTasks = async () => {
             throw new Error(t("failedToLoadTasks"));
         }
 
-        currentTasks =
+        const tasks =
             await response.json();
+
+        currentTasks =
+            tasks.filter(
+                task => task.listId == null
+            );
 
         renderTasks();
 
@@ -93,6 +179,26 @@ const renderTasks = () => {
     const completedTasks =
         currentTasks.filter(
             task => task.status === "DONE"
+        );
+
+    const overdueTasks =
+        activeTasks.filter(
+            task => isTaskOverdue(task)
+        );
+
+    const todayTasks =
+        activeTasks.filter(
+            task => isTaskDueToday(task)
+        );
+
+    const upcomingTasks =
+        activeTasks.filter(
+            task => isTaskUpcoming(task)
+        );
+
+    const noDueDateTasks =
+        activeTasks.filter(
+            task => !task.dueAt
         );
 
     // Renders a single task row.
@@ -200,32 +306,107 @@ const renderTasks = () => {
 
         `;
     };
+    const renderTaskSection = (
+        title,
+        tasks
+    ) => {
 
+        if (tasks.length === 0) {
+            return "";
+        }
+
+        return `
+        <div class="task-section">
+
+            <h2 class="task-section-title">
+                ${title}
+            </h2>
+
+            ${tasks
+            .map(renderTaskRow)
+            .join("")}
+
+        </div>
+    `;
+    };
+
+    const renderEmptyTasks = () => {
+        return `
+        <p class="tasks-empty">
+            ${t("noTasksYet")}
+        </p>
+    `;
+    };
+
+    if (currentTaskFilter === "today") {
+
+        taskContent.innerHTML =
+            todayTasks.length > 0
+                ? renderTaskSection(
+                    t("today"),
+                    todayTasks
+                )
+                : renderEmptyTasks();
+
+        return;
+    }
+
+
+    if (currentTaskFilter === "upcoming") {
+
+        taskContent.innerHTML =
+            upcomingTasks.length > 0
+                ? renderTaskSection(
+                    t("upcoming"),
+                    upcomingTasks
+                )
+                : renderEmptyTasks();
+
+        return;
+    }
+
+
+    if (currentTaskFilter === "completed") {
+
+        taskContent.innerHTML =
+            completedTasks.length > 0
+                ? renderTaskSection(
+                    t("completed"),
+                    completedTasks
+                )
+                : renderEmptyTasks();
+
+        return;
+    }
+
+
+    // Default = All
     taskContent.innerHTML = `
 
-        <div class="task-section">
+        ${renderTaskSection(
+        t("overdue"),
+        overdueTasks
+    )}
 
-            <h2 class="task-section-title">
-                ${t("today")}
-            </h2>
+        ${renderTaskSection(
+        t("today"),
+        todayTasks
+    )}
 
-            ${activeTasks
-        .map(renderTaskRow)
-        .join("")}
+        ${renderTaskSection(
+        t("upcoming"),
+        upcomingTasks
+    )}
 
-        </div>
+        ${renderTaskSection(
+        t("noDueDate"),
+        noDueDateTasks
+    )}
 
-        <div class="task-section">
-
-            <h2 class="task-section-title">
-                ${t("completed")}
-            </h2>
-
-            ${completedTasks
-        .map(renderTaskRow)
-        .join("")}
-
-        </div>
+        ${renderTaskSection(
+        t("completed"),
+        completedTasks
+    )}
 
     `;
 

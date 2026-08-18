@@ -53,23 +53,34 @@
     </section>
 
     <section class="task-filters">
-
-        <button class="task-filter active"
+        <button
+                class="task-filter active"
+                data-filter="all"
+                onclick="setTaskFilter('all')"
                 data-translate="all">
             All
         </button>
 
-        <button class="task-filter"
+        <button
+                class="task-filter"
+                data-filter="today"
+                onclick="setTaskFilter('today')"
                 data-translate="today">
             Today
         </button>
 
-        <button class="task-filter"
+        <button
+                class="task-filter"
+                data-filter="upcoming"
+                onclick="setTaskFilter('upcoming')"
                 data-translate="upcoming">
             Upcoming
         </button>
 
-        <button class="task-filter"
+        <button
+                class="task-filter"
+                data-filter="completed"
+                onclick="setTaskFilter('completed')"
                 data-translate="completed">
             Completed
         </button>
