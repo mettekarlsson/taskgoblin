@@ -17,7 +17,7 @@ const renderListColorChips = () => {
             class="list-color-chip ${selectedListColor === color ? "selected" : ""}"
             data-color="${color}"
         >
-            ${color === DEFAULT_LIST_COLOR ? "Default" : ""}
+            ${color === DEFAULT_LIST_COLOR ? t("defaultColor") : ""}
         </button>
     `).join("");
 };
@@ -82,7 +82,7 @@ const renderLists = async (lists, searchQuery = "") => {
     if (lists.length === 0) {
         listsGrid.innerHTML = `
             <p class="lists-empty">
-                ${searchQuery ? "No lists match your search." : "No lists yet."}
+                ${searchQuery ? t("noListsMatchSearch") : t("noListsYet")}
             </p>
         `;
 
@@ -142,12 +142,12 @@ const renderLists = async (lists, searchQuery = "") => {
 <div class="list-tasks-preview">
     ${
                 previewTasks ||
-                `<p class="list-task-preview">No tasks yet</p>`
+                `<p class="list-task-preview">${t("noTasksYet")}</p>`
             }
 </div>
 
 <div class="list-meta">
-    ${tasks.length} tasks
+    ${tasks.length} ${t("tasksCount")}
     ${
                 list.isRecurring
                     ? ` · ↻ ${formatRecurrence(
@@ -329,14 +329,14 @@ const renderSingleList = (list, tasks) => {
             class="list-cancel-btn"
             onclick="closeListDetail()"
         >
-            ← Back
+            ← ${t("back")}
         </button>
 
         <button
             class="list-save-btn"
             onclick="renderEditListForm(null, ${list.id})"
         >
-            Edit
+            ${t("edit")}
         </button>
 
     </div>
@@ -373,7 +373,7 @@ const renderSingleList = (list, tasks) => {
         <button
             class="list-task-check ${isVisuallyCompleted ? "checked" : ""}"
             onclick="toggleTaskComplete(event, ${task.id}, '${task.status}')"
-            aria-label="Complete task"
+            aria-label="${t("completeTask")}"
         >
             <svg viewBox="0 0 24 24" fill="none">
                 <path d="M5 13L10 18L19 7" />
@@ -389,7 +389,7 @@ const renderSingleList = (list, tasks) => {
             ${
                     task.isRecurring && task.lastCompletedAt
                         ? `<span class="list-task-badge">
-                        Senast klar ${formatListDate(task.lastCompletedAt)}
+                        ${t("lastCompleted")} ${formatListDate(task.lastCompletedAt)}
                     </span>`
                         : ""
                 }
@@ -399,7 +399,7 @@ const renderSingleList = (list, tasks) => {
     </div>
 `;
             }).join("")
-            : `<p class="list-task-preview">No tasks yet</p>`
+            : `<p class="list-task-preview">${t("noTasksYet")}</p>`
     }
 
     </div>
@@ -408,7 +408,7 @@ const renderSingleList = (list, tasks) => {
         class="list-add-task-btn"
         onclick="renderCreateTaskInListForm(${list.id})"
     >
-        + Task
+        ${t("addTask")}
     </button>
 
     <div id="create-task-in-list-container"></div>
@@ -417,7 +417,7 @@ const renderSingleList = (list, tasks) => {
     class="list-complete-btn"
     onclick="completeList(${list.id})"
 >
-    Complete list
+    ${t("completeList")}
 </button>
 
     <div class="list-detail-footer">
@@ -425,12 +425,12 @@ const renderSingleList = (list, tasks) => {
         <div class="list-detail-meta">
 
             <span>
-                Created:
+                ${t("created")}:
                 ${formatListDate(list.createdAt)}
             </span>
 
             <span>
-                Updated:
+                ${t("updated")}:
                 ${formatListDate(
         list.lastInteractedAt || list.createdAt
     )}
@@ -442,7 +442,7 @@ const renderSingleList = (list, tasks) => {
             class="list-delete-btn"
             onclick="openDeleteListModal(null, ${list.id})"
         >
-            Delete
+            ${t("delete")}
         </button>
 
     </div>
@@ -452,6 +452,12 @@ const renderSingleList = (list, tasks) => {
 };
 
 //Helper
+
+const getCurrentLocale = () => {
+    return currentSettings?.language === "sv"
+        ? "sv-SE"
+        : "en-GB";
+};
 
 const formatDueDate = (dateString) => {
     const dueDate = new Date(dateString);
@@ -467,22 +473,22 @@ const formatDueDate = (dateString) => {
         );
 
     if (diff === 0) {
-        return "Due today";
+        return t("dueToday");
     }
 
     if (diff === 1) {
-        return "Due tomorrow";
+        return t("dueTomorrow");
     }
 
     if (diff === -1) {
-        return "Due yesterday";
+        return t("dueYesterday");
     }
 
     if (diff < 0) {
-        return `Overdue ${Math.abs(diff)} days`;
+        return `${t("overdue")} ${Math.abs(diff)} ${t("days")}`;
     }
 
-    return `Due ${formatListDate(dateString)}`;
+    return `${t("due")} ${formatListDate(dateString)}`;
 };
 
 const formatListSchedule = (list) => {
@@ -505,13 +511,13 @@ const formatRecurrence = (frequency, intervalValue) => {
     if (interval === 1) {
         switch (frequency) {
             case "DAILY":
-                return "Daily";
+                return t("daily");
             case "WEEKLY":
-                return "Weekly";
+                return t("weekly");
             case "MONTHLY":
-                return "Monthly";
+                return t("monthly");
             case "YEARLY":
-                return "Yearly";
+                return t("yearly");
             default:
                 return "";
         }
@@ -519,13 +525,13 @@ const formatRecurrence = (frequency, intervalValue) => {
 
     switch (frequency) {
         case "DAILY":
-            return `Every ${interval} days`;
+            return `${t("every")} ${interval} ${t("days")}`;
         case "WEEKLY":
-            return `Every ${interval} weeks`;
+            return `${t("every")} ${interval} ${t("weeks")}`;
         case "MONTHLY":
-            return `Every ${interval} months`;
+            return `${t("every")} ${interval} ${t("months")}`;
         case "YEARLY":
-            return `Every ${interval} years`;
+            return `${t("every")} ${interval} ${t("years")}`;
         default:
             return "";
     }
@@ -770,18 +776,18 @@ const renderCreateListForm = () => {
     listsGrid.innerHTML = `
         <section class="list-form-card">
 
-            <h2>Add list</h2>
+            <h2>${t("addList")}</h2>
 
-            <label for="list-name">Name</label>
+            <label for="list-name">${t("name")}</label>
             <input id="list-name" class="list-input" type="text">
 
-            <label>Color</label>
+            <label>${t("color")}</label>
 
             <div class="list-color-options">
                 ${renderListColorChips()}
             </div>
 
-            <label>Icon</label>
+            <label>${t("icon")}</label>
 
             <button
                 type="button"
@@ -789,7 +795,7 @@ const renderCreateListForm = () => {
                 class="list-icon-picker-btn"
                 onclick="toggleIconPicker()"
             >
-               ${getListIconEmoji(selectedListIcon)} Choose icon
+               ${getListIconEmoji(selectedListIcon)} ${t("chooseIcon")}
             </button>
 
             <div
@@ -799,7 +805,7 @@ const renderCreateListForm = () => {
                 ${renderIconOptions()}
             </div>
 
-            <label for="list-due-at">Due date</label>
+            <label for="list-due-at">${t("dueDate")}</label>
             <input
     id="list-due-at"
     class="list-input"
@@ -812,7 +818,7 @@ const renderCreateListForm = () => {
                     type="checkbox"
                     onchange="toggleRecurringOptions()"
                 >
-                Recurring list
+                ${t("recurringList")}
             </label>
 
             <div
@@ -820,9 +826,9 @@ const renderCreateListForm = () => {
                 class="list-recurring-options"
             >
 
-                <label for="list-interval-value">
-                    Repeat every
-                </label>
+               <label for="list-interval-value">
+    ${t("repeatEvery")}
+</label>
 
                 <div class="list-recurring-row">
 
@@ -838,10 +844,10 @@ const renderCreateListForm = () => {
                         id="list-frequency"
                         class="list-input"
                     >
-                        <option value="DAILY">Day</option>
-                        <option value="WEEKLY">Week</option>
-                        <option value="MONTHLY">Month</option>
-                        <option value="YEARLY">Year</option>
+                        <option value="DAILY">${t("day")}</option>
+<option value="WEEKLY">${t("week")}</option>
+<option value="MONTHLY">${t("month")}</option>
+<option value="YEARLY">${t("year")}</option>
                     </select>
 
                 </div>
@@ -856,14 +862,14 @@ const renderCreateListForm = () => {
                     class="list-save-btn"
                     onclick="createList()"
                 >
-                    Save
+                    ${t("save")}
                 </button>
 
                 <button
                     class="list-cancel-btn"
                     onclick="renderLists(currentLists)"
                 >
-                    Cancel
+                    ${t("cancel")}
                 </button>
 
             </div>
@@ -895,9 +901,9 @@ const renderEditListForm = (event, listId) => {
     listsGrid.innerHTML = `
         <section class="list-form-card">
 
-            <h2>Edit list</h2>
+            <h2>${t("editList")}</h2>
 
-            <label for="list-name">Name</label>
+            <label for="list-name">${t("name")}</label>
             <input
                 id="list-name"
                 class="list-input"
@@ -905,13 +911,13 @@ const renderEditListForm = (event, listId) => {
                 value="${list.name || ""}"
             >
 
-            <label>Color</label>
+            <label>${t("color")}</label>
 
             <div class="list-color-options">
                 ${renderListColorChips()}
             </div>
 
-            <label>Icon</label>
+            <label>${t("icon")}</label>
 
             <button
                 type="button"
@@ -919,7 +925,7 @@ const renderEditListForm = (event, listId) => {
                 class="list-icon-picker-btn"
                 onclick="toggleIconPicker()"
             >
-                ${getListIconEmoji(selectedListIcon)} Choose icon
+                ${getListIconEmoji(selectedListIcon)} ${t("chooseIcon")}
             </button>
 
             <div
@@ -929,7 +935,7 @@ const renderEditListForm = (event, listId) => {
                 ${renderIconOptions()}
             </div>
 
-            <label for="list-due-at">Due date</label>
+            <label for="list-due-at">${t("dueDate")}</label>
             <input
                 id="list-due-at"
                 class="list-input"
@@ -944,7 +950,7 @@ const renderEditListForm = (event, listId) => {
                     onchange="toggleRecurringOptions()"
                     ${list.isRecurring ? "checked" : ""}
                 >
-                Recurring list
+                ${t("recurringList")}
             </label>
 
             <div
@@ -953,7 +959,7 @@ const renderEditListForm = (event, listId) => {
             >
 
                 <label for="list-interval-value">
-                    Repeat every
+                    ${t("repeatEvery")}
                 </label>
 
                 <div class="list-recurring-row">
@@ -971,19 +977,19 @@ const renderEditListForm = (event, listId) => {
                         class="list-input"
                     >
                         <option value="DAILY" ${list.frequency === "DAILY" ? "selected" : ""}>
-                            Day
+                            ${t("day")}
                         </option>
 
                         <option value="WEEKLY" ${list.frequency === "WEEKLY" ? "selected" : ""}>
-                            Week
+                            ${t("week")}
                         </option>
 
                         <option value="MONTHLY" ${list.frequency === "MONTHLY" ? "selected" : ""}>
-                            Month
+                            ${t("month")}
                         </option>
 
                         <option value="YEARLY" ${list.frequency === "YEARLY" ? "selected" : ""}>
-                            Year
+                            ${t("year")}
                         </option>
                     </select>
 
@@ -999,14 +1005,14 @@ const renderEditListForm = (event, listId) => {
                     class="list-save-btn"
                     onclick="updateList(${list.id})"
                 >
-                    Save
+                    ${t("save")}
                 </button>
 
                 <button
                     class="list-cancel-btn"
                     onclick="openList(${list.id})"
                 >
-                    Cancel
+                    ${t("cancel")}
                 </button>
 
             </div>
@@ -1142,7 +1148,7 @@ const selectListIcon = (value) => {
             "selected-list-icon-btn"
         )
         .textContent =
-        `${selected.emoji} Choose icon`;
+        `${selected.emoji} ${t("chooseIcon")}`;
 
     document
         .getElementById(
@@ -1194,13 +1200,13 @@ const createList = async () => {
 
     if (!name) {
         document.getElementById("list-message").textContent =
-            "List name cannot be empty";
+            t("listNameCannotBeEmpty");
         return;
     }
 
     if (isRecurring && !dueAt) {
         document.getElementById("list-message").textContent =
-            "Recurring lists need a due date";
+            t("recurringListNeedsDueDate");
         return;
     }
 
@@ -1277,14 +1283,14 @@ const formatListDate = (dateString) => {
         Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
     if (diffInDays === 0) {
-        return "Today";
+        return t("today");
     }
 
     if (diffInDays === 1) {
-        return "Yesterday";
+        return t("yesterday");
     }
 
-    return date.toLocaleDateString("sv-SE", {
+    return date.toLocaleDateString(getCurrentLocale(), {
         day: "numeric",
         month: "short",
         year: "numeric"
