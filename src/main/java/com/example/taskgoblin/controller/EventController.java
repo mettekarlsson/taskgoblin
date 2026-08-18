@@ -57,7 +57,7 @@ public class EventController {
 
     //delete an event
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteNote(
+    public ResponseEntity<String> deleteEvent(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
