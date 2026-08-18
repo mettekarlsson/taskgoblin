@@ -17,7 +17,7 @@ const renderListColorChips = () => {
             class="list-color-chip ${selectedListColor === color ? "selected" : ""}"
             data-color="${color}"
         >
-            ${color === DEFAULT_LIST_COLOR ? "Default" : ""}
+            ${color === DEFAULT_LIST_COLOR ? t("defaultColor") : ""}
         </button>
     `).join("");
 };
@@ -82,7 +82,7 @@ const renderLists = async (lists, searchQuery = "") => {
     if (lists.length === 0) {
         listsGrid.innerHTML = `
             <p class="lists-empty">
-                ${searchQuery ? "No lists match your search." : "No lists yet."}
+                ${searchQuery ? t("noListsMatchSearch") : t("noListsYet")}
             </p>
         `;
 
@@ -142,13 +142,20 @@ const renderLists = async (lists, searchQuery = "") => {
 <div class="list-tasks-preview">
     ${
                 previewTasks ||
-                `<p class="list-task-preview">No tasks yet</p>`
+                `<p class="list-task-preview">${t("noTasksYet")}</p>`
             }
 </div>
 
 <div class="list-meta">
-    ${tasks.length} tasks
-    ${list.isRecurring ? " · recurring" : ""}
+    ${tasks.length} ${t("tasksCount")}
+    ${
+                list.isRecurring
+                    ? ` · ↻ ${formatRecurrence(
+                        list.frequency,
+                        list.intervalValue
+                    )}`
+                    : ""
+            }
 </div>
 
 <div class="list-footer">
@@ -322,14 +329,14 @@ const renderSingleList = (list, tasks) => {
             class="list-cancel-btn"
             onclick="closeListDetail()"
         >
-            ← Back
+            ← ${t("back")}
         </button>
 
         <button
             class="list-save-btn"
             onclick="renderEditListForm(null, ${list.id})"
         >
-            Edit
+            ${t("edit")}
         </button>
 
     </div>
@@ -343,7 +350,9 @@ const renderSingleList = (list, tasks) => {
         <h2>${list.name}</h2>
 
     </div>
-
+<div class="list-detail-schedule">
+    ${formatListSchedule(list)}
+</div>
     <div class="list-detail-tasks">
 
         ${
@@ -364,7 +373,7 @@ const renderSingleList = (list, tasks) => {
         <button
             class="list-task-check ${isVisuallyCompleted ? "checked" : ""}"
             onclick="toggleTaskComplete(event, ${task.id}, '${task.status}')"
-            aria-label="Complete task"
+            aria-label="${t("completeTask")}"
         >
             <svg viewBox="0 0 24 24" fill="none">
                 <path d="M5 13L10 18L19 7" />
@@ -380,7 +389,7 @@ const renderSingleList = (list, tasks) => {
             ${
                     task.isRecurring && task.lastCompletedAt
                         ? `<span class="list-task-badge">
-                        Senast klar ${formatListDate(task.lastCompletedAt)}
+                        ${t("lastCompleted")} ${formatListDate(task.lastCompletedAt)}
                     </span>`
                         : ""
                 }
@@ -390,7 +399,7 @@ const renderSingleList = (list, tasks) => {
     </div>
 `;
             }).join("")
-            : `<p class="list-task-preview">No tasks yet</p>`
+            : `<p class="list-task-preview">${t("noTasksYet")}</p>`
     }
 
     </div>
@@ -399,22 +408,29 @@ const renderSingleList = (list, tasks) => {
         class="list-add-task-btn"
         onclick="renderCreateTaskInListForm(${list.id})"
     >
-        + Task
+        ${t("addTask")}
     </button>
 
     <div id="create-task-in-list-container"></div>
+    
+    <button
+    class="list-complete-btn"
+    onclick="completeList(${list.id})"
+>
+    ${t("completeList")}
+</button>
 
     <div class="list-detail-footer">
 
         <div class="list-detail-meta">
 
             <span>
-                Created:
+                ${t("created")}:
                 ${formatListDate(list.createdAt)}
             </span>
 
             <span>
-                Updated:
+                ${t("updated")}:
                 ${formatListDate(
         list.lastInteractedAt || list.createdAt
     )}
@@ -426,7 +442,7 @@ const renderSingleList = (list, tasks) => {
             class="list-delete-btn"
             onclick="openDeleteListModal(null, ${list.id})"
         >
-            Delete
+            ${t("delete")}
         </button>
 
     </div>
@@ -436,6 +452,91 @@ const renderSingleList = (list, tasks) => {
 };
 
 //Helper
+
+const getCurrentLocale = () => {
+    return currentSettings?.language === "sv"
+        ? "sv-SE"
+        : "en-GB";
+};
+
+const formatDueDate = (dateString) => {
+    const dueDate = new Date(dateString);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.round(
+            (dueDate - today) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    if (diff === 0) {
+        return t("dueToday");
+    }
+
+    if (diff === 1) {
+        return t("dueTomorrow");
+    }
+
+    if (diff === -1) {
+        return t("dueYesterday");
+    }
+
+    if (diff < 0) {
+        return `${t("overdue")} ${Math.abs(diff)} ${t("days")}`;
+    }
+
+    return `${t("due")} ${formatListDate(dateString)}`;
+};
+
+const formatListSchedule = (list) => {
+    const parts = [];
+
+    if (list.isRecurring) {
+        parts.push(`↻ ${formatRecurrence(list.frequency, list.intervalValue)}`);
+    }
+
+    if (list.dueAt) {
+        parts.push(formatDueDate(list.dueAt));
+    }
+
+    return parts.join(" · ");
+};
+
+const formatRecurrence = (frequency, intervalValue) => {
+    const interval = intervalValue || 1;
+
+    if (interval === 1) {
+        switch (frequency) {
+            case "DAILY":
+                return t("daily");
+            case "WEEKLY":
+                return t("weekly");
+            case "MONTHLY":
+                return t("monthly");
+            case "YEARLY":
+                return t("yearly");
+            default:
+                return "";
+        }
+    }
+
+    switch (frequency) {
+        case "DAILY":
+            return `${t("every")} ${interval} ${t("days")}`;
+        case "WEEKLY":
+            return `${t("every")} ${interval} ${t("weeks")}`;
+        case "MONTHLY":
+            return `${t("every")} ${interval} ${t("months")}`;
+        case "YEARLY":
+            return `${t("every")} ${interval} ${t("years")}`;
+        default:
+            return "";
+    }
+};
+
 const isToday = (dateString) => {
     if (!dateString) {
         return false;
@@ -475,6 +576,31 @@ const toggleTaskComplete = async (event, taskId, status) => {
     } catch (error) {
         listsGrid.innerHTML = `
             <p class="lists-error">${error.message}</p>
+        `;
+    }
+};
+
+const completeList = async (listId) => {
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/complete`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to complete list");
+        }
+
+        await loadLists();
+        await openList(listId);
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
         `;
     }
 };
@@ -554,7 +680,9 @@ const openDeleteListModal = (
     listId
 ) => {
 
-    event.stopPropagation();
+    if (event) {
+        event.stopPropagation();
+    }
 
     listToDeleteId = listId;
 
@@ -648,18 +776,18 @@ const renderCreateListForm = () => {
     listsGrid.innerHTML = `
         <section class="list-form-card">
 
-            <h2>Add list</h2>
+            <h2>${t("addList")}</h2>
 
-            <label for="list-name">Name</label>
+            <label for="list-name">${t("name")}</label>
             <input id="list-name" class="list-input" type="text">
 
-            <label>Color</label>
+            <label>${t("color")}</label>
 
             <div class="list-color-options">
                 ${renderListColorChips()}
             </div>
 
-            <label>Icon</label>
+            <label>${t("icon")}</label>
 
             <button
                 type="button"
@@ -667,7 +795,7 @@ const renderCreateListForm = () => {
                 class="list-icon-picker-btn"
                 onclick="toggleIconPicker()"
             >
-               ${getListIconEmoji(selectedListIcon)} Choose icon
+               ${getListIconEmoji(selectedListIcon)} ${t("chooseIcon")}
             </button>
 
             <div
@@ -677,7 +805,7 @@ const renderCreateListForm = () => {
                 ${renderIconOptions()}
             </div>
 
-            <label for="list-due-at">Due date</label>
+            <label for="list-due-at">${t("dueDate")}</label>
             <input
     id="list-due-at"
     class="list-input"
@@ -690,7 +818,7 @@ const renderCreateListForm = () => {
                     type="checkbox"
                     onchange="toggleRecurringOptions()"
                 >
-                Recurring list
+                ${t("recurringList")}
             </label>
 
             <div
@@ -698,9 +826,9 @@ const renderCreateListForm = () => {
                 class="list-recurring-options"
             >
 
-                <label for="list-interval-value">
-                    Repeat every
-                </label>
+               <label for="list-interval-value">
+    ${t("repeatEvery")}
+</label>
 
                 <div class="list-recurring-row">
 
@@ -716,10 +844,10 @@ const renderCreateListForm = () => {
                         id="list-frequency"
                         class="list-input"
                     >
-                        <option value="DAILY">Day</option>
-                        <option value="WEEKLY">Week</option>
-                        <option value="MONTHLY">Month</option>
-                        <option value="YEARLY">Year</option>
+                        <option value="DAILY">${t("day")}</option>
+<option value="WEEKLY">${t("week")}</option>
+<option value="MONTHLY">${t("month")}</option>
+<option value="YEARLY">${t("year")}</option>
                     </select>
 
                 </div>
@@ -734,20 +862,236 @@ const renderCreateListForm = () => {
                     class="list-save-btn"
                     onclick="createList()"
                 >
-                    Save
+                    ${t("save")}
                 </button>
 
                 <button
                     class="list-cancel-btn"
                     onclick="renderLists(currentLists)"
                 >
-                    Cancel
+                    ${t("cancel")}
                 </button>
 
             </div>
 
         </section>
     `;
+};
+
+const renderEditListForm = (event, listId) => {
+    if (event) {
+        event.stopPropagation();
+    }
+
+    const list =
+        currentLists.find(list => list.id === listId);
+
+    if (!list) {
+        return;
+    }
+
+    document.querySelector(".lists-header").style.display = "none";
+
+    selectedListColor =
+        list.color || DEFAULT_LIST_COLOR;
+
+    selectedListIcon =
+        list.icon || "clipboard";
+
+    listsGrid.innerHTML = `
+        <section class="list-form-card">
+
+            <h2>${t("editList")}</h2>
+
+            <label for="list-name">${t("name")}</label>
+            <input
+                id="list-name"
+                class="list-input"
+                type="text"
+                value="${list.name || ""}"
+            >
+
+            <label>${t("color")}</label>
+
+            <div class="list-color-options">
+                ${renderListColorChips()}
+            </div>
+
+            <label>${t("icon")}</label>
+
+            <button
+                type="button"
+                id="selected-list-icon-btn"
+                class="list-icon-picker-btn"
+                onclick="toggleIconPicker()"
+            >
+                ${getListIconEmoji(selectedListIcon)} ${t("chooseIcon")}
+            </button>
+
+            <div
+                id="list-icon-picker"
+                class="list-icon-picker"
+            >
+                ${renderIconOptions()}
+            </div>
+
+            <label for="list-due-at">${t("dueDate")}</label>
+            <input
+                id="list-due-at"
+                class="list-input"
+                type="date"
+                value="${formatDateInputValue(list.dueAt)}"
+            >
+
+            <label class="list-checkbox-row">
+                <input
+                    id="list-is-recurring"
+                    type="checkbox"
+                    onchange="toggleRecurringOptions()"
+                    ${list.isRecurring ? "checked" : ""}
+                >
+                ${t("recurringList")}
+            </label>
+
+            <div
+                id="list-recurring-options"
+                class="list-recurring-options ${list.isRecurring ? "open" : ""}"
+            >
+
+                <label for="list-interval-value">
+                    ${t("repeatEvery")}
+                </label>
+
+                <div class="list-recurring-row">
+
+                    <input
+                        id="list-interval-value"
+                        class="list-input"
+                        type="number"
+                        min="1"
+                        value="${list.intervalValue || 1}"
+                    >
+
+                    <select
+                        id="list-frequency"
+                        class="list-input"
+                    >
+                        <option value="DAILY" ${list.frequency === "DAILY" ? "selected" : ""}>
+                            ${t("day")}
+                        </option>
+
+                        <option value="WEEKLY" ${list.frequency === "WEEKLY" ? "selected" : ""}>
+                            ${t("week")}
+                        </option>
+
+                        <option value="MONTHLY" ${list.frequency === "MONTHLY" ? "selected" : ""}>
+                            ${t("month")}
+                        </option>
+
+                        <option value="YEARLY" ${list.frequency === "YEARLY" ? "selected" : ""}>
+                            ${t("year")}
+                        </option>
+                    </select>
+
+                </div>
+
+            </div>
+
+            <p id="list-message" class="list-message"></p>
+
+            <div class="list-form-actions">
+
+                <button
+                    class="list-save-btn"
+                    onclick="updateList(${list.id})"
+                >
+                    ${t("save")}
+                </button>
+
+                <button
+                    class="list-cancel-btn"
+                    onclick="openList(${list.id})"
+                >
+                    ${t("cancel")}
+                </button>
+
+            </div>
+
+        </section>
+    `;
+};
+
+const updateList = async (listId) => {
+    const name =
+        document.getElementById("list-name").value.trim();
+
+    const dueDate =
+        document.getElementById("list-due-at").value;
+
+    const dueAt =
+        dueDate
+            ? `${dueDate}T00:00:00`
+            : null;
+
+    const isRecurring =
+        document.getElementById("list-is-recurring").checked;
+
+    const frequency =
+        isRecurring
+            ? document.getElementById("list-frequency").value
+            : null;
+
+    const intervalValue =
+        isRecurring
+            ? Number(document.getElementById("list-interval-value").value)
+            : null;
+
+    if (!name) {
+        document.getElementById("list-message").textContent =
+            "List name cannot be empty";
+        return;
+    }
+
+    if (isRecurring && !dueAt) {
+        document.getElementById("list-message").textContent =
+            "Recurring lists need a due date";
+        return;
+    }
+
+    const listData = {
+        name,
+        color: selectedListColor,
+        icon: selectedListIcon,
+        dueAt,
+        isRecurring,
+        frequency,
+        intervalValue
+    };
+
+    try {
+        const response = await apiFetch(`/lists/${listId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(listData)
+        });
+
+        if (!response.ok) {
+            const error = await response.json();
+
+            throw new Error(
+                error.message || "Failed to update list"
+            );
+        }
+
+        await loadLists();
+        await openList(listId);
+
+    } catch (error) {
+        document.getElementById("list-message").textContent =
+            error.message;
+    }
 };
 
 const LIST_ICONS = [
@@ -804,7 +1148,7 @@ const selectListIcon = (value) => {
             "selected-list-icon-btn"
         )
         .textContent =
-        `${selected.emoji} Choose icon`;
+        `${selected.emoji} ${t("chooseIcon")}`;
 
     document
         .getElementById(
@@ -856,13 +1200,13 @@ const createList = async () => {
 
     if (!name) {
         document.getElementById("list-message").textContent =
-            "List name cannot be empty";
+            t("listNameCannotBeEmpty");
         return;
     }
 
     if (isRecurring && !dueAt) {
         document.getElementById("list-message").textContent =
-            "Recurring lists need a due date";
+            t("recurringListNeedsDueDate");
         return;
     }
 
@@ -918,6 +1262,14 @@ const createTaskInList = async (listId) => {
     }
 };
 
+const formatDateInputValue = (dateString) => {
+    if (!dateString) {
+        return "";
+    }
+
+    return dateString.split("T")[0];
+};
+
 const formatListDate = (dateString) => {
     if (!dateString) {
         return "";
@@ -931,14 +1283,14 @@ const formatListDate = (dateString) => {
         Math.floor(diffInMs / (1000 * 60 * 60 * 24));
 
     if (diffInDays === 0) {
-        return "Today";
+        return t("today");
     }
 
     if (diffInDays === 1) {
-        return "Yesterday";
+        return t("yesterday");
     }
 
-    return date.toLocaleDateString("sv-SE", {
+    return date.toLocaleDateString(getCurrentLocale(), {
         day: "numeric",
         month: "short",
         year: "numeric"

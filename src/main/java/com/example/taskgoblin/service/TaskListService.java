@@ -156,27 +156,36 @@ public class TaskListService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Task list"));
 
+        // Tracks whether list content/settings were updated.
+        // Pinning alone should not change lastInteractedAt.
+        boolean contentWasUpdated = false;
+
         // Updates the name only if a new value was provided.
         if (dto.getName() != null) {
             taskList.setName(dto.getName());
+            contentWasUpdated = true;
         }
 
         // Updates the color if provided.
         if (dto.getColor() != null) {
             taskList.setColor(dto.getColor());
+            contentWasUpdated = true;
         }
 
         // Updates the icon if provided.
         if (dto.getIcon() != null) {
             taskList.setIcon(dto.getIcon());
+            contentWasUpdated = true;
         }
 
         // Updates the due date if provided.
         if (dto.getDueAt() != null) {
             taskList.setDueAt(dto.getDueAt());
+            contentWasUpdated = true;
         }
 
         // Updates the pinned status if provided.
+        // Pinning should not count as interaction.
         if (dto.getPinned() != null) {
             taskList.setPinned(dto.getPinned());
         }
@@ -184,16 +193,19 @@ public class TaskListService {
         // Updates recurring settings if provided.
         if (dto.getIsRecurring() != null) {
             taskList.setRecurring(dto.getIsRecurring());
+            contentWasUpdated = true;
         }
 
         // Updates the recurring frequency if provided.
         if (dto.getFrequency() != null) {
             taskList.setFrequency(dto.getFrequency());
+            contentWasUpdated = true;
         }
 
         // Updates the recurring interval value if provided.
         if (dto.getIntervalValue() != null) {
             taskList.setIntervalValue(dto.getIntervalValue());
+            contentWasUpdated = true;
         }
 
         // Updates the category if a category ID was provided.
@@ -206,10 +218,14 @@ public class TaskListService {
                             new ResourceNotFoundException("Category"));
 
             taskList.setCategory(category);
+            contentWasUpdated = true;
         }
 
-        // Updates the timestamp for the latest interaction.
-        taskList.setLastInteractedAt(LocalDateTime.now());
+        // Only update interaction timestamp when actual
+        // list content or settings were changed.
+        if (contentWasUpdated) {
+            taskList.setLastInteractedAt(LocalDateTime.now());
+        }
 
         // Saves the updated task list.
         TaskList updatedList =
@@ -219,7 +235,6 @@ public class TaskListService {
         return TaskListMapper
                 .mapToTaskListDTO(updatedList);
     }
-
 
     public TaskListDTO completeList(Long listId, Long userId) {
 
@@ -243,7 +258,6 @@ public class TaskListService {
         LocalDateTime now =
                 LocalDateTime.now();
 
-        // Handle recurring lists differently
         if (taskList.isRecurring()) {
 
             // Store latest completion timestamp
@@ -259,6 +273,9 @@ public class TaskListService {
 
             // Recurring lists are never permanently completed
             taskList.setCompletedAt(null);
+
+            // Reset completed child tasks for next occurrence
+            resetCompletedTasksForNextOccurrence(taskList);
 
         } else {
 
@@ -370,6 +387,48 @@ public class TaskListService {
 
     /*
  ---- HELPER -----
+
+     */
+    /*
+ Resets completed tasks in a recurring list
+ so they are ready for the next occurrence.
+
+ Completion history and lastCompletedAt are preserved.
+*/
+    private void resetCompletedTasksForNextOccurrence(
+            TaskList taskList
+    ) {
+
+        List<Task> tasks =
+                taskRepository.findByListId(
+                        taskList.getId()
+                );
+
+        LocalDateTime now =
+                LocalDateTime.now();
+
+        for (Task task : tasks) {
+
+            // Only reset tasks that were completed
+            if (task.getStatus() == TaskStatus.DONE) {
+
+                // Make task available again
+                task.setStatus(TaskStatus.TODO);
+
+                // Task is no longer permanently completed
+                task.setCompletedAt(null);
+
+                // Keep lastCompletedAt unchanged so we still know
+                // when the task was last completed
+
+                task.setUpdatedAt(now);
+            }
+        }
+
+        taskRepository.saveAll(tasks);
+    }
+
+ /*
  Calculates the next occurrence for a recurring task list.
 
  Used when a recurring task list is completed to move

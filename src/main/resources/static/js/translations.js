@@ -31,9 +31,35 @@ const translations = {
         defaultColor: "Default",
         created: "Created",
         updated: "Updated",
+
         today: "Today",
         yesterday: "Yesterday",
 
+        repeatEvery: "Repeat every",
+
+        day: "Day",
+        week: "Week",
+        month: "Month",
+        year: "Year",
+
+        daily: "Daily",
+        weekly: "Weekly",
+        monthly: "Monthly",
+        yearly: "Yearly",
+
+        days: "days",
+        weeks: "weeks",
+        months: "months",
+        years: "years",
+
+        due: "Due",
+        every: "Every",
+        dueToday: "Due today",
+        dueTomorrow: "Due tomorrow",
+        dueYesterday: "Due yesterday",
+        overdue: "Overdue",
+        dueDate: "Due date",
+        noDueDate: "No due date",
 
         fullNameValidation: "Full name must contain only letters and include first and last name",
         emailValidation: "Email must be valid",
@@ -81,16 +107,15 @@ const translations = {
         status: "Status",
         priority: "Priority",
 
-        addTask: "Add task",
+        addTask: "+ Add task",
         add: "Add",
         taskTitleRequired: "Task title is required",
         failedToCreateTask: "Failed to create task",
 
+        completeTask: "Complete task",
+        lastCompleted: "Last completed",
         complete: "Complete",
         reopen: "Reopen",
-
-        dueDate: "Due date",
-        noDueDate: "No due date",
 
         deleteTaskConfirm: "Delete this task?",
         failedToDeleteTask: "Failed to delete task",
@@ -109,14 +134,41 @@ const translations = {
         addMoreDetails: "Add more details",
     },
 
+    // LISTS
+    listsSubtitle: "Your quests, routines and grouped tasks.",
+    addList: "+ Add list",
+    editList: "Edit list",
+    deleteList: "Delete list",
+    searchLists: "Search lists...",
+    noListsYet: "No lists yet.",
+    noListsMatchSearch: "No lists match your search.",
+
+    noTasksYet: "No tasks yet.",
+    task: "task",
+    tasksCount: "tasks",
+
+    chooseIcon: "Choose icon",
+    recurringList: "Recurring list",
+
+    completeList: "Complete list",
+
+    listNameCannotBeEmpty: "List name cannot be empty",
+    recurringListNeedsDueDate: "Recurring lists need a due date",
+
+    failedToLoadLists: "Failed to load lists",
+    failedToLoadList: "Failed to load list",
+    failedToSaveList: "Failed to save list",
+    failedToUpdateList: "Failed to update list",
+    failedToDeleteList: "Failed to delete list",
+
 
 
     sv: {
         home: "Hem",
         profile: "Profil",
         settings: "Inställningar",
-        tasks: "To-Do's",
-        lists: "Checklistor",
+        tasks: "Uppgifter",
+        lists: "Listor",
         notes: "Anteckningar",
         calendar: "Kalender",
         logout: "Logga ut",
@@ -143,8 +195,36 @@ const translations = {
         defaultColor: "Standard",
         created: "Skapad",
         updated: "Uppdaterad",
+
         today: "Idag",
         yesterday: "Igår",
+
+        repeatEvery: "Upprepa varje",
+
+        day: "Dag",
+        week: "Vecka",
+        month: "Månad",
+        year: "År",
+
+        daily: "Dagligen",
+        weekly: "Varje vecka",
+        monthly: "Varje månad",
+        yearly: "Varje år",
+
+        days: "dagar",
+        weeks: "veckor",
+        months: "månader",
+        years: "år",
+
+        due: "Förfaller",
+        every: "Varje",
+        dueToday: "Förfaller idag",
+        dueTomorrow: "Förfaller imorgon",
+        dueYesterday: "Förföll igår",
+        overdue: "Försenad",
+        dueDate: "Förfallodatum",
+        noDueDate: "Inget datum",
+
 
         fullNameValidation: "Fullständigt namn får bara innehålla bokstäver och måste innehålla både för- och efternamn",
         emailValidation: "E-postadressen måste vara giltig",
@@ -197,11 +277,10 @@ const translations = {
         taskTitleRequired: "Uppgiftens titel krävs",
         failedToCreateTask: "Kunde inte skapa uppgift",
 
+        completeTask: "Slutför uppgift",
+        lastCompleted: "Senast gjord",
         complete: "Klar",
         reopen: "Återöppna",
-
-        dueDate: "Förfallodatum",
-        noDueDate: "Inget datum",
 
         deleteTaskConfirm: "Ta bort denna uppgift?",
         failedToDeleteTask: "Kunde inte ta bort uppgiften",
@@ -218,6 +297,31 @@ const translations = {
 
         task: "Uppgift",
         addMoreDetails: "Visa fler detaljer",
+
+        // LISTS
+        listsSubtitle: "Dina uppdrag, rutiner och grupperade uppgifter.",
+        addList: "+ Lägg till lista",
+        editList: "Redigera lista",
+        deleteList: "Ta bort lista",
+        searchLists: "Sök listor...",
+        noListsYet: "Inga listor ännu.",
+        noListsMatchSearch: "Inga listor matchar sökningen.",
+
+        task: "uppgift",
+        tasksCount: "uppgifter",
+
+        chooseIcon: "Välj ikon",
+        recurringList: "Återkommande lista",
+        completeList: "Slutför lista",
+
+        listNameCannotBeEmpty: "Listans namn får inte vara tomt",
+        recurringListNeedsDueDate: "Återkommande listor behöver ett förfallodatum",
+
+        failedToLoadLists: "Kunde inte ladda listor",
+        failedToLoadList: "Kunde inte ladda listan",
+        failedToSaveList: "Kunde inte spara listan",
+        failedToUpdateList: "Kunde inte uppdatera listan",
+        failedToDeleteList: "Kunde inte ta bort listan",
 
 
     }
