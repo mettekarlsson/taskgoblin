@@ -115,6 +115,7 @@ const translations = {
 
         addTask: "+ Add task",
         add: "Add",
+        updateTask: "Update task",
         taskTitleRequired: "Task title is required",
         failedToCreateTask: "Failed to create task",
         taskTitleCannotBeEmpty: "Task title cannot be empty",
@@ -293,6 +294,7 @@ const translations = {
 
         addTask: "Lägg till uppgift",
         add: "Lägg till",
+        updateTask: "Uppdatera uppgift",
         taskTitleRequired: "Uppgiftens titel krävs",
         failedToCreateTask: "Kunde inte skapa uppgift",
         taskTitleCannotBeEmpty: "Uppgiftens titel får inte vara tom",
