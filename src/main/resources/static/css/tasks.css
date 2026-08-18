@@ -541,8 +541,7 @@
 
 .tasks-empty,
 .tasks-error {
-    color: var(--text-muted);
-
+    color: darkred;
     font-weight: 600;
 }
 

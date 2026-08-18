@@ -106,6 +106,7 @@ const translations = {
 
         // TASK
         noTasksYet: "No tasks yet.",
+        noTasksMatchSearch: "No tasks match your search.",
         failedToLoadTasks: "Failed to load tasks",
         status: "Status",
         priority: "Priority",
@@ -136,6 +137,7 @@ const translations = {
         deleteTask: "Delete task",
 
         task: "Task",
+        tasksCount: "tasks",
         addMoreDetails: "Add more details",
 
         // LISTS
@@ -146,10 +148,6 @@ const translations = {
         searchLists: "Search lists...",
         noListsYet: "No lists yet.",
         noListsMatchSearch: "No lists match your search.",
-
-        noTasksYet: "No tasks yet.",
-        task: "task",
-        tasksCount: "tasks",
 
         chooseIcon: "Choose icon",
         recurringList: "Recurring list",
@@ -276,6 +274,7 @@ const translations = {
 
         // TASK
         noTasksYet: "Inga uppgifter ännu.",
+        noTasksMatchSearch: "Inga uppgifter matchar sökningen.",
         failedToLoadTasks: "Kunde inte ladda uppgifter",
         status: "Status",
         priority: "Prioritet",
@@ -306,19 +305,18 @@ const translations = {
         deleteTask: "Ta bort uppgift",
 
         task: "Uppgift",
+        tasksCount: "uppgifter",
+
         addMoreDetails: "Visa fler detaljer",
 
         // LISTS
         listsSubtitle: "Håll ordning på dina rutiner och uppgifter.",
-        addList: "+ Lägg till lista",
+        addList: "+ Ny lista",
         editList: "Redigera lista",
         deleteList: "Ta bort lista",
         searchLists: "Sök listor...",
         noListsYet: "Inga listor ännu.",
         noListsMatchSearch: "Inga listor matchar sökningen.",
-
-        task: "uppgift",
-        tasksCount: "uppgifter",
 
         chooseIcon: "Välj ikon",
         recurringList: "Återkommande lista",

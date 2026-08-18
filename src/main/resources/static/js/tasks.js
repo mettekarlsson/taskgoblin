@@ -20,7 +20,22 @@ const setTaskFilter = (filter) => {
 
         });
 
-    renderTasks();
+    const searchInput =
+        document.getElementById("tasks-search");
+
+    const query =
+        searchInput
+            ? searchInput.value.trim().toLowerCase()
+            : "";
+
+    const filteredTasks =
+        currentTasks.filter(task =>
+            (task.title || "")
+                .toLowerCase()
+                .includes(query)
+        );
+
+    renderTasks(filteredTasks);
 };
 
 // Formats backend date into readable text.
@@ -124,6 +139,42 @@ const toggleTaskMenu = (event, taskId) => {
 
 };
 
+const toggleTaskSearch = () => {
+
+    const searchView =
+        document.getElementById("tasks-search-view");
+
+    const searchInput =
+        document.getElementById("tasks-search");
+
+    const isOpen =
+        searchView.classList.contains("open");
+
+    if (isOpen) {
+        closeTaskSearch();
+        return;
+    }
+
+    searchView.classList.add("open");
+
+    searchInput.value = "";
+    searchInput.focus();
+
+    renderTasks();
+};
+
+const closeTaskSearch = () => {
+
+    document
+        .getElementById("tasks-search-view")
+        .classList.remove("open");
+
+    document
+        .getElementById("tasks-search")
+        .value = "";
+
+    renderTasks();
+};
 
 // Loads all tasks for the current user.
 const loadTasks = async () => {
@@ -158,26 +209,36 @@ const loadTasks = async () => {
 };
 
 // Renders all tasks to the page.
-const renderTasks = () => {
+const renderTasks = (tasks = currentTasks) => {
 
     // Shows message if there are no tasks.
-    if (currentTasks.length === 0) {
+    if (tasks.length === 0) {
+
+        const searchQuery =
+            document
+                .getElementById("tasks-search")
+                ?.value
+                .trim();
 
         taskContent.innerHTML = `
-            <p>${t("noTasksYet")}</p>
-        `;
+        <p class="tasks-empty">
+            ${searchQuery
+            ? t("noTasksMatchSearch")
+            : t("noTasksYet")}
+        </p>
+    `;
 
         return;
     }
 
     // Splits active and completed tasks.
     const activeTasks =
-        currentTasks.filter(
+        tasks.filter(
             task => task.status !== "DONE"
         );
 
     const completedTasks =
-        currentTasks.filter(
+        tasks.filter(
             task => task.status === "DONE"
         );
 
@@ -411,6 +472,37 @@ const renderTasks = () => {
     `;
 
 };
+
+const taskSearchInput =
+    document.getElementById("tasks-search");
+
+if (taskSearchInput) {
+
+    taskSearchInput.addEventListener("input", (event) => {
+
+        const query =
+            event.target.value
+                .trim()
+                .toLowerCase();
+
+        const filteredTasks =
+            currentTasks.filter(task =>
+                (task.title || "")
+                    .toLowerCase()
+                    .includes(query)
+            );
+
+        renderTasks(filteredTasks);
+    });
+
+    taskSearchInput.addEventListener("keydown", (event) => {
+
+        if (event.key === "Escape") {
+            closeTaskSearch();
+        }
+
+    });
+}
 
 // Runs automatically when the page loads.
 const initPage = async () => {
