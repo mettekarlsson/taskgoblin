@@ -148,7 +148,14 @@ const renderLists = async (lists, searchQuery = "") => {
 
 <div class="list-meta">
     ${tasks.length} tasks
-    ${list.isRecurring ? " · recurring" : ""}
+    ${
+                list.isRecurring
+                    ? ` · ↻ ${formatRecurrence(
+                        list.frequency,
+                        list.intervalValue
+                    )}`
+                    : ""
+            }
 </div>
 
 <div class="list-footer">
@@ -343,7 +350,9 @@ const renderSingleList = (list, tasks) => {
         <h2>${list.name}</h2>
 
     </div>
-
+<div class="list-detail-schedule">
+    ${formatListSchedule(list)}
+</div>
     <div class="list-detail-tasks">
 
         ${
@@ -403,6 +412,13 @@ const renderSingleList = (list, tasks) => {
     </button>
 
     <div id="create-task-in-list-container"></div>
+    
+    <button
+    class="list-complete-btn"
+    onclick="completeList(${list.id})"
+>
+    Complete list
+</button>
 
     <div class="list-detail-footer">
 
@@ -436,6 +452,85 @@ const renderSingleList = (list, tasks) => {
 };
 
 //Helper
+
+const formatDueDate = (dateString) => {
+    const dueDate = new Date(dateString);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.round(
+            (dueDate - today) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    if (diff === 0) {
+        return "Due today";
+    }
+
+    if (diff === 1) {
+        return "Due tomorrow";
+    }
+
+    if (diff === -1) {
+        return "Due yesterday";
+    }
+
+    if (diff < 0) {
+        return `Overdue ${Math.abs(diff)} days`;
+    }
+
+    return `Due ${formatListDate(dateString)}`;
+};
+
+const formatListSchedule = (list) => {
+    const parts = [];
+
+    if (list.isRecurring) {
+        parts.push(`↻ ${formatRecurrence(list.frequency, list.intervalValue)}`);
+    }
+
+    if (list.dueAt) {
+        parts.push(formatDueDate(list.dueAt));
+    }
+
+    return parts.join(" · ");
+};
+
+const formatRecurrence = (frequency, intervalValue) => {
+    const interval = intervalValue || 1;
+
+    if (interval === 1) {
+        switch (frequency) {
+            case "DAILY":
+                return "Daily";
+            case "WEEKLY":
+                return "Weekly";
+            case "MONTHLY":
+                return "Monthly";
+            case "YEARLY":
+                return "Yearly";
+            default:
+                return "";
+        }
+    }
+
+    switch (frequency) {
+        case "DAILY":
+            return `Every ${interval} days`;
+        case "WEEKLY":
+            return `Every ${interval} weeks`;
+        case "MONTHLY":
+            return `Every ${interval} months`;
+        case "YEARLY":
+            return `Every ${interval} years`;
+        default:
+            return "";
+    }
+};
+
 const isToday = (dateString) => {
     if (!dateString) {
         return false;
@@ -475,6 +570,31 @@ const toggleTaskComplete = async (event, taskId, status) => {
     } catch (error) {
         listsGrid.innerHTML = `
             <p class="lists-error">${error.message}</p>
+        `;
+    }
+};
+
+const completeList = async (listId) => {
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/complete`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error("Failed to complete list");
+        }
+
+        await loadLists();
+        await openList(listId);
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
         `;
     }
 };
