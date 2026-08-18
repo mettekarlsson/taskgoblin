@@ -258,7 +258,6 @@ public class TaskListService {
         LocalDateTime now =
                 LocalDateTime.now();
 
-        // Handle recurring lists differently
         if (taskList.isRecurring()) {
 
             // Store latest completion timestamp
@@ -274,6 +273,9 @@ public class TaskListService {
 
             // Recurring lists are never permanently completed
             taskList.setCompletedAt(null);
+
+            // Reset completed child tasks for next occurrence
+            resetCompletedTasksForNextOccurrence(taskList);
 
         } else {
 
@@ -385,6 +387,48 @@ public class TaskListService {
 
     /*
  ---- HELPER -----
+
+     */
+    /*
+ Resets completed tasks in a recurring list
+ so they are ready for the next occurrence.
+
+ Completion history and lastCompletedAt are preserved.
+*/
+    private void resetCompletedTasksForNextOccurrence(
+            TaskList taskList
+    ) {
+
+        List<Task> tasks =
+                taskRepository.findByListId(
+                        taskList.getId()
+                );
+
+        LocalDateTime now =
+                LocalDateTime.now();
+
+        for (Task task : tasks) {
+
+            // Only reset tasks that were completed
+            if (task.getStatus() == TaskStatus.DONE) {
+
+                // Make task available again
+                task.setStatus(TaskStatus.TODO);
+
+                // Task is no longer permanently completed
+                task.setCompletedAt(null);
+
+                // Keep lastCompletedAt unchanged so we still know
+                // when the task was last completed
+
+                task.setUpdatedAt(now);
+            }
+        }
+
+        taskRepository.saveAll(tasks);
+    }
+
+ /*
  Calculates the next occurrence for a recurring task list.
 
  Used when a recurring task list is completed to move
