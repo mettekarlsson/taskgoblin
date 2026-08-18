@@ -26,6 +26,7 @@ public class TaskMapper {
                 task.getCreatedAt(),
                 task.getUpdatedAt(),
                 task.getCompletedAt(),
+                task.getLastCompletedAt(),
 
                 task.getList() != null ? task.getList().getId() : null,
 

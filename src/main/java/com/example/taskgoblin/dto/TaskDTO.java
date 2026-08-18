@@ -34,6 +34,8 @@ public class TaskDTO {
 
     private LocalDateTime completedAt;
 
+    private LocalDateTime lastCompletedAt;
+
     private Long listId;
 
     private Long categoryId;
@@ -56,6 +58,7 @@ public class TaskDTO {
             LocalDateTime createdAt,
             LocalDateTime updatedAt,
             LocalDateTime completedAt,
+            LocalDateTime lastCompletedAt,
             Long listId,
             Long categoryId,
             Frequency frequency,
@@ -69,7 +72,7 @@ public class TaskDTO {
         this.isRecurring = isRecurring;
         this.createdAt = createdAt;
         this.updatedAt = updatedAt;
-        this.completedAt = completedAt;
+        this.lastCompletedAt = lastCompletedAt;
         this.listId = listId;
         this.categoryId = categoryId;
         this.frequency = frequency;
@@ -110,6 +113,10 @@ public class TaskDTO {
 
     public LocalDateTime getCompletedAt() {
         return completedAt;
+    }
+
+    public LocalDateTime getLastCompletedAt() {
+        return lastCompletedAt;
     }
 
     public Long getListId() { return listId; }
