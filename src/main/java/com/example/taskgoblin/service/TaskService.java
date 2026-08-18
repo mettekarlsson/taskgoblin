@@ -355,6 +355,25 @@ public class TaskService {
                         new ResourceNotFoundException("Category not found"));
     }
 
+    // Retrieves all tasks in a specific category for the current user.
+    public List<TaskDTO> getTasksByCategoryId(Long categoryId, Long userId) {
+
+        // Verify that the category belongs to the current user.
+        categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Category not found"));
+
+        // Find all tasks that belong to the category.
+        List<Task> tasks = taskRepository.findByCategoryId(categoryId);
+
+        // Convert tasks to DTOs before returning them.
+        return tasks.stream()
+                .map(TaskMapper::mapToTaskDto)
+                .toList();
+    }
+
+
+
     /*
  Finds a task list and validates ownership.
  Returns null if no task list id was provided.
