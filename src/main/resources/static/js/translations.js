@@ -146,7 +146,7 @@ const translations = {
         tasksCount: "tasks",
 
         addMoreDetails: "Add more details",
-        lessDetails: "− Less details",
+        lessDetails: "Less details",
 
         // LISTS
         listsSubtitle: "Keep your routines and tasks organized.",
@@ -322,7 +322,7 @@ const translations = {
         tasksCount: "uppgifter",
 
         addMoreDetails: "Visa fler detaljer",
-        lessDetails: "− Färre detaljer",
+        lessDetails: "Färre detaljer",
 
         // LISTS
         listsSubtitle: "Håll ordning på dina rutiner och uppgifter.",

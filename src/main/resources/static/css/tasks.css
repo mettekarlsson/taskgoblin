@@ -306,12 +306,12 @@
     text-align: right;
 }
 
-
 /* ---------------- */
 /*     Priority     */
 /* ---------------- */
 
-.priority-badge {
+.priority-badge,
+.task-priority-chip {
     padding: 4px 8px;
 
     border-radius: 999px;
@@ -323,26 +323,47 @@
     white-space: nowrap;
 }
 
-.priority-badge.high {
+.priority-badge.high,
+.task-priority-chip.high {
     background: rgba(255, 120, 120, 0.18);
     color: #c53b3b;
 }
 
-.priority-badge.medium {
+.priority-badge.medium,
+.task-priority-chip.medium {
     background: rgba(255, 190, 90, 0.18);
     color: #b06b00;
 }
 
-.priority-badge.low {
+.priority-badge.low,
+.task-priority-chip.low {
     background: rgba(120, 200, 120, 0.18);
     color: #2d7c2d;
 }
 
-.priority-badge.none {
+.task-priority-chip.none {
     background: var(--primary-soft);
     color: var(--text-muted);
 }
 
+.task-priority-options {
+    display: flex;
+    gap: 10px;
+
+    margin-bottom: 16px;
+
+    flex-wrap: wrap;
+}
+
+.task-priority-chip {
+    border: 2px solid transparent;
+
+    cursor: pointer;
+}
+
+.task-priority-chip.selected {
+    border-color: var(--primary);
+}
 
 /* ---------------- */
 /*     Task menu    */
@@ -448,7 +469,6 @@
 
 .task-form-card {
     width: 100%;
-    max-width: 650px;
 
     background: var(--card);
 
@@ -499,6 +519,10 @@
 /* ---------------- */
 /*  More details    */
 /* ---------------- */
+
+.task-extra-fields {
+    margin-top: 18px;
+}
 
 .task-details-btn {
     padding: 0;

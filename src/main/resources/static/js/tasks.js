@@ -734,7 +734,7 @@ const toggleTaskDetailsForm = () => {
         container.innerHTML = "";
 
         button.textContent =
-            t("addMoreDetails");
+            `${t("addMoreDetails")} ⌄`;
 
         return;
     }
@@ -747,27 +747,51 @@ const toggleTaskDetailsForm = () => {
                 ${t("priority")}
             </label>
 
-            <select
-                id="task-priority"
-                class="task-input"
-            >
-                <option value="NONE">
-                    ${t("none")}
-                </option>
+            <div class="task-priority-options">
 
-                <option value="LOW">
-                    ${t("low")}
-                </option>
+    <button
+        type="button"
+        class="task-priority-chip none selected"
+        data-priority="NONE"
+        onclick="selectTaskPriority(this)"
+    >
+        ${t("none")}
+    </button>
 
-                <option value="MEDIUM">
-                    ${t("medium")}
-                </option>
+    <button
+        type="button"
+        class="task-priority-chip low"
+        data-priority="LOW"
+        onclick="selectTaskPriority(this)"
+    >
+        ${t("low")}
+    </button>
 
-                <option value="HIGH">
-                    ${t("high")}
-                </option>
-            </select>
+    <button
+        type="button"
+        class="task-priority-chip medium"
+        data-priority="MEDIUM"
+        onclick="selectTaskPriority(this)"
+    >
+        ${t("medium")}
+    </button>
 
+    <button
+        type="button"
+        class="task-priority-chip high"
+        data-priority="HIGH"
+        onclick="selectTaskPriority(this)"
+    >
+        ${t("high")}
+    </button>
+
+</div>
+
+<input
+    type="hidden"
+    id="task-priority"
+    value="NONE"
+>
 
             <label for="task-due-at">
                 ${t("dueDate")}
@@ -784,8 +808,25 @@ const toggleTaskDetailsForm = () => {
     `;
 
     button.textContent =
-        t("lessDetails");
+        `${t("lessDetails")} ⌃`;
 };
+
+const selectTaskPriority = (button) => {
+
+    document
+        .querySelectorAll(".task-priority-chip")
+        .forEach(chip =>
+            chip.classList.remove("selected")
+        );
+
+    button.classList.add("selected");
+
+    document
+        .getElementById("task-priority")
+        .value =
+        button.dataset.priority;
+};
+
 //_______________________________________________________//
 // Renders the create task form.
 const renderCreateTaskForm = () => {
@@ -813,7 +854,7 @@ const renderCreateTaskForm = () => {
                 class="task-details-btn"
                 onclick="toggleTaskDetailsForm()"
             >
-                ${t("addMoreDetails")}
+                ${t("addMoreDetails")} ⌄
             </button>
             
             <div id="task-extra-fields"></div>
