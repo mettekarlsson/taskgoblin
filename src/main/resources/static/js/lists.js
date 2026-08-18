@@ -167,7 +167,7 @@ const renderLists = async (lists, searchQuery = "") => {
 <button
     class="list-trash-btn"
     onclick="openDeleteListModal(event, ${list.id})"
-    aria-label="Delete list"
+    aria-label="${t("deleteList")}"
 >
     <svg viewBox="0 0 24 24" fill="none">
         <path d="M4 7H20" />
@@ -245,7 +245,7 @@ const sendListRequest = async (
             throw new Error(
                 error.message
                 ||
-                "Failed to save list"
+                t("failedToSaveList")
             );
         }
 
@@ -275,7 +275,7 @@ const openList = async (listId) => {
             ||
             !tasksResponse.ok
         ) {
-            throw new Error("Failed to load list");
+            throw new Error(t("failedToLoadList"));
         }
 
         const list =
@@ -562,7 +562,7 @@ const toggleTaskComplete = async (event, taskId, status) => {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to update task");
+            throw new Error(t("failedToUpdateTask"));
         }
 
         const openListId =
@@ -590,7 +590,7 @@ const completeList = async (listId) => {
         );
 
         if (!response.ok) {
-            throw new Error("Failed to complete list");
+            throw new Error(t("failedToCompleteList"));
         }
 
         await loadLists();
@@ -609,7 +609,7 @@ const renderCreateTaskInListForm = (listId) => {
     document.getElementById("create-task-in-list-container").innerHTML = `
         <section class="list-task-form">
 
-            <label for="list-task-title">Task title</label>
+            <label for="list-task-title">${t("title")}</label>
 
             <input
                 id="list-task-title"
@@ -625,14 +625,14 @@ const renderCreateTaskInListForm = (listId) => {
                     class="list-save-btn"
                     onclick="createTaskInList(${listId})"
                 >
-                    Save
+                    ${t("save")}
                 </button>
 
                 <button
                     class="list-cancel-btn"
                     onclick="document.getElementById('create-task-in-list-container').innerHTML = ''"
                 >
-                    Cancel
+                    ${t("cancel")}
                 </button>
 
             </div>
@@ -659,7 +659,7 @@ const deleteList = async (listId) => {
 
         if (!response.ok) {
             throw new Error(
-                "Failed to delete list"
+                t("failedToDeleteList")
             );
         }
 
@@ -1048,13 +1048,13 @@ const updateList = async (listId) => {
 
     if (!name) {
         document.getElementById("list-message").textContent =
-            "List name cannot be empty";
+            t("listNameCannotBeEmpty");
         return;
     }
 
     if (isRecurring && !dueAt) {
         document.getElementById("list-message").textContent =
-            "Recurring lists need a due date";
+            t("recurringListNeedsDueDate");
         return;
     }
 
@@ -1081,7 +1081,7 @@ const updateList = async (listId) => {
             const error = await response.json();
 
             throw new Error(
-                error.message || "Failed to update list"
+                error.message || t("failedToUpdateList")
             );
         }
 
@@ -1235,7 +1235,7 @@ const createTaskInList = async (listId) => {
 
     if (!title) {
         document.getElementById("list-message").textContent =
-            "Task title cannot be empty";
+            t("taskTitleCannotBeEmpty");
         return;
     }
 
@@ -1251,7 +1251,7 @@ const createTaskInList = async (listId) => {
         });
 
         if (!response.ok) {
-            throw new Error("Failed to create task");
+            throw new Error(t("failedToCreateTask"));
         }
 
         await openList(listId);

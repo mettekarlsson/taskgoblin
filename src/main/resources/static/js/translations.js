@@ -31,6 +31,8 @@ const translations = {
         defaultColor: "Default",
         created: "Created",
         updated: "Updated",
+        icon: "Icon",
+
 
         today: "Today",
         yesterday: "Yesterday",
@@ -86,6 +88,7 @@ const translations = {
             "Delete your account and all associated data permanently.",
         deleteAccount: "Delete account",
 
+        //NOTES
         notesSubtitle: "Quick thoughts and reminders.",
         newNote: "Add note",
         editNote: "Edit note",
@@ -111,6 +114,8 @@ const translations = {
         add: "Add",
         taskTitleRequired: "Task title is required",
         failedToCreateTask: "Failed to create task",
+        taskTitleCannotBeEmpty: "Task title cannot be empty",
+        failedToUpdateTask: "Failed to update task",
 
         completeTask: "Complete task",
         lastCompleted: "Last completed",
@@ -132,35 +137,36 @@ const translations = {
 
         task: "Task",
         addMoreDetails: "Add more details",
+
+        // LISTS
+        listsSubtitle: "Keep your routines and tasks organized.",
+        addList: "+ Add list",
+        editList: "Edit list",
+        deleteList: "Delete list",
+        searchLists: "Search lists...",
+        noListsYet: "No lists yet.",
+        noListsMatchSearch: "No lists match your search.",
+
+        noTasksYet: "No tasks yet.",
+        task: "task",
+        tasksCount: "tasks",
+
+        chooseIcon: "Choose icon",
+        recurringList: "Recurring list",
+
+        completeList: "Complete list",
+
+        listNameCannotBeEmpty: "List name cannot be empty",
+        recurringListNeedsDueDate: "Recurring lists need a due date",
+
+        failedToLoadLists: "Failed to load lists",
+        failedToLoadList: "Failed to load list",
+        failedToSaveList: "Failed to save list",
+        failedToUpdateList: "Failed to update list",
+        failedToDeleteList: "Failed to delete list",
+        failedToCompleteList: "Failed to complete list",
+
     },
-
-    // LISTS
-    listsSubtitle: "Your quests, routines and grouped tasks.",
-    addList: "+ Add list",
-    editList: "Edit list",
-    deleteList: "Delete list",
-    searchLists: "Search lists...",
-    noListsYet: "No lists yet.",
-    noListsMatchSearch: "No lists match your search.",
-
-    noTasksYet: "No tasks yet.",
-    task: "task",
-    tasksCount: "tasks",
-
-    chooseIcon: "Choose icon",
-    recurringList: "Recurring list",
-
-    completeList: "Complete list",
-
-    listNameCannotBeEmpty: "List name cannot be empty",
-    recurringListNeedsDueDate: "Recurring lists need a due date",
-
-    failedToLoadLists: "Failed to load lists",
-    failedToLoadList: "Failed to load list",
-    failedToSaveList: "Failed to save list",
-    failedToUpdateList: "Failed to update list",
-    failedToDeleteList: "Failed to delete list",
-
 
 
     sv: {
@@ -195,6 +201,7 @@ const translations = {
         defaultColor: "Standard",
         created: "Skapad",
         updated: "Uppdaterad",
+        icon: "Ikon",
 
         today: "Idag",
         yesterday: "Igår",
@@ -251,6 +258,7 @@ const translations = {
             "Ta bort ditt konto och all tillhörande data permanent.",
         deleteAccount: "Ta bort konto",
 
+        //NOTES
         notesSubtitle: "Snabba tankar och påminnelser.",
         newNote: "Ny anteckning",
         editNote: "Redigera anteckning",
@@ -276,6 +284,8 @@ const translations = {
         add: "Lägg till",
         taskTitleRequired: "Uppgiftens titel krävs",
         failedToCreateTask: "Kunde inte skapa uppgift",
+        taskTitleCannotBeEmpty: "Uppgiftens titel får inte vara tom",
+        failedToUpdateTask: "Kunde inte uppdatera uppgiften",
 
         completeTask: "Slutför uppgift",
         lastCompleted: "Senast gjord",
@@ -299,7 +309,7 @@ const translations = {
         addMoreDetails: "Visa fler detaljer",
 
         // LISTS
-        listsSubtitle: "Dina uppdrag, rutiner och grupperade uppgifter.",
+        listsSubtitle: "Håll ordning på dina rutiner och uppgifter.",
         addList: "+ Lägg till lista",
         editList: "Redigera lista",
         deleteList: "Ta bort lista",
@@ -322,7 +332,7 @@ const translations = {
         failedToSaveList: "Kunde inte spara listan",
         failedToUpdateList: "Kunde inte uppdatera listan",
         failedToDeleteList: "Kunde inte ta bort listan",
-
+        failedToCompleteList: "Kunde inte slutföra listan",
 
     }
 };
