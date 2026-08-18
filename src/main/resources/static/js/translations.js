@@ -118,6 +118,11 @@ const translations = {
         taskTitleCannotBeEmpty: "Task title cannot be empty",
         failedToUpdateTask: "Failed to update task",
 
+        none: "None",
+        low: "Low",
+        medium: "Medium",
+        high: "High",
+
         completeTask: "Complete task",
         lastCompleted: "Last completed",
         complete: "Complete",
@@ -138,7 +143,9 @@ const translations = {
 
         task: "Task",
         tasksCount: "tasks",
+
         addMoreDetails: "Add more details",
+        lessDetails: "− Less details",
 
         // LISTS
         listsSubtitle: "Keep your routines and tasks organized.",
@@ -286,6 +293,11 @@ const translations = {
         taskTitleCannotBeEmpty: "Uppgiftens titel får inte vara tom",
         failedToUpdateTask: "Kunde inte uppdatera uppgiften",
 
+        none: "Ingen",
+        low: "Låg",
+        medium: "Medel",
+        high: "Hög",
+
         completeTask: "Slutför uppgift",
         lastCompleted: "Senast gjord",
         complete: "Klar",
@@ -308,6 +320,7 @@ const translations = {
         tasksCount: "uppgifter",
 
         addMoreDetails: "Visa fler detaljer",
+        lessDetails: "− Färre detaljer",
 
         // LISTS
         listsSubtitle: "Håll ordning på dina rutiner och uppgifter.",

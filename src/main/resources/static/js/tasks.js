@@ -45,8 +45,43 @@ const formatDate = (dateString) => {
         return t("noDueDate");
     }
 
-    return new Date(dateString)
-        .toLocaleString();
+    const date =
+        new Date(dateString);
+
+    const today =
+        new Date();
+
+    date.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.round(
+            (date - today) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    if (diff === 0) {
+        return t("today");
+    }
+
+    if (diff === 1) {
+        return t("tomorrow");
+    }
+
+    if (diff === -1) {
+        return t("yesterday");
+    }
+
+    return date.toLocaleDateString(
+        currentSettings?.language === "sv"
+            ? "sv-SE"
+            : "en-GB",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
+    );
 };
 
 const getStartOfToday = () => {
@@ -304,9 +339,14 @@ const renderTasks = (tasks = currentTasks) => {
 
                             <div class="task-row-meta">
 
-                                <span class="priority-badge ${priorityClass}">
-                                    ${task.priority || "NONE"}
-                                </span>
+                                ${task.priority && task.priority !== "NONE"
+            ? `
+        <span class="priority-badge ${priorityClass}">
+            ${t(task.priority.toLowerCase())}
+        </span>
+    `
+            : ""
+        }
 
                                 <p class="task-row-date">
                                     ${formatDate(task.dueAt)}
@@ -519,6 +559,27 @@ const createTask = async () => {
             .value
             .trim();
 
+    const priorityInput =
+        document.getElementById("task-priority");
+
+    const dueDateInput =
+        document.getElementById("task-due-at");
+
+    const priority =
+        priorityInput
+            ? priorityInput.value
+            : null;
+
+    const dueDate =
+        dueDateInput
+            ? dueDateInput.value
+            : null;
+
+    const dueAt =
+        dueDate
+            ? `${dueDate}T00:00:00`
+            : null;
+
     if (!title) {
 
         alert(t("taskTitleRequired"));
@@ -532,7 +593,9 @@ const createTask = async () => {
             await apiFetch("/tasks", {
                 method: "POST",
                 body: JSON.stringify({
-                    title
+                    title,
+                    priority,
+                    dueAt
                 })
             });
 
@@ -656,20 +719,71 @@ const toggleTaskDetailsForm = () => {
             "task-extra-fields"
         );
 
-    if (container.innerHTML !== "") {
+    const button =
+        document.querySelector(
+            ".task-details-btn"
+        );
+
+    const isOpen =
+        container.innerHTML.trim() !== "";
+
+    if (isOpen) {
 
         container.innerHTML = "";
+
+        button.textContent =
+            t("addMoreDetails");
 
         return;
     }
 
     container.innerHTML = `
-        <p>Priority</p>
-        <p>Due date</p>
-        <p>Reminder</p>
-    `;
-};
 
+        <div class="task-extra-fields">
+
+            <label for="task-priority">
+                ${t("priority")}
+            </label>
+
+            <select
+                id="task-priority"
+                class="task-input"
+            >
+                <option value="NONE">
+                    ${t("none")}
+                </option>
+
+                <option value="LOW">
+                    ${t("low")}
+                </option>
+
+                <option value="MEDIUM">
+                    ${t("medium")}
+                </option>
+
+                <option value="HIGH">
+                    ${t("high")}
+                </option>
+            </select>
+
+
+            <label for="task-due-at">
+                ${t("dueDate")}
+            </label>
+
+            <input
+                id="task-due-at"
+                class="task-input"
+                type="date"
+            >
+
+        </div>
+
+    `;
+
+    button.textContent =
+        t("lessDetails");
+};
 //_______________________________________________________//
 // Renders the create task form.
 const renderCreateTaskForm = () => {
