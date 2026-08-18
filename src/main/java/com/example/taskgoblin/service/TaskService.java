@@ -165,7 +165,7 @@ public class TaskService {
 
         // Validate recurring task configuration
         validateRecurringConfiguration(
-                updateTaskDTO.getRecurring(),
+                updateTaskDTO.getIsRecurring(),
                 updateTaskDTO.getFrequency(),
                 updateTaskDTO.getIntervalValue()
         );
@@ -483,10 +483,13 @@ public class TaskService {
 */
     private void validateDueDate(LocalDateTime dueAt) {
 
-        if (
-                dueAt != null &&
-                        dueAt.isBefore(LocalDateTime.now())
-        ) {
+        if (dueAt == null) {
+            return;
+        }
+
+        if (dueAt.toLocalDate().isBefore(
+                LocalDateTime.now().toLocalDate()
+        )) {
             throw new InvalidDueDateException(
                     "Due date cannot be in the past."
             );

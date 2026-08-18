@@ -79,11 +79,11 @@ public class UpdateTaskDTO {
         this.sortOrder = sortOrder;
     }
 
-    public Boolean getRecurring() {
+    public Boolean getIsRecurring() {
         return isRecurring;
     }
 
-    public void setRecurring(Boolean recurring) {
+    public void setIsRecurring(Boolean recurring) {
         isRecurring = recurring;
     }
 

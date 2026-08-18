@@ -178,7 +178,7 @@
     border: 1px solid var(--border);
     border-radius: 14px;
 
-    overflow: hidden;
+    overflow: visible;
 }
 
 
@@ -212,6 +212,11 @@
     gap: 12px;
 
     padding: 10px 14px;
+}
+
+.task-row.completed .task-row-title {
+    text-decoration: line-through;
+    opacity: 0.6;
 }
 
 /* ---------------- */

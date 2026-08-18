@@ -24,6 +24,7 @@ const translations = {
         cancel: "Cancel",
         back: "Back",
         delete: "Delete",
+        update: "Update",
 
         title: "Title",
         content: "Content",
@@ -139,9 +140,6 @@ const translations = {
         newTask: "+ New task",
         searchTasks: "Search tasks...",
 
-        updateTask: "Update task",
-        deleteTask: "Delete task",
-
         task: "Task",
         tasksCount: "tasks",
         recurringTask: "Recurring task",
@@ -203,6 +201,7 @@ const translations = {
         cancel: "Avbryt",
         back: "Tillbaka",
         delete: "Radera",
+        update: "Uppdatera",
 
         title: "Titel",
         content: "Innehåll",
@@ -317,9 +316,6 @@ const translations = {
         completed: "Genomförda",
         newTask: "+ Ny uppgift",
         searchTasks: "Sök uppgifter...",
-
-        updateTask: "Uppdatera uppgift",
-        deleteTask: "Ta bort uppgift",
 
         task: "Uppgift",
         tasksCount: "uppgifter",

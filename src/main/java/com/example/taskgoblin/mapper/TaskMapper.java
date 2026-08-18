@@ -77,7 +77,7 @@ public class TaskMapper {
         task.setDueAt(updateTaskDTO.getDueAt());
         task.setPriority(updateTaskDTO.getPriority());
 
-        task.setRecurring(Boolean.TRUE.equals(updateTaskDTO.getRecurring()));
+        task.setRecurring(Boolean.TRUE.equals(updateTaskDTO.getIsRecurring()));
 
         task.setFrequency(updateTaskDTO.getFrequency());
 
