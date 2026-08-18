@@ -93,6 +93,42 @@
 
 </main>
 
+<div class="modal" id="delete-task-modal">
+
+    <div class="modal-content">
+
+        <h2 data-translate="deleteTaskTitle">
+            Delete task?
+        </h2>
+
+        <p data-translate="deleteTaskMessage">
+            This action cannot be undone.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                    class="modal-cancel-btn"
+                    onclick="closeDeleteTaskModal()"
+                    data-translate="cancel"
+            >
+                Cancel
+            </button>
+
+            <button
+                    class="modal-confirm-btn"
+                    onclick="confirmDeleteTask()"
+                    data-translate="delete"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
 <footer id="app-footer"></footer>
 
 <script src="/js/auth.js"></script>

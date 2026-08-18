@@ -5,6 +5,8 @@ let currentTasks = [];
 
 let currentTaskFilter = "all";
 
+let taskToDeleteId = null;
+
 const setTaskFilter = (filter) => {
 
     currentTaskFilter = filter;
@@ -401,12 +403,12 @@ const renderTasks = (tasks = currentTasks) => {
             </button>
 
             <button
-                onclick="
-                    deleteTask(${task.id})
-                "
-            >
-                ${t("delete")}
-            </button>
+    onclick="
+        openDeleteTaskModal(${task.id})
+    "
+>
+    ${t("delete")}
+</button>
 
         </div>
 
@@ -789,38 +791,52 @@ const reopenTask = async (taskId) => {
 };
 
 // Deletes a task.
-const deleteTask = async (taskId) => {
+        const openDeleteTaskModal = (taskId) => {
+            taskToDeleteId = taskId;
 
-    const confirmed =
-        confirm(t("deleteTaskConfirm"));
+            document
+                .getElementById("delete-task-modal")
+                .classList.add("open");
+        };
 
-    if (!confirmed) {
-        return;
-    }
+        const closeDeleteTaskModal = () => {
+            taskToDeleteId = null;
 
-    try {
+            document
+                .getElementById("delete-task-modal")
+                .classList.remove("open");
+        };
 
-        const response =
-            await apiFetch(`/tasks/${taskId}`, {
-                method: "DELETE"
-            });
+        const confirmDeleteTask = async () => {
 
-        if (!response.ok) {
-            throw new Error(
-                t("failedToDeleteTask")
-            );
-        }
+            if (!taskToDeleteId) {
+                return;
+            }
 
-        // Reloads tasks after deletion.
-        await loadTasks();
+            try {
 
-    } catch (error) {
+                const response =
+                    await apiFetch(
+                        `/tasks/${taskToDeleteId}`,
+                        {
+                            method: "DELETE"
+                        }
+                    );
 
-        alert(error.message);
+                if (!response.ok) {
+                    throw new Error(
+                        t("failedToDeleteTask")
+                    );
+                }
 
-    }
+                await loadTasks();
 
-};
+                closeDeleteTaskModal();
+
+            } catch (error) {
+                alert(error.message);
+            }
+        };
 
 const openUpdateTaskModal = (taskId) => {
 

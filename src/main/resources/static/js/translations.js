@@ -130,7 +130,8 @@ const translations = {
         complete: "Complete",
         reopen: "Reopen",
 
-        deleteTaskConfirm: "Delete this task?",
+        deleteTaskTitle: "Delete this task?",
+        deleteTaskMessage: "This action cannot be undone.",
         failedToDeleteTask: "Failed to delete task",
 
         taskSubtitle: "Keep track of your tasks.",
@@ -307,7 +308,8 @@ const translations = {
         complete: "Klar",
         reopen: "Återöppna",
 
-        deleteTaskConfirm: "Ta bort denna uppgift?",
+        deleteTaskTitle: "Radera uppgift?",
+        deleteTaskMessage: "Den här åtgärden kan inte ångras.",
         failedToDeleteTask: "Kunde inte ta bort uppgiften",
 
         taskSubtitle: "Håll koll på dina uppgifter.",
