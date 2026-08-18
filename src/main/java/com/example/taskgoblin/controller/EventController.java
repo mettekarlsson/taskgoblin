@@ -2,6 +2,7 @@ package com.example.taskgoblin.controller;
 
 import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
+import com.example.taskgoblin.dto.EventSummaryDTO;
 import com.example.taskgoblin.dto.UpdateEventDTO;
 import com.example.taskgoblin.service.CalendarService;
 import com.example.taskgoblin.service.UserService;
@@ -11,6 +12,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping ("/events")
@@ -23,6 +26,14 @@ public class EventController {
         this.calendarService = calendarService;
         this.userService = userService;
     }
+
+    //view specific event
+    @GetMapping("/{id}")
+    public ResponseEntity<EventDTO> getEvent(@AuthenticationPrincipal UserDetails userDetails, @PathVariable Long id) {
+
+            Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+            return ResponseEntity.ok(calendarService.getEventById(userId, id));
+        }
 
     //create a new event
     @PostMapping
