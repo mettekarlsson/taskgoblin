@@ -3,9 +3,10 @@ package com.example.taskgoblin.dto;
 import com.example.taskgoblin.model.Frequency;
 import java.time.LocalDateTime;
 
+//is used in event-view
 public class EventDTO {
 
-    //final pga ingen set-er
+    //final because no setter
     private final Long id;
 
     private CategoryDTO category;

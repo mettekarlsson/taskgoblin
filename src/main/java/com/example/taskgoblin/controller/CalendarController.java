@@ -1,6 +1,6 @@
 package com.example.taskgoblin.controller;
 
-import com.example.taskgoblin.dto.EventDTO;
+import com.example.taskgoblin.dto.EventSummaryDTO;
 import com.example.taskgoblin.service.CalendarService;
 import com.example.taskgoblin.service.UserService;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +25,7 @@ public class CalendarController {
 
     //get all events OR get events between certain date-range
     @GetMapping
-    public ResponseEntity<List<EventDTO>> getEvents(
+    public ResponseEntity<List<EventSummaryDTO>> getEvents(
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,
             @AuthenticationPrincipal UserDetails userDetails

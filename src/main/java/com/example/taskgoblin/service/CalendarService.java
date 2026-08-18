@@ -2,6 +2,7 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
+import com.example.taskgoblin.dto.EventSummaryDTO;
 import com.example.taskgoblin.dto.UpdateEventDTO;
 import com.example.taskgoblin.exception.InvalidEventException;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
@@ -29,11 +30,19 @@ public class CalendarService {
     }
 
     //view all events
-    public List<EventDTO> getAllEvents(Long userId) {
+    public List<EventSummaryDTO> getAllEvents(Long userId) {
         List<Event> events = calendarRepository.findByUserId(userId);
 
         return events.stream()
-                .map(EventMapper::mapToEventDto)
+                .map(EventMapper::mapToEventSummaryDto)
+                .toList();
+    }
+
+    //view events between certain dates
+    public List<EventSummaryDTO> getEventsByDateRange (Long userId, LocalDateTime start, LocalDateTime end) {
+        List<Event> events = calendarRepository.findByUserIdAndStartTimeBetween(userId, start, end);
+        return events.stream()
+                .map(EventMapper::mapToEventSummaryDto)
                 .toList();
     }
 
@@ -133,13 +142,5 @@ public class CalendarService {
         Event updatedEvent = calendarRepository.save(event);
 
         return EventMapper.mapToEventDto(updatedEvent);
-    }
-
-    //view events between certain dates
-    public List<EventDTO> getEventsByDateRange (Long userId, LocalDateTime start, LocalDateTime end) {
-        List<Event> events = calendarRepository.findByUserIdAndStartTimeBetween(userId, start, end);
-        return events.stream()
-                .map(EventMapper::mapToEventDto)
-                .toList();
     }
 }

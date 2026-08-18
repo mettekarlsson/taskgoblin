@@ -3,6 +3,7 @@ package com.example.taskgoblin.mapper;
 import com.example.taskgoblin.dto.CategoryDTO;
 import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
+import com.example.taskgoblin.dto.EventSummaryDTO;
 import com.example.taskgoblin.model.Event;
 
 public class EventMapper {
@@ -50,5 +51,23 @@ public class EventMapper {
 
         return event;
 }
+
+//map from entity to eventsummarydto
+    public static EventSummaryDTO mapToEventSummaryDto(Event event) {
+
+        String color = null;
+        if (event.getCategory() != null) {
+            color = event.getCategory().getColor();
+        }
+
+        return new EventSummaryDTO(
+                event.getId(),
+                event.getTitle(),
+                event.getStartTime(),
+                event.getEndTime(),
+                event.getIsAllDay(),
+                color
+        );
+    }
 
 }
