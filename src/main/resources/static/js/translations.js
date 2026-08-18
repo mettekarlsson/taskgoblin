@@ -35,6 +35,7 @@ const translations = {
 
 
         today: "Today",
+        tomorrow: "Tomorrow",
         yesterday: "Yesterday",
 
         repeatEvery: "Repeat every",
@@ -209,6 +210,7 @@ const translations = {
         icon: "Ikon",
 
         today: "Idag",
+        tomorrow: "Imorgon",
         yesterday: "Igår",
 
         repeatEvery: "Upprepa varje",

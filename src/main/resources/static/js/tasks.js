@@ -326,9 +326,9 @@ const renderTasks = (tasks = currentTasks) => {
             : `completeTask(${task.id})`}
             "
         >
-            ${task.status === "DONE"
+           ${task.status === "DONE"
             ? "✓"
-            : "○"}
+            : ""}
         </button>
 
         <h3 class="task-row-title">
@@ -417,18 +417,20 @@ const renderTasks = (tasks = currentTasks) => {
         }
 
         return `
-        <div class="task-section">
+    <div class="task-section">
 
-            <h2 class="task-section-title">
-                ${title}
-            </h2>
+        <h2 class="task-section-title">
+            ${title}
+        </h2>
 
+        <div class="task-section-list">
             ${tasks
             .map(renderTaskRow)
             .join("")}
-
         </div>
-    `;
+
+    </div>
+`;
     };
 
     const renderEmptyTasks = () => {
