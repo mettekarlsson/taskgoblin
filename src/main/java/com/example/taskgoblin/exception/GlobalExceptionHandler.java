@@ -93,25 +93,6 @@ public class GlobalExceptionHandler {
                 ));
     }
 
-//    @ExceptionHandler(TaskAlreadyCompletedException.class)
-//    public ResponseEntity<String> handleTaskAlreadyCompletedException(
-//            TaskAlreadyCompletedException ex
-//    ) {
-//
-//        return ResponseEntity
-//                .status(HttpStatus.CONFLICT)
-//                .body(ex.getMessage());
-//    }
-//
-//    @ExceptionHandler(TaskAlreadyOpenException.class)
-//    public ResponseEntity<String> handleTaskAlreadyOpenException(
-//            TaskAlreadyOpenException ex
-//    ) {
-//
-//        return ResponseEntity
-//                .status(HttpStatus.CONFLICT)
-//                .body(ex.getMessage());
-//    }
 
     @ExceptionHandler(AlreadyCompletedException.class)
     public ResponseEntity<String> handleAlreadyCompletedException(
