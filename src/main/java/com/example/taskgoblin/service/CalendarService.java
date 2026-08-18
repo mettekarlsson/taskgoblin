@@ -74,7 +74,13 @@ public class CalendarService {
             if (createEventDTO.getFrequency() == null) {
                 throw new InvalidEventException("Frequency must be set when event is recurring");
             }
-            event.setFrequency(Frequency.valueOf(createEventDTO.getFrequency().toUpperCase()));
+            // Validates frequency value even though frontend restricts input via dropdown.
+            // Guards against direct API calls (e.g. via Postman) with invalid values.
+            try {
+                event.setFrequency(Frequency.valueOf(createEventDTO.getFrequency().toUpperCase()));
+            } catch (IllegalArgumentException e) {
+                throw new InvalidEventException("Invalid frequency: " + createEventDTO.getFrequency() + ". Must be DAILY, WEEKLY, MONTHLY or YEARLY");
+            }
         }
 
         Event savedEvent = calendarRepository.save(event);
