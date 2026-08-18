@@ -249,9 +249,50 @@
     color: white;
 }
 
+.task-status-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.task-status-btn.recurring-completing {
+    border-color: #6da34d;
+    background: #6da34d;
+    color: white;
+}
+
+.task-status-btn.recurring-completing
+.task-status-icon {
+    animation: task-recurring-spin 0.7s linear infinite;
+}
+.task-status-btn:disabled {
+    cursor: default;
+}
+@keyframes task-recurring-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
 /* ---------------- */
 /*    Task title    */
 /* ---------------- */
+.task-title-content {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.task-last-completed {
+    color: var(--text-muted);
+
+    font-size: 0.75rem;
+    font-weight: 400;
+}
 
 .task-title-group {
     min-width: 0;

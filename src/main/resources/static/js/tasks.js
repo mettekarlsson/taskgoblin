@@ -315,25 +315,42 @@ const renderTasks = (tasks = currentTasks) => {
 
     <div class="task-title-group">
 
-        <button
-            class="task-status-btn
-                ${task.status === "DONE"
+       <button
+    class="task-status-btn
+        ${task.status === "DONE"
             ? "completed"
             : ""}"
-            onclick="
-                ${task.status === "DONE"
+    data-task-id="${task.id}"
+    onclick="
+        ${task.status === "DONE"
             ? `reopenTask(${task.id})`
             : `completeTask(${task.id})`}
-            "
-        >
-           ${task.status === "DONE"
+    "
+>
+    <span class="task-status-icon">
+        ${task.status === "DONE"
             ? "✓"
             : ""}
-        </button>
+    </span>
+</button>
 
-        <h3 class="task-row-title">
-            ${task.title}
-        </h3>
+        <div class="task-title-content">
+
+    <h3 class="task-row-title">
+        ${task.title}
+    </h3>
+
+    ${
+            task.isRecurring && task.lastCompletedAt
+                ? `
+                <span class="task-last-completed">
+                    ${t("lastCompleted")} ${formatDate(task.lastCompletedAt)}
+                </span>
+            `
+                : ""
+        }
+
+</div>
 
     </div>
 
@@ -667,28 +684,85 @@ const createTask = async () => {
 // Marks a task as completed.
 const completeTask = async (taskId) => {
 
+    const task =
+        currentTasks.find(
+            task => task.id === taskId
+        );
+
+    const button =
+        document.querySelector(
+            `.task-status-btn[data-task-id="${taskId}"]`
+        );
+
+    const icon =
+        button?.querySelector(
+            ".task-status-icon"
+        );
+
+    const isRecurring =
+        task?.isRecurring;
+
+    if (
+        isRecurring &&
+        button &&
+        icon
+    ) {
+        button.classList.add(
+            "recurring-completing"
+        );
+
+        button.disabled = true;
+
+        icon.textContent = "↻";
+    }
+
     try {
 
-        const response =
-            await apiFetch(`/tasks/${taskId}/complete`, {
+        const request =
+            apiFetch(`/tasks/${taskId}/complete`, {
                 method: "PATCH"
             });
 
+        const minimumAnimation =
+            isRecurring
+                ? new Promise(resolve =>
+                    setTimeout(resolve, 700)
+                )
+                : Promise.resolve();
+
+        const [response] =
+            await Promise.all([
+                request,
+                minimumAnimation
+            ]);
+
         if (!response.ok) {
-            throw new Error("Failed to complete task");
+            throw new Error(
+                t("failedToUpdateTask")
+            );
         }
 
-        // Reload tasks after update.
         await loadTasks();
 
     } catch (error) {
 
+        if (
+            isRecurring &&
+            button &&
+            icon
+        ) {
+            button.classList.remove(
+                "recurring-completing"
+            );
+
+            button.disabled = false;
+
+            icon.textContent = "";
+        }
+
         alert(error.message);
-
     }
-
 };
-
 
 // Reopens a completed task.
 const reopenTask = async (taskId) => {
