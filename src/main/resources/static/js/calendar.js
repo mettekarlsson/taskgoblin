@@ -440,7 +440,7 @@ const renderCalendar = () => {
 
         calendarHTML += `
 
-            <div class="${cellClass}">
+            <div class="${cellClass}" onclick="selectDay('${cellDate.toISOString()}')">
 
                 <span class="calendar-day-number">
                     ${dayNumber}
@@ -484,6 +484,126 @@ const renderCalendar = () => {
 };
 
 /* -------------------------------- */
+/* Select day                       */
+/* -------------------------------- */
+
+const selectDay = (dateString) => {
+
+    // Convert the date string to a Date object
+    const selectedDate = new Date(dateString);
+
+    // Filter out only the events that belong to the selected day
+    const eventsForDay = currentEvents.filter(event => {
+
+        const eventDate = new Date(event.startTime);
+
+        return (
+            eventDate.getFullYear() === selectedDate.getFullYear()
+            && eventDate.getMonth() === selectedDate.getMonth()
+            && eventDate.getDate() === selectedDate.getDate()
+        );
+    });
+
+    // Render the day view with the selected date and its events
+    renderDayView(selectedDate, eventsForDay);
+};
+
+
+/* -------------------------------- */
+/* Day view                         */
+/* -------------------------------- */
+
+const renderDayView = (date, events) => {
+
+    const container = document.getElementById("calendar-day-view");
+
+    // Format the date label based on language setting
+    const dateLabel = date.toLocaleDateString(
+        currentSettings?.language === "sv" ? "sv-SE" : "en-GB",
+        { weekday: "long", day: "numeric", month: "long" }
+    );
+
+    // Show message if no events exist for this day
+    if (events.length === 0) {
+        container.innerHTML = `
+    <h2>${dateLabel}</h2>
+    <p class="day-no-events">No events this day</p>
+`;
+        return;
+    }
+
+    // Render the date label and a list of events
+    container.innerHTML = `
+        <h2>${dateLabel}</h2>
+        <ul class="day-event-list">
+            ${events.map(event => `
+                <li onclick="openEventDetail(${event.id})">
+                    <span class="event-dot" style="background: ${event.color || "var(--primary)"}"></span>
+                    <span class="event-time">${new Date(event.startTime).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}</span>
+                    <span class="event-title">${event.title}</span>
+                    <span>›</span>
+                </li>
+            `).join("")}
+        </ul>
+    `;
+};
+
+/* -------------------------------- */
+/* Event detail modal               */
+/* -------------------------------- */
+
+const openEventDetail = async (id) => {
+    try {
+        const response = await apiFetch(`/events/${id}`);
+
+        if (!response.ok) {
+            throw new Error("Failed to load event");
+        }
+
+        const event = await response.json();
+
+        // Fill in the modal with event data
+        document.getElementById("modal-event-title").textContent = event.title;
+
+        document.getElementById("modal-event-details").innerHTML = `
+    <div class="event-detail-row">
+        📅 <span>${new Date(event.startTime).toLocaleDateString([], {weekday: "long", day: "numeric", month: "long"})}</span>
+    </div>
+    ${event.endTime ? `
+    <div class="event-detail-row">
+        🕐 <span>${new Date(event.startTime).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})} – ${new Date(event.endTime).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}</span>
+    </div>` : ""}
+    ${event.location ? `
+    <div class="event-detail-row">
+        📍 <span>${event.location}</span>
+    </div>` : ""}
+    ${event.category ? `
+    <div class="event-detail-row">
+        🏷️ <span>${event.category.name}</span>
+    </div>` : ""}
+    ${event.isRecurring ? `
+    <div class="event-detail-row">
+        🔁 <span>${event.frequency}</span>
+    </div>` : ""}
+    ${event.description ? `
+    <div class="event-detail-row">
+        📝 <span>${event.description}</span>
+    </div>` : ""}
+`;
+
+        // Open the modal
+        document.getElementById("event-detail-modal").classList.add("open");
+
+    } catch (error) {
+        alert(error.message);
+    }
+};
+
+const closeEventDetail = () => {
+    document.getElementById("event-detail-modal").classList.remove("open");
+};
+
+/* -------------------------------- */
     /* Change month                     */
     /* -------------------------------- */
 
@@ -505,17 +625,86 @@ const renderCalendar = () => {
     /* Create event                     */
     /* -------------------------------- */
 
-    const renderCreateEventForm = () => {
+const renderCreateEventForm = () => {
 
-        /*
-            We build this in the next step.
-        */
+    document.querySelector(".calendar-header").style.display = "none";
+    document.querySelector(".calendar-container").style.display = "none";
 
-        console.log(
-            "Create event form coming next"
-        );
-    };
+    const dayView = document.getElementById("calendar-day-view");
+    dayView.style.display = "block";
 
+    dayView.innerHTML = `
+        <section class="event-form-card">
+
+            <h2>New event</h2>
+
+            <label for="event-title">Title</label>
+            <input id="event-title" class="event-input" type="text" placeholder="Event title">
+
+            <label for="event-start">Start time</label>
+            <input id="event-start" class="event-input" type="datetime-local">
+
+            <label for="event-end">End time</label>
+            <input id="event-end" class="event-input" type="datetime-local">
+
+            <label for="event-location">Location</label>
+            <input id="event-location" class="event-input" type="text" placeholder="Location (optional)">
+
+            <label for="event-description">Description</label>
+            <input id="event-description" class="event-input" type="text" placeholder="Description (optional)">
+
+            <label class="event-checkbox-row">
+                <input id="event-is-all-day" type="checkbox">
+                All day event
+            </label>
+
+            <label class="event-checkbox-row">
+                <input id="event-is-recurring" type="checkbox" onchange="toggleEventRecurringOptions()">
+                Recurring event
+            </label>
+
+                <div id="event-recurring-options" class="event-recurring-options">
+                <label for="event-interval-value">Repeat every</label>
+
+                <div class="event-recurring-row">
+                    <input
+                        id="event-interval-value"
+                        class="event-input"
+                        type="number"
+                        min="1"
+                        value="1"
+                    >
+                    <select id="event-frequency" class="event-input">
+                        <option value="DAILY">Day</option>
+                        <option value="WEEKLY">Week</option>
+                        <option value="MONTHLY">Month</option>
+                        <option value="YEARLY">Year</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <p id="event-message" class="event-message"></p>
+
+            <div class="event-form-actions">
+                <button class="event-save-btn" onclick="createEvent()">Save</button>
+                <button class="event-cancel-btn" onclick="cancelEventForm()">Cancel</button>
+            </div>
+
+        </section>
+    `;
+};
+
+const toggleEventRecurringOptions = () => {
+    const isRecurring = document.getElementById("event-is-recurring").checked;
+    const options = document.getElementById("event-recurring-options");
+
+    if (isRecurring) {
+        options.classList.add("open");
+    } else {
+        options.classList.remove("open");
+    }
+};
 
     /* -------------------------------- */
     /* Init                             */
