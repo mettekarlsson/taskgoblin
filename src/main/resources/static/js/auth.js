@@ -41,7 +41,10 @@ const register = async (name, email, password) => {
     });
 
     if (!response.ok) {
-        throw new Error("Could not create account");
+
+        const error = await response.json();
+
+        throw new Error(error.message);
     }
 };
 

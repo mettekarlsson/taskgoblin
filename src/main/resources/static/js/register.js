@@ -1,4 +1,7 @@
-const handleRegister = async () => {
+const handleRegister = async (event) => {
+
+    event.preventDefault();
+
     const name =
         document.getElementById("name").value.trim();
 
@@ -8,10 +11,13 @@ const handleRegister = async () => {
     const password =
         document.getElementById("password").value;
 
-    const message =
-        document.getElementById("register-message");
+    // Clear previous error messages before a new submission.
+    document.getElementById("name-error").textContent = "";
+    document.getElementById("email-error").textContent = "";
+    document.getElementById("password-error").textContent = "";
 
     try {
+
         await register(name, email, password);
 
         localStorage.setItem(
@@ -22,6 +28,24 @@ const handleRegister = async () => {
         window.location.href = "/login.html";
 
     } catch (error) {
-        message.textContent = error.message;
+
+        const errors = error.message.split(", ");
+
+        errors.forEach(errorMessage => {
+
+            const [field, message] =
+                errorMessage.split(": ");
+
+            const errorElement =
+                document.getElementById(`${field}-error`);
+
+            if (errorElement) {
+                errorElement.textContent = message;
+            }
+        });
     }
 };
+
+document
+    .getElementById("register-form")
+    .addEventListener("submit", handleRegister);
