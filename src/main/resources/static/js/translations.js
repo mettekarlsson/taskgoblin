@@ -56,11 +56,14 @@ const translations = {
         months: "months",
         years: "years",
 
+        everyNDays: "Every {n} days",
+        everyNWeeks: "Every {n} weeks",
+        everyNMonths: "Every {n} months",
+        everyNYears: "Every {n} years",
+
         due: "Due",
-        every: "Every",
         dueToday: "Due today",
         dueTomorrow: "Due tomorrow",
-        dueYesterday: "Due yesterday",
         overdue: "Overdue",
         dayOverdue: "day overdue",
         daysOverdue: "days overdue",
@@ -168,6 +171,8 @@ const translations = {
         completeList: "Complete list",
         undoCompletion: "Undo completion",
         failedToUndoListCompletion: "Failed to undo list completion",
+        nextOccurrence: "Next occurrence",
+        done: "Done",
 
         listNameCannotBeEmpty: "List name cannot be empty",
         recurringListNeedsDueDate: "Recurring lists need a due date",
@@ -241,16 +246,19 @@ const translations = {
         months: "månader",
         years: "år",
 
-        due: "Förfaller",
-        every: "Varje",
-        dueToday: "Förfaller idag",
-        dueTomorrow: "Förfaller imorgon",
-        dueYesterday: "Förföll igår",
+        everyNDays: "Var {n}:e dag",
+        everyNWeeks: "Var {n}:e vecka",
+        everyNMonths: "Var {n}:e månad",
+        everyNYears: "Var {n}:e år",
+
+        due: "Klar senast",
+        dueToday: "Klar senast idag",
+        dueTomorrow: "Klar senast imorgon",
         overdue: "Försenad",
         dayOverdue: "dag försenad",
         daysOverdue: "dagar försenad",
-        dueDate: "Förfallodatum",
-        noDueDate: "Inget datum",
+        dueDate: "Klart senast",
+        noDueDate: "Inget slutdatum",
 
 
 
@@ -355,6 +363,8 @@ const translations = {
         completeList: "Slutför lista",
         undoCompletion: "Ångra slutförande",
         failedToUndoListCompletion: "Kunde inte ångra slutförandet",
+        nextOccurrence: "Nästa tillfälle",
+        done: "Färdig",
 
         listNameCannotBeEmpty: "Listans namn får inte vara tomt",
         recurringListNeedsDueDate: "Återkommande listor behöver ett förfallodatum",

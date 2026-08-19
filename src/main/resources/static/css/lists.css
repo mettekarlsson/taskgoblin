@@ -148,7 +148,7 @@
 .list-completed-status {
     align-self: flex-start;
 
-    margin-top: 6px;
+    margin-top: 3px;
     padding: 4px 8px;
 
     border-radius: 999px;
@@ -177,7 +177,7 @@
 }
 
 .list-card-icon {
-    font-size: 1.1rem;
+    font-size: 1rem;
 
     line-height: 1;
 
@@ -220,6 +220,27 @@
     opacity: 0.55;
 }
 
+.list-tasks-preview {
+    position: relative;
+}
+
+.list-tasks-fade {
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0;
+
+    height: 42px;
+
+    pointer-events: none;
+
+    background: linear-gradient(
+            to bottom,
+            transparent 0%,
+            var(--list-color) 90%
+    );
+}
+
 
 /* =========================================================
    LIST META / STATUS
@@ -257,10 +278,14 @@
 
     display: flex;
     justify-content: space-between;
-    align-items: center;
+    align-items: flex-end;
 }
 
-.list-date {
+.list-footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+
     color: var(--text-muted);
     font-size: 0.8rem;
 }
@@ -269,6 +294,11 @@
     display: flex;
     align-items: center;
     gap: 4px;
+}
+
+.list-date {
+    color: var(--text-muted);
+    font-size: 0.8rem;
 }
 
 
@@ -867,7 +897,7 @@
    MOBILE
    ========================================================= */
 
-@media (max-width: 430px) {
+@media (max-width: 450px) {
 
     .lists-page {
         padding-left: 16px;
@@ -883,7 +913,22 @@
     }
 
     .list-card {
-        height: 180px;
+        height: 220px;
         padding: 16px 14px;
+    }
+
+    .list-card-title h2 {
+        font-size: 0.85rem;
+
+    }
+
+    .list-completed-status {
+        width: fit-content;
+        max-width: none;
+
+        white-space: nowrap;
+
+        font-size: 0.68rem;
+        padding: 4px 7px;
     }
 }

@@ -114,6 +114,8 @@ const renderLists = async (lists, searchQuery = "") => {
                     </div>
                 `)
                 .join("");
+            const hasMoreTasks =
+                tasks.length > 4;
 
             return `
 <article
@@ -148,16 +150,15 @@ const renderLists = async (lists, searchQuery = "") => {
                 previewTasks ||
                 `<p class="list-task-preview">${t("noTasksYet")}</p>`
             }
-</div>
 
-<div class="list-meta">
-    ${tasks.length} ${t("tasksCount")}
     ${
-                list.isRecurring
-                    ? ` · ↻ ${formatRecurrence(
-                        list.frequency,
-                        list.intervalValue
-                    )}`
+                tasks.length > 4
+                    ? `
+                <div
+                    class="list-tasks-fade"
+                    style="--list-color: ${listColor};"
+                ></div>
+            `
                     : ""
             }
 </div>
@@ -179,18 +180,33 @@ ${
                 listCompleted && list.isRecurring
                     ? `
             <div class="list-completed-status">
-                ✓ ${t("completed")} · ${formatDueDate(list.dueAt)}
-            </div>
+    ${t("nextOccurrence")} ${formatListDate(list.dueAt)}
+</div>
         `
                     : ""
             }
 
 <div class="list-footer">
 
-    <span class="list-date">
-        ${formatListDate(list.lastInteractedAt || list.createdAt)}
-    </span>
+    <div class="list-footer-info">
+        <span>
+            ${tasks.length} ${t("tasksCount")}
+        </span>
 
+        ${
+                list.isRecurring
+                    ? `
+                    <span>
+                        ↻ ${formatRecurrence(
+                        list.frequency,
+                        list.intervalValue
+                    )}
+                    </span>
+                `
+                    : ""
+            }
+    </div>
+    
     <div class="list-footer-actions">
 
         <button
@@ -516,12 +532,14 @@ const formatDueDate = (dateString) => {
         return t("dueTomorrow");
     }
 
-    if (diff === -1) {
-        return t("dueYesterday");
-    }
-
     if (diff < 0) {
-        return `${t("overdue")} ${Math.abs(diff)} ${t("days")}`;
+        const daysOverdue = Math.abs(diff);
+
+        return `${daysOverdue} ${
+            daysOverdue === 1
+                ? t("dayOverdue")
+                : t("daysOverdue")
+        }`;
     }
 
     return `${t("due")} ${formatListDate(dateString)}`;
@@ -564,35 +582,50 @@ const formatListSchedule = (list) => {
 };
 
 const formatRecurrence = (frequency, intervalValue) => {
-    const interval = intervalValue || 1;
 
-    if (interval === 1) {
+    if (intervalValue === 1) {
         switch (frequency) {
             case "DAILY":
                 return t("daily");
+
             case "WEEKLY":
                 return t("weekly");
+
             case "MONTHLY":
                 return t("monthly");
+
             case "YEARLY":
                 return t("yearly");
+
             default:
                 return "";
         }
     }
 
+    let key;
+
     switch (frequency) {
         case "DAILY":
-            return `${t("every")} ${interval} ${t("days")}`;
+            key = "everyNDays";
+            break;
+
         case "WEEKLY":
-            return `${t("every")} ${interval} ${t("weeks")}`;
+            key = "everyNWeeks";
+            break;
+
         case "MONTHLY":
-            return `${t("every")} ${interval} ${t("months")}`;
+            key = "everyNMonths";
+            break;
+
         case "YEARLY":
-            return `${t("every")} ${interval} ${t("years")}`;
+            key = "everyNYears";
+            break;
+
         default:
             return "";
     }
+
+    return t(key).replace("{n}", intervalValue);
 };
 
 const isCurrentOccurrenceCompleted = (list) => {
