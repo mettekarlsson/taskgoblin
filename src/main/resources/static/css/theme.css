@@ -16,6 +16,7 @@
 
     --secondary: #d6c8b8;
     --danger: #B3261E;
+    --danger-soft: #FCE8E6;
 
     --border: rgba(39, 51, 15, 0.15);
     --border-soft: rgba(39, 51, 15, 0.10);
@@ -51,6 +52,7 @@ body.dark-theme {
 
     --secondary: #4B4038;
     --danger: #FF7A7A;
+    --danger-soft: #3D2528;
 
     --border: rgba(246, 241, 235, 0.16);
     --border-soft: rgba(246, 241, 235, 0.10);

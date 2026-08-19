@@ -100,6 +100,12 @@ const renderLists = async (lists, searchQuery = "") => {
             const listColor =
                 list.color || DEFAULT_LIST_COLOR;
 
+            const overdueDays =
+                getOverdueDays(list.dueAt);
+
+            const listCompleted =
+                isCurrentOccurrenceCompleted(list);
+
             const previewTasks = tasks
                 .slice(0, 4)
                 .map(task => `
@@ -111,11 +117,9 @@ const renderLists = async (lists, searchQuery = "") => {
 
             return `
 <article
-    class="list-card"
+    class="list-card ${listCompleted ? "completed" : ""}"
     onclick="openList(${list.id})"
-    style="
-        background: ${listColor};
-    "
+    style="background: ${listColor};"
 >
 
 <button
@@ -158,25 +162,61 @@ const renderLists = async (lists, searchQuery = "") => {
             }
 </div>
 
+${
+                overdueDays > 0
+                    ? `
+            <div class="list-overdue">
+                ⚠ ${overdueDays} ${
+                        overdueDays === 1
+                            ? t("dayOverdue")
+                            : t("daysOverdue")
+                    }
+            </div>
+        `
+                    : ""
+            }
+${
+                listCompleted && list.isRecurring
+                    ? `
+            <div class="list-completed-status">
+                ✓ ${t("completed")} · ${formatDueDate(list.dueAt)}
+            </div>
+        `
+                    : ""
+            }
+
 <div class="list-footer">
 
     <span class="list-date">
         ${formatListDate(list.lastInteractedAt || list.createdAt)}
     </span>
 
-<button
-    class="list-trash-btn"
-    onclick="openDeleteListModal(event, ${list.id})"
-    aria-label="${t("deleteList")}"
+    <div class="list-footer-actions">
+
+        <button
+    class="list-complete-check ${listCompleted ? "checked" : ""}"
+    onclick="completeListFromOverview(event, ${list.id})"
+    aria-label="${t("completeList")}"
+    ${listCompleted ? "disabled" : ""}
 >
-    <svg viewBox="0 0 24 24" fill="none">
-        <path d="M4 7H20" />
-        <path d="M10 11V17" />
-        <path d="M14 11V17" />
-        <path d="M6 7L7 21H17L18 7" />
-        <path d="M9 7V4H15V7" />
-    </svg>
+    ${listCompleted ? "✓" : ""}
 </button>
+
+        <button
+            class="list-trash-btn"
+            onclick="openDeleteListModal(event, ${list.id})"
+            aria-label="${t("deleteList")}"
+        >
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 7H20" />
+                <path d="M10 11V17" />
+                <path d="M14 11V17" />
+                <path d="M6 7L7 21H17L18 7" />
+                <path d="M9 7V4H15V7" />
+            </svg>
+        </button>
+
+    </div>
 
 </div>
 
@@ -186,20 +226,6 @@ const renderLists = async (lists, searchQuery = "") => {
     );
 
     listsGrid.innerHTML = cards.join("");
-};
-
-const toggleListMenu = (event, listId) => {
-    event.stopPropagation();
-
-    document.querySelectorAll(".list-action-menu").forEach(menu => {
-        if (menu.id !== `list-menu-${listId}`) {
-            menu.classList.remove("open");
-        }
-    });
-
-    document
-        .getElementById(`list-menu-${listId}`)
-        .classList.toggle("open");
 };
 
 const toggleListPinned = async (event, listId) => {
@@ -309,13 +335,18 @@ const renderSingleList = (list, tasks) => {
     const listColor =
         list.color || DEFAULT_LIST_COLOR;
 
+    const listCompleted =
+        isCurrentOccurrenceCompleted(list);
+
     const sortedTasks = [...tasks].sort((a, b) => {
 
         const aCompleted =
-            a.status === "DONE" || isToday(a.lastCompletedAt);
+            a.status === "DONE"
+            || (listCompleted && a.lastCompletedAt);
 
         const bCompleted =
-            b.status === "DONE" || isToday(b.lastCompletedAt);
+            b.status === "DONE"
+            || (listCompleted && b.lastCompletedAt);
 
         return aCompleted - bCompleted;
     });
@@ -358,14 +389,14 @@ const renderSingleList = (list, tasks) => {
         ${
         tasks.length
             ? sortedTasks.map(task => {
-                const completedToday =
-                    isToday(task.lastCompletedAt);
-
                 const isDone =
                     task.status === "DONE";
 
+                const wasCompletedInCurrentOccurrence =
+                    listCompleted && task.lastCompletedAt;
+
                 const isVisuallyCompleted =
-                    isDone || completedToday;
+                    isDone || wasCompletedInCurrentOccurrence;
 
                 return `
     <div class="list-detail-task ${isVisuallyCompleted ? "done" : ""}">
@@ -491,6 +522,28 @@ const formatDueDate = (dateString) => {
     return `${t("due")} ${formatListDate(dateString)}`;
 };
 
+const getOverdueDays = (dateString) => {
+    if (!dateString) {
+        return 0;
+    }
+
+    const dueDate = new Date(dateString);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.floor(
+            (today - dueDate) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    return diff > 0
+        ? diff
+        : 0;
+};
+
 const formatListSchedule = (list) => {
     const parts = [];
 
@@ -537,6 +590,24 @@ const formatRecurrence = (frequency, intervalValue) => {
     }
 };
 
+const isCurrentOccurrenceCompleted = (list) => {
+    if (!list.isRecurring) {
+        return list.status === "DONE";
+    }
+
+    if (!list.lastCompletedAt || !list.dueAt) {
+        return false;
+    }
+
+    const dueDate = new Date(list.dueAt);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    return dueDate > today;
+};
+
 const isToday = (dateString) => {
     if (!dateString) {
         return false;
@@ -580,7 +651,7 @@ const toggleTaskComplete = async (event, taskId, status) => {
     }
 };
 
-const completeList = async (listId) => {
+const completeList = async (listId, reopenDetail = true) => {
     try {
         const response = await apiFetch(
             `/lists/${listId}/complete`,
@@ -594,7 +665,10 @@ const completeList = async (listId) => {
         }
 
         await loadLists();
-        await openList(listId);
+
+        if (reopenDetail) {
+            await openList(listId);
+        }
 
     } catch (error) {
         listsGrid.innerHTML = `
@@ -603,6 +677,13 @@ const completeList = async (listId) => {
             </p>
         `;
     }
+};
+
+const completeListFromOverview = async (event, listId) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    await completeList(listId, false);
 };
 
 const renderCreateTaskInListForm = (listId) => {

@@ -62,6 +62,8 @@ const translations = {
         dueTomorrow: "Due tomorrow",
         dueYesterday: "Due yesterday",
         overdue: "Overdue",
+        dayOverdue: "day overdue",
+        daysOverdue: "days overdue",
         dueDate: "Due date",
         noDueDate: "No due date",
 
@@ -243,8 +245,11 @@ const translations = {
         dueTomorrow: "Förfaller imorgon",
         dueYesterday: "Förföll igår",
         overdue: "Försenad",
+        dayOverdue: "dag försenad",
+        daysOverdue: "dagar försenad",
         dueDate: "Förfallodatum",
         noDueDate: "Inget datum",
+
 
 
         fullNameValidation: "Fullständigt namn får bara innehålla bokstäver och måste innehålla både för- och efternamn",

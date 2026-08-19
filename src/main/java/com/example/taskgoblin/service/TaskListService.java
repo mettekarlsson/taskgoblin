@@ -11,6 +11,7 @@ import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.TaskListRepository;
 import com.example.taskgoblin.repository.TaskRepository;
 import com.example.taskgoblin.repository.UserRepository;
+import com.example.taskgoblin.repository.CompletionHistoryRepository;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -26,6 +27,8 @@ public class TaskListService {
     private final TaskRepository taskRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final CompletionHistoryRepository completionHistoryRepository;
+
 
 
     /*
@@ -35,12 +38,14 @@ public class TaskListService {
             TaskListRepository taskListRepository,
             TaskRepository taskRepository,
             UserRepository userRepository,
-            CategoryRepository categoryRepository
+            CategoryRepository categoryRepository,
+            CompletionHistoryRepository completionHistoryRepository
     ) {
         this.taskListRepository = taskListRepository;
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.completionHistoryRepository = completionHistoryRepository;
     }
 
 
@@ -278,6 +283,10 @@ public class TaskListService {
         LocalDateTime now =
                 LocalDateTime.now();
 
+        LocalDateTime previousDueAt =
+                taskList.getDueAt();
+
+
         if (taskList.isRecurring()) {
 
             // Store latest completion timestamp
@@ -285,7 +294,7 @@ public class TaskListService {
 
             // Move list to next occurrence
             taskList.setDueAt(
-                    calculateNextDueAt(taskList)
+                    calculateNextDueAt(taskList, now)
             );
 
             // Keep recurring list active
@@ -314,11 +323,89 @@ public class TaskListService {
         TaskList updatedList =
                 taskListRepository.save(taskList);
 
+        // Save list completion in history
+        CompletionHistory history =
+                new CompletionHistory();
+
+        history.setUser(taskList.getUser());
+        history.setList(taskList);
+        history.setCompletedAt(now);
+        history.setPreviousDueAt(previousDueAt);
+
+        completionHistoryRepository.save(history);
+
         // Convert updated entity into DTO
         return TaskListMapper
                 .mapToTaskListDTO(updatedList);
     }
 
+    public TaskListDTO undoLatestCompletion(
+            Long listId,
+            Long userId
+    ) {
+
+        // Find list and verify ownership
+        TaskList taskList = taskListRepository
+                .findByIdAndUserId(listId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Task list"));
+
+        // This undo is for recurring list occurrences
+        if (!taskList.isRecurring()) {
+            throw new InvalidRecurringTaskException(
+                    "Only recurring task lists can undo latest completion."
+            );
+        }
+
+        // Find latest completion history entry
+        CompletionHistory latestCompletion =
+                completionHistoryRepository
+                        .findFirstByListIdAndUserIdOrderByCompletedAtDesc(
+                                listId,
+                                userId
+                        )
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "List completion history"
+                                ));
+
+        // Restore the due date that existed before completion
+        taskList.setDueAt(
+                latestCompletion.getPreviousDueAt()
+        );
+
+        // Remove the completion that is being undone
+        completionHistoryRepository.delete(latestCompletion);
+
+    /*
+     Find the completion before the one we just removed.
+     If none exists, lastCompletedAt becomes null.
+    */
+        LocalDateTime previousCompletedAt =
+                completionHistoryRepository
+                        .findFirstByListIdAndUserIdOrderByCompletedAtDesc(
+                                listId,
+                                userId
+                        )
+                        .map(CompletionHistory::getCompletedAt)
+                        .orElse(null);
+
+        taskList.setLastCompletedAt(previousCompletedAt);
+
+        // Recurring list stays active
+        taskList.setStatus(TaskListStatus.TODO);
+        taskList.setCompletedAt(null);
+
+        taskList.setLastInteractedAt(
+                LocalDateTime.now()
+        );
+
+        TaskList updatedList =
+                taskListRepository.save(taskList);
+
+        return TaskListMapper
+                .mapToTaskListDTO(updatedList);
+    }
 
     public TaskListDTO reopenList(Long listId, Long userId) {
 
@@ -455,43 +542,63 @@ public class TaskListService {
  the due date forward according to frequency
  and interval settings.
 */
-    private LocalDateTime calculateNextDueAt(
+ private LocalDateTime calculateNextDueAt(
+         TaskList taskList,
+         LocalDateTime completedAt
+ ) {
+
+     return switch (taskList.getFrequency()) {
+
+         case DAILY ->
+                 completedAt.plusDays(
+                         taskList.getIntervalValue()
+                 );
+
+         case WEEKLY ->
+                 completedAt.plusWeeks(
+                         taskList.getIntervalValue()
+                 );
+
+         case MONTHLY ->
+                 completedAt.plusMonths(
+                         taskList.getIntervalValue()
+                 );
+
+         case YEARLY ->
+                 completedAt.plusYears(
+                         taskList.getIntervalValue()
+                 );
+     };
+ }
+
+    private LocalDateTime calculatePreviousDueAt(
             TaskList taskList
     ) {
 
-        // Start from current due date
-        LocalDateTime nextDueAt =
+        LocalDateTime dueAt =
                 taskList.getDueAt();
 
-        // Continue until next occurrence is in the future
-        do {
+        return switch (taskList.getFrequency()) {
 
-            nextDueAt =
-                    switch (taskList.getFrequency()) {
+            case DAILY ->
+                    dueAt.minusDays(
+                            taskList.getIntervalValue()
+                    );
 
-                        case DAILY ->
-                                nextDueAt.plusDays(
-                                        taskList.getIntervalValue()
-                                );
+            case WEEKLY ->
+                    dueAt.minusWeeks(
+                            taskList.getIntervalValue()
+                    );
 
-                        case WEEKLY ->
-                                nextDueAt.plusWeeks(
-                                        taskList.getIntervalValue()
-                                );
+            case MONTHLY ->
+                    dueAt.minusMonths(
+                            taskList.getIntervalValue()
+                    );
 
-                        case MONTHLY ->
-                                nextDueAt.plusMonths(
-                                        taskList.getIntervalValue()
-                                );
-
-                        case YEARLY ->
-                                nextDueAt.plusYears(
-                                        taskList.getIntervalValue()
-                                );
-                    };
-
-        } while (!nextDueAt.isAfter(LocalDateTime.now()));
-
-        return nextDueAt;
+            case YEARLY ->
+                    dueAt.minusYears(
+                            taskList.getIntervalValue()
+                    );
+        };
     }
 }
