@@ -11,6 +11,18 @@ const handleRegister = async (event) => {
     const password =
         document.getElementById("password").value;
 
+    const confirmPassword =
+        document.getElementById("confirm-password").value;
+
+    // Check that the password and confirmation match.
+    if (password !== confirmPassword) {
+
+        document.getElementById("confirm-password-error").textContent =
+            "Passwords do not match";
+
+        return;
+    }
+
     // Clear previous error messages before a new submission.
     document.getElementById("name-error").textContent = "";
     document.getElementById("email-error").textContent = "";
