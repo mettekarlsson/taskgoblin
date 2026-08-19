@@ -7,7 +7,7 @@ const handleLogin = async () => {
         document.getElementById("password").value;
 
     const errorElement =
-        document.getElementById("login-error");
+        document.getElementById("login-message");
 
     try {
 
