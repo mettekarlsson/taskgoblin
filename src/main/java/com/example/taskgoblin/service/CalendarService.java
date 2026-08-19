@@ -59,11 +59,29 @@ public class CalendarService {
                 .orElseThrow(() -> new ResourceNotFoundException("User"));
 
         Event event = EventMapper.mapToEventEntity(createEventDTO);
+
+        if (createEventDTO.getIsAllDay()) {
+
+            LocalDateTime start =
+                    createEventDTO.getStartTime()
+                            .toLocalDate()
+                            .atStartOfDay();
+
+            event.setStartTime(start);
+
+            event.setEndTime(
+                    start.toLocalDate()
+                            .plusDays(1)
+                            .atStartOfDay()
+            );
+        }
+
         event.setUser(user);
         event.setCreatedAt(LocalDateTime.now());
 
         // Validates that end time is not before start time
-        if (createEventDTO.getEndTime() != null &&
+        if (createEventDTO.getStartTime() != null &&
+                createEventDTO.getEndTime() != null &&
                 createEventDTO.getEndTime().isBefore(createEventDTO.getStartTime())) {
             throw new InvalidEventException("End time cannot be before start time");
         }
