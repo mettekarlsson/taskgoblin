@@ -18,18 +18,112 @@
 
 <main class="calendar-page">
 
-    <!-- Calendar content -->
+    <!-- Page header -->
+    <section class="calendar-header">
+
+        <div class="calendar-header-text">
+
+            <h1 data-translate="calendar">
+                Calendar
+            </h1>
+
+            <p class="calendar-subtitle">
+                Keep track of your events.
+            </p>
+
+        </div>
+
+
+        <div class="calendar-header-actions">
+
+            <button
+                    class="calendar-search-btn"
+                    onclick="toggleCalendarSearch()"
+                    aria-label="Search events"
+            >
+                🔍
+            </button>
+
+            <button
+                    class="new-event-btn"
+                    onclick="renderCreateEventForm()"
+            >
+                + New event
+            </button>
+
+        </div>
+
+    </section>
+
+
+    <!-- Search -->
+    <section
+            class="calendar-search-view"
+            id="calendar-search-view"
+    >
+
+        <input
+                id="calendar-search"
+                class="calendar-search-input"
+                type="text"
+                placeholder="Search events..."
+        >
+
+    </section>
+
+
+    <!-- Calendar -->
     <section class="calendar-container">
 
-        <h1 data-translate="calendar">Calendar</h1>
 
-        <div id="calendar-content">
-            Loading calendar...
+        <!-- Month navigation -->
+        <div class="calendar-toolbar">
+
+            <button
+                    class="calendar-nav-btn"
+                    onclick="changeCalendarMonth(-1)"
+                    aria-label="Previous month"
+            >
+                ‹
+            </button>
+
+
+            <h2 id="calendar-month-label"></h2>
+
+
+            <button
+                    class="calendar-nav-btn"
+                    onclick="changeCalendarMonth(1)"
+                    aria-label="Next month"
+            >
+                ›
+            </button>
+
+        </div>
+
+        <!-- Weekdays -->
+        <div
+                class="calendar-weekdays"
+                id="calendar-weekdays"
+        ></div>
+
+        <!--
+            JS replaces Loading calendar...
+            when calendar has rendered.
+        -->
+        <div
+                class="calendar-grid"
+                id="calendar-content"
+        >
+            <p class="calendar-loading">
+                Loading calendar...
+            </p>
         </div>
 
     </section>
 
 </main>
+
 
 <footer id="app-footer"></footer>
 
