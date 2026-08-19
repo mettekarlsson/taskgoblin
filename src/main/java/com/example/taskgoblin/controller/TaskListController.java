@@ -200,6 +200,19 @@ public class TaskListController {
         return taskListService.completeList(id, userId);
     }
 
+    @PatchMapping("/{id}/undo-complete")
+    public TaskListDTO undoLatestCompletion(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId = userService
+                .getUserByEmail(userDetails.getUsername())
+                .getId();
+
+        return taskListService
+                .undoLatestCompletion(id, userId);
+    }
 
     @PatchMapping("/{id}/reopen")
     public TaskListDTO reopenList(

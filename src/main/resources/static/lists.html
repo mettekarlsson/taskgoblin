@@ -61,11 +61,11 @@
 
     <div class="modal-content">
 
-        <h2>
+        <h2 data-translate="deleteListTitle">
             Delete list?
         </h2>
 
-        <p>
+        <p data-translate="deleteListMessage">
             This action cannot be undone.
         </p>
 
@@ -74,6 +74,7 @@
             <button
                     class="modal-cancel-btn"
                     onclick="closeDeleteListModal()"
+                    data-translate="cancel"
             >
                 Cancel
             </button>
@@ -81,6 +82,7 @@
             <button
                     class="modal-confirm-btn"
                     onclick="confirmDeleteList()"
+                    data-translate="delete"
             >
                 Delete
             </button>
