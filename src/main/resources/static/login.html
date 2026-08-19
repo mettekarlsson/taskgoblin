@@ -23,23 +23,27 @@
         </div>
         <h1>TaskGoblin</h1>
 
-        <input
-                id="email"
-                class="auth-input"
-                type="email"
-                placeholder="E-mail"
-        >
+        <form id="login-form">
 
-        <input
-                id="password"
-                class="auth-input"
-                type="password"
-                placeholder="Password"
-        >
+            <input
+                    id="email"
+                    class="auth-input"
+                    type="email"
+                    placeholder="E-mail"
+            >
 
-        <button class="auth-btn" onclick="handleLogin()">
-            Login
-        </button>
+            <input
+                    id="password"
+                    class="auth-input"
+                    type="password"
+                    placeholder="Password"
+            >
+
+            <button class="auth-btn" type="submit">
+                Login
+            </button>
+
+        </form>
 
         <p id="login-message" class="auth-message"></p>
 

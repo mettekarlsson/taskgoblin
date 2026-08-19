@@ -1,4 +1,6 @@
-const handleLogin = async () => {
+const handleLogin = async (event) => {
+
+    event.preventDefault();
 
     const email =
         document.getElementById("email").value;
@@ -23,6 +25,10 @@ const handleLogin = async () => {
     }
 
 };
+
+document
+    .getElementById("login-form")
+    .addEventListener("submit", handleLogin);
 
 const successMessage =
     document.getElementById("login-message");
