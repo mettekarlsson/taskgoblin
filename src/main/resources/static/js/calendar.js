@@ -9,34 +9,22 @@ let currentEvents = [];
 const toggleCalendarSearch = () => {
 
     const searchView =
-        document.getElementById(
-            "calendar-search-view"
-        );
+        document.getElementById("calendar-search-view");
 
     const searchInput =
-        document.getElementById(
-            "calendar-search"
-        );
-
+        document.getElementById("calendar-search");
 
     const isOpen =
-        searchView.classList.contains(
-            "open"
-        );
-
+        searchView.classList.contains("open");
 
     if (isOpen) {
-
         closeCalendarSearch();
-
         return;
     }
-
 
     searchView.classList.add("open");
 
     searchInput.value = "";
-
     searchInput.focus();
 };
 
@@ -44,18 +32,12 @@ const toggleCalendarSearch = () => {
 const closeCalendarSearch = () => {
 
     const searchView =
-        document.getElementById(
-            "calendar-search-view"
-        );
+        document.getElementById("calendar-search-view");
 
     const searchInput =
-        document.getElementById(
-            "calendar-search"
-        );
-
+        document.getElementById("calendar-search");
 
     searchView.classList.remove("open");
-
     searchInput.value = "";
 };
 
@@ -63,10 +45,7 @@ const closeCalendarSearch = () => {
 /* Close search with Escape */
 
 const calendarSearchInput =
-    document.getElementById(
-        "calendar-search"
-    );
-
+    document.getElementById("calendar-search");
 
 if (calendarSearchInput) {
 
@@ -75,9 +54,7 @@ if (calendarSearchInput) {
         event => {
 
             if (event.key === "Escape") {
-
                 closeCalendarSearch();
-
             }
 
         }
@@ -92,9 +69,7 @@ if (calendarSearchInput) {
 const loadEvents = async () => {
 
     const calendarContent =
-        document.getElementById(
-            "calendar-content"
-        );
+        document.getElementById("calendar-content");
 
     try {
 
@@ -102,9 +77,7 @@ const loadEvents = async () => {
             await apiFetch("/calendar");
 
         if (!response.ok) {
-            throw new Error(
-                "Failed to load events"
-            );
+            throw new Error("Failed to load events");
         }
 
         currentEvents =
@@ -123,6 +96,11 @@ const loadEvents = async () => {
         console.error(error);
     }
 };
+
+
+/* -------------------------------- */
+/* ISO week                         */
+/* -------------------------------- */
 
 const getISOWeekNumber = (date) => {
 
@@ -163,33 +141,33 @@ const getISOWeekNumber = (date) => {
     );
 };
 
+
+/* -------------------------------- */
+/* Weekdays                         */
+/* -------------------------------- */
+
 const renderWeekdays = () => {
 
     const container =
-        document.getElementById(
-            "calendar-weekdays"
-        );
+        document.getElementById("calendar-weekdays");
+
+    if (!container) {
+        return;
+    }
 
     const locale =
         currentSettings?.language === "sv"
             ? "sv-SE"
             : "en-GB";
 
-
-    /*
-        Start with a known Monday.
-        2024-01-01 was a Monday.
-    */
     const monday =
         new Date(2024, 0, 1);
 
-
     let weekdaysHTML = `
-    <div class="calendar-week-label">
-        ${currentSettings?.language === "sv" ? "V" : "W"}
-    </div>
-`;
-
+        <div class="calendar-week-label">
+            ${currentSettings?.language === "sv" ? "V" : "W"}
+        </div>
+    `;
 
     for (let i = 0; i < 7; i++) {
 
@@ -200,7 +178,6 @@ const renderWeekdays = () => {
             monday.getDate() + i
         );
 
-
         const weekday =
             date.toLocaleDateString(
                 locale,
@@ -209,7 +186,6 @@ const renderWeekdays = () => {
                 }
             );
 
-
         weekdaysHTML += `
             <div>
                 ${weekday}
@@ -217,28 +193,26 @@ const renderWeekdays = () => {
         `;
     }
 
-
     container.innerHTML =
         weekdaysHTML;
 };
 
+
+/* -------------------------------- */
+/* Render calendar                   */
+/* -------------------------------- */
+
 const renderCalendar = () => {
 
     const calendarContent =
-        document.getElementById(
-            "calendar-content"
-        );
+        document.getElementById("calendar-content");
 
     const monthLabel =
-        document.getElementById(
-            "calendar-month-label"
-        );
-
+        document.getElementById("calendar-month-label");
 
     if (!calendarContent || !monthLabel) {
         return;
     }
-
 
     const year =
         currentCalendarDate.getFullYear();
@@ -250,19 +224,18 @@ const renderCalendar = () => {
     /* Month title */
 
     monthLabel.textContent =
-        currentCalendarDate
-            .toLocaleDateString(
-                currentSettings?.language === "sv"
-                    ? "sv-SE"
-                    : "en-GB",
-                {
-                    month: "long",
-                    year: "numeric"
-                }
-            );
+        currentCalendarDate.toLocaleDateString(
+            currentSettings?.language === "sv"
+                ? "sv-SE"
+                : "en-GB",
+            {
+                month: "long",
+                year: "numeric"
+            }
+        );
 
 
-    /* Month info */
+    /* Month information */
 
     const firstDayOfMonth =
         new Date(
@@ -271,7 +244,6 @@ const renderCalendar = () => {
             1
         );
 
-
     const lastDayOfMonth =
         new Date(
             year,
@@ -279,17 +251,14 @@ const renderCalendar = () => {
             0
         );
 
-
     const daysInMonth =
         lastDayOfMonth.getDate();
-
 
     const startDay =
         (
             firstDayOfMonth.getDay()
             + 6
         ) % 7;
-
 
     const previousMonthLastDay =
         new Date(
@@ -298,13 +267,15 @@ const renderCalendar = () => {
             0
         ).getDate();
 
-
     const today =
         new Date();
 
-
     let calendarHTML = "";
 
+
+    /* -------------------------------- */
+    /* Create 42 calendar cells         */
+    /* -------------------------------- */
 
     for (
         let index = 0;
@@ -360,12 +331,10 @@ const renderCalendar = () => {
                     dayNumber
                 );
 
-
             const isToday =
                 dayNumber === today.getDate()
                 && month === today.getMonth()
                 && year === today.getFullYear();
-
 
             if (isToday) {
                 cellClass += " today";
@@ -404,12 +373,8 @@ const renderCalendar = () => {
                     return false;
                 }
 
-
                 const eventDate =
-                    new Date(
-                        event.startTime
-                    );
-
+                    new Date(event.startTime);
 
                 return (
                     eventDate.getFullYear() ===
@@ -423,24 +388,29 @@ const renderCalendar = () => {
                 );
             });
 
+
+        /* Week number */
+
         if (index % 7 === 0) {
 
             const weekNumber =
                 getISOWeekNumber(cellDate);
 
             calendarHTML += `
-        <div class="calendar-week-number">
-            ${weekNumber}
-        </div>
-    `;
+                <div class="calendar-week-number">
+                    ${weekNumber}
+                </div>
+            `;
         }
 
 
-        /* Build one calendar cell */
+        /* Calendar day */
 
         calendarHTML += `
-
-            <div class="${cellClass}" onclick="selectDay('${cellDate.toISOString()}')">
+            <div
+                class="${cellClass}"
+                onclick="selectDay('${cellDate.toISOString()}')"
+            >
 
                 <span class="calendar-day-number">
                     ${dayNumber}
@@ -451,12 +421,14 @@ const renderCalendar = () => {
                     ${eventsForDay.map(event => `
 
                         <button
+                            type="button"
                             class="calendar-event"
                             style="
                                 --event-color:
                                 ${event.color || "var(--primary)"}
                             "
                             data-event-id="${event.id}"
+                            onclick="event.stopPropagation(); openEventDetail(${event.id})"
                         >
 
                             <span class="calendar-event-dot"></span>
@@ -472,16 +444,14 @@ const renderCalendar = () => {
                 </div>
 
             </div>
-
         `;
     }
 
 
-    /* Put finished calendar into HTML */
-
     calendarContent.innerHTML =
         calendarHTML;
 };
+
 
 /* -------------------------------- */
 /* Select day                       */
@@ -489,23 +459,42 @@ const renderCalendar = () => {
 
 const selectDay = (dateString) => {
 
-    // Convert the date string to a Date object
-    const selectedDate = new Date(dateString);
+    const selectedDate =
+        new Date(dateString);
 
-    // Filter out only the events that belong to the selected day
-    const eventsForDay = currentEvents.filter(event => {
+    const eventsForDay = currentEvents
+        .filter(event => {
+            const eventDate = new Date(event.startTime);
 
-        const eventDate = new Date(event.startTime);
-
-        return (
-            eventDate.getFullYear() === selectedDate.getFullYear()
-            && eventDate.getMonth() === selectedDate.getMonth()
-            && eventDate.getDate() === selectedDate.getDate()
+            return (
+                eventDate.getFullYear() === selectedDate.getFullYear()
+                && eventDate.getMonth() === selectedDate.getMonth()
+                && eventDate.getDate() === selectedDate.getDate()
+            );
+        })
+        .sort((a, b) =>
+            new Date(a.startTime) - new Date(b.startTime)
         );
-    });
 
-    // Render the day view with the selected date and its events
-    renderDayView(selectedDate, eventsForDay);
+
+    const dayView =
+        document.getElementById("calendar-day-view");
+
+    if (!dayView) {
+        return;
+    }
+
+    /*
+     * IMPORTANT:
+     * The day view is always shown when a date
+     * is clicked, even if there are no events.
+     */
+    dayView.style.display = "block";
+
+    renderDayView(
+        selectedDate,
+        eventsForDay
+    );
 };
 
 
@@ -513,202 +502,894 @@ const selectDay = (dateString) => {
 /* Day view                         */
 /* -------------------------------- */
 
-const renderDayView = (date, events) => {
+const renderDayView = (
+    date,
+    events
+) => {
 
-    const container = document.getElementById("calendar-day-view");
+    const container =
+        document.getElementById(
+            "calendar-day-view"
+        );
 
-    // Format the date label based on language setting
-    const dateLabel = date.toLocaleDateString(
-        currentSettings?.language === "sv" ? "sv-SE" : "en-GB",
-        { weekday: "long", day: "numeric", month: "long" }
-    );
-
-    // Show message if no events exist for this day
-    if (events.length === 0) {
-        container.innerHTML = `
-    <h2>${dateLabel}</h2>
-    <p class="day-no-events">No events this day</p>
-`;
+    if (!container) {
         return;
     }
 
-    // Render the date label and a list of events
+
+    const locale =
+        currentSettings?.language === "sv"
+            ? "sv-SE"
+            : "en-GB";
+
+
+    const dateLabel =
+        date.toLocaleDateString(
+            locale,
+            {
+                weekday: "long",
+                day: "numeric",
+                month: "long"
+            }
+        );
+
+
+    /*
+     * Always render the day view.
+     * If there are no events, show a message.
+     */
+
+    if (events.length === 0) {
+
+        container.innerHTML = `
+            <h2>${dateLabel}</h2>
+
+            <p class="day-no-events">
+                No events this day
+            </p>
+        `;
+
+        return;
+    }
+
+
     container.innerHTML = `
         <h2>${dateLabel}</h2>
+
         <ul class="day-event-list">
+
             ${events.map(event => `
-                <li onclick="openEventDetail(${event.id})">
-                    <span class="event-dot" style="background: ${event.color || "var(--primary)"}"></span>
-                    <span class="event-time">${new Date(event.startTime).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}</span>
-                    <span class="event-title">${event.title}</span>
+
+                <li
+                    onclick="openEventDetail(${event.id})"
+                >
+
+                    <span
+                        class="event-dot"
+                        style="
+                            background:
+                            ${event.color || "var(--primary)"}
+                        "
+                    ></span>
+
+                    <span class="event-time">
+                        ${new Date(event.startTime)
+        .toLocaleTimeString(
+            [],
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        )}
+                    </span>
+
+                    <span class="event-title">
+                        ${event.title}
+                    </span>
+
                     <span>›</span>
+
                 </li>
+
             `).join("")}
+
         </ul>
     `;
 };
+
 
 /* -------------------------------- */
 /* Event detail modal               */
 /* -------------------------------- */
 
 const openEventDetail = async (id) => {
+
     try {
-        const response = await apiFetch(`/events/${id}`);
+
+        const response =
+            await apiFetch(`/events/${id}`);
 
         if (!response.ok) {
-            throw new Error("Failed to load event");
+            throw new Error(
+                "Failed to load event"
+            );
         }
 
-        const event = await response.json();
+        const event =
+            await response.json();
 
-        // Fill in the modal with event data
-        document.getElementById("modal-event-title").textContent = event.title;
 
-        document.getElementById("modal-event-details").innerHTML = `
-    <div class="event-detail-row">
-        📅 <span>${new Date(event.startTime).toLocaleDateString([], {weekday: "long", day: "numeric", month: "long"})}</span>
-    </div>
-    ${event.endTime ? `
-    <div class="event-detail-row">
-        🕐 <span>${new Date(event.startTime).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})} – ${new Date(event.endTime).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}</span>
-    </div>` : ""}
-    ${event.location ? `
-    <div class="event-detail-row">
-        📍 <span>${event.location}</span>
-    </div>` : ""}
-    ${event.category ? `
-    <div class="event-detail-row">
-        🏷️ <span>${event.category.name}</span>
-    </div>` : ""}
-    ${event.isRecurring ? `
-    <div class="event-detail-row">
-        🔁 <span>${event.frequency}</span>
-    </div>` : ""}
-    ${event.description ? `
-    <div class="event-detail-row">
-        📝 <span>${event.description}</span>
-    </div>` : ""}
-`;
+        document.getElementById(
+            "modal-event-title"
+        ).textContent =
+            event.title;
 
-        // Open the modal
-        document.getElementById("event-detail-modal").classList.add("open");
+
+        document.getElementById(
+            "modal-event-details"
+        ).innerHTML = `
+
+            <div class="event-detail-row">
+                📅
+                <span>
+                    ${new Date(event.startTime)
+            .toLocaleDateString(
+                [],
+                {
+                    weekday: "long",
+                    day: "numeric",
+                    month: "long"
+                }
+            )}
+                </span>
+            </div>
+
+            ${event.endTime ? `
+
+                <div class="event-detail-row">
+                    🕐
+                    <span>
+                        ${new Date(event.startTime)
+            .toLocaleTimeString(
+                [],
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            )}
+
+                        –
+
+                        ${new Date(event.endTime)
+            .toLocaleTimeString(
+                [],
+                {
+                    hour: "2-digit",
+                    minute: "2-digit"
+                }
+            )}
+                    </span>
+                </div>
+
+            ` : ""}
+
+            ${event.location ? `
+
+                <div class="event-detail-row">
+                    📍
+                    <span>
+                        ${event.location}
+                    </span>
+                </div>
+
+            ` : ""}
+
+            ${event.category ? `
+
+                <div class="event-detail-row">
+                    🏷️
+                    <span>
+                        ${event.category.name}
+                    </span>
+                </div>
+
+            ` : ""}
+
+            ${event.isRecurring ? `
+
+                <div class="event-detail-row">
+                    🔁
+                    <span>
+                        ${event.frequency}
+                    </span>
+                </div>
+
+            ` : ""}
+
+            ${event.description ? `
+
+                <div class="event-detail-row">
+                    📝
+                    <span>
+                        ${event.description}
+                    </span>
+                </div>
+
+            ` : ""}
+
+        `;
+
+
+        document
+            .getElementById("event-detail-modal")
+            .classList.add("open");
+
 
     } catch (error) {
+
         alert(error.message);
     }
 };
 
+
 const closeEventDetail = () => {
-    document.getElementById("event-detail-modal").classList.remove("open");
+
+    document
+        .getElementById("event-detail-modal")
+        .classList.remove("open");
 };
 
+
 /* -------------------------------- */
-    /* Change month                     */
-    /* -------------------------------- */
+/* Change month                     */
+/* -------------------------------- */
 
-    const changeCalendarMonth = (
-        amount
-    ) => {
+const changeCalendarMonth = (
+    amount
+) => {
 
-        currentCalendarDate.setMonth(
-            currentCalendarDate.getMonth()
-            + amount
+    currentCalendarDate.setMonth(
+        currentCalendarDate.getMonth()
+        + amount
+    );
+
+    renderCalendar();
+};
+
+
+/* -------------------------------- */
+/* Restore calendar view            */
+/* -------------------------------- */
+
+/*
+ * This is the important part.
+ *
+ * Whenever we leave the create-event form,
+ * restore the entire calendar layout.
+ */
+
+const restoreCalendarView = () => {
+
+    const header =
+        document.querySelector(
+            ".calendar-header"
+        );
+
+    const calendarContainer =
+        document.querySelector(
+            ".calendar-container"
+        );
+
+    const dayView =
+        document.getElementById(
+            "calendar-day-view"
         );
 
 
-        renderCalendar();
+    if (header) {
+        header.style.display = "flex";
+    }
+
+    if (calendarContainer) {
+        calendarContainer.style.display = "block";
+    }
+
+    if (dayView) {
+
+        /*
+         * Keep the day view visible.
+         * This is what allows the user to click
+         * dates and see their events underneath.
+         */
+        dayView.style.display = "block";
+
+        /*
+         * Clear the old create-event form.
+         * Do NOT hide the day view.
+         */
+        dayView.innerHTML = "";
+    }
+
+
+    renderWeekdays();
+    renderCalendar();
+};
+
+
+/* -------------------------------- */
+/* Create event                     */
+/* -------------------------------- */
+
+const renderCreateEventForm = () => {
+
+    const header =
+        document.querySelector(
+            ".calendar-header"
+        );
+
+    const calendarContainer =
+        document.querySelector(
+            ".calendar-container"
+        );
+
+    const dayView =
+        document.getElementById(
+            "calendar-day-view"
+        );
+
+
+    if (header) {
+        header.style.display = "none";
+    }
+
+    if (calendarContainer) {
+        calendarContainer.style.display = "none";
+    }
+
+    if (dayView) {
+
+        dayView.style.display = "block";
+
+        dayView.innerHTML = `
+
+            <section class="event-form-card">
+
+                <h2>New event</h2>
+
+
+                <label for="event-title">
+                    Title
+                </label>
+
+                <input
+                    id="event-title"
+                    class="event-input"
+                    type="text"
+                    placeholder="Event title"
+                >
+
+
+                <div id="event-time-options">
+
+    <label for="event-start">
+        Start time
+    </label>
+
+    <input
+        id="event-start"
+        class="event-input"
+        type="datetime-local"
+    >
+
+    <label for="event-end">
+        End time
+    </label>
+
+    <input
+        id="event-end"
+        class="event-input"
+        type="datetime-local"
+    >
+
+</div>
+
+<div id="event-all-day-options">
+
+    <label for="event-all-day-date">
+        Date
+    </label>
+
+    <input
+        id="event-all-day-date"
+        class="event-input"
+        type="date"
+    >
+
+</div>
+
+<label class="event-checkbox-row">
+
+    <input
+        id="event-is-all-day"
+        type="checkbox"
+        onchange="toggleEventAllDay()"
+    >
+
+    All day event
+
+</label>
+
+
+                <label for="event-location">
+                    Location
+                </label>
+
+                <input
+                    id="event-location"
+                    class="event-input"
+                    type="text"
+                    placeholder="Location (optional)"
+                >
+
+
+                <label for="event-description">
+                    Description
+                </label>
+
+                <input
+                    id="event-description"
+                    class="event-input"
+                    type="text"
+                    placeholder="Description (optional)"
+                >
+
+
+                <label class="event-checkbox-row">
+
+                    <input
+                        id="event-is-recurring"
+                        type="checkbox"
+                        onchange="toggleEventRecurringOptions()"
+                    >
+
+                    Recurring event
+
+                </label>
+
+
+                <div
+                    id="event-recurring-options"
+                    class="event-recurring-options"
+                >
+
+                    <label for="event-interval-value">
+                        Repeat every
+                    </label>
+
+
+                    <div class="event-recurring-row">
+
+                        <input
+                            id="event-interval-value"
+                            class="event-input"
+                            type="number"
+                            min="1"
+                            value="1"
+                        >
+
+
+                        <select
+                            id="event-frequency"
+                            class="event-input"
+                        >
+
+                            <option value="DAILY">
+                                Day
+                            </option>
+
+                            <option value="WEEKLY">
+                                Week
+                            </option>
+
+                            <option value="MONTHLY">
+                                Month
+                            </option>
+
+                            <option value="YEARLY">
+                                Year
+                            </option>
+
+                        </select>
+
+                    </div>
+
+                </div>
+
+
+                <p
+                    id="event-message"
+                    class="event-message"
+                ></p>
+
+
+                <div class="event-form-actions">
+
+                    <button
+                        type="button"
+                        class="event-save-btn"
+                        onclick="submitCreateEvent()"
+                    >
+                        Save
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="event-cancel-btn"
+                        onclick="cancelEventForm()"
+                    >
+                        Cancel
+                    </button>
+
+                </div>
+
+            </section>
+
+        `;
+    }
+    const allDayOptions =
+        document.getElementById(
+            "event-all-day-options"
+        );
+
+    allDayOptions.style.display = "none";
+};
+
+
+/* -------------------------------- */
+/* Submit create event              */
+/* -------------------------------- */
+
+const submitCreateEvent = async () => {
+
+    const title =
+        document
+            .getElementById("event-title")
+            .value
+            .trim();
+
+
+    const location =
+        document
+            .getElementById("event-location")
+            .value
+            .trim();
+
+
+    const description =
+        document
+            .getElementById("event-description")
+            .value
+            .trim();
+
+
+    const isAllDay =
+        document
+            .getElementById("event-is-all-day")
+            .checked;
+
+
+    /* -------------------------------- */
+    /* Validation                       */
+    /* -------------------------------- */
+
+    if (!title) {
+
+        document
+            .getElementById("event-message")
+            .textContent =
+            "Title cannot be empty";
+
+        return;
+    }
+
+
+    let startTime = null;
+    let endTime = null;
+
+
+    /* -------------------------------- */
+    /* Time / all-day handling          */
+    /* -------------------------------- */
+
+    if (isAllDay) {
+
+        const allDayDate =
+            document
+                .getElementById("event-all-day-date")
+                .value;
+
+        if (!allDayDate) {
+
+            document
+                .getElementById("event-message")
+                .textContent =
+                "Date cannot be empty";
+
+            return;
+        }
+
+        startTime =
+            `${allDayDate}T00:00:00`;
+
+        endTime = null;
+
+    } else {
+
+        startTime =
+            document
+                .getElementById("event-start")
+                .value;
+
+        endTime =
+            document
+                .getElementById("event-end")
+                .value;
+
+        if (!startTime) {
+
+            document
+                .getElementById("event-message")
+                .textContent =
+                "Start time cannot be empty";
+
+            return;
+        }
+    }
+
+
+    /* -------------------------------- */
+    /* Recurring                        */
+    /* -------------------------------- */
+
+    const isRecurring =
+        document
+            .getElementById("event-is-recurring")
+            .checked;
+
+
+    const frequency =
+        isRecurring
+            ? document
+                .getElementById("event-frequency")
+                .value
+            : null;
+
+
+    const intervalValue =
+        isRecurring
+            ? Number(
+                document
+                    .getElementById(
+                        "event-interval-value"
+                    )
+                    .value
+            )
+            : null;
+
+
+    /* -------------------------------- */
+    /* Event data                       */
+    /* -------------------------------- */
+
+    const eventData = {
+
+        title,
+
+        description:
+            description || null,
+
+        startTime,
+
+        endTime:
+            endTime || null,
+
+        location:
+            location || null,
+
+        isAllDay,
+
+        isRecurring,
+
+        frequency,
+
+        intervalValue
     };
 
 
     /* -------------------------------- */
-    /* Create event                     */
+    /* Save                              */
     /* -------------------------------- */
 
-const renderCreateEventForm = () => {
+    try {
 
-    document.querySelector(".calendar-header").style.display = "none";
-    document.querySelector(".calendar-container").style.display = "none";
+        const response =
+            await apiFetch(
+                "/events",
+                {
+                    method: "POST",
 
-    const dayView = document.getElementById("calendar-day-view");
-    dayView.style.display = "block";
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
 
-    dayView.innerHTML = `
-        <section class="event-form-card">
+                    body:
+                        JSON.stringify(
+                            eventData
+                        )
+                }
+            );
 
-            <h2>New event</h2>
 
-            <label for="event-title">Title</label>
-            <input id="event-title" class="event-input" type="text" placeholder="Event title">
+        if (!response.ok) {
 
-            <label for="event-start">Start time</label>
-            <input id="event-start" class="event-input" type="datetime-local">
+            let errorMessage =
+                "Failed to create event";
 
-            <label for="event-end">End time</label>
-            <input id="event-end" class="event-input" type="datetime-local">
+            try {
 
-            <label for="event-location">Location</label>
-            <input id="event-location" class="event-input" type="text" placeholder="Location (optional)">
+                const error =
+                    await response.json();
 
-            <label for="event-description">Description</label>
-            <input id="event-description" class="event-input" type="text" placeholder="Description (optional)">
+                errorMessage =
+                    error.message ||
+                    errorMessage;
 
-            <label class="event-checkbox-row">
-                <input id="event-is-all-day" type="checkbox">
-                All day event
-            </label>
+            } catch (e) {
+                // Ignore JSON parsing error
+            }
 
-            <label class="event-checkbox-row">
-                <input id="event-is-recurring" type="checkbox" onchange="toggleEventRecurringOptions()">
-                Recurring event
-            </label>
+            throw new Error(
+                errorMessage
+            );
+        }
 
-                <div id="event-recurring-options" class="event-recurring-options">
-                <label for="event-interval-value">Repeat every</label>
 
-                <div class="event-recurring-row">
-                    <input
-                        id="event-interval-value"
-                        class="event-input"
-                        type="number"
-                        min="1"
-                        value="1"
-                    >
-                    <select id="event-frequency" class="event-input">
-                        <option value="DAILY">Day</option>
-                        <option value="WEEKLY">Week</option>
-                        <option value="MONTHLY">Month</option>
-                        <option value="YEARLY">Year</option>
-                    </select>
-                </div>
+        /*
+         * Reload events so the newly created
+         * event appears in the calendar.
+         */
 
-            </div>
+        await loadEvents();
 
-            <p id="event-message" class="event-message"></p>
 
-            <div class="event-form-actions">
-                <button class="event-save-btn" onclick="createEvent()">Save</button>
-                <button class="event-cancel-btn" onclick="cancelEventForm()">Cancel</button>
-            </div>
+        /*
+         * Return to calendar view.
+         */
 
-        </section>
-    `;
-};
+        restoreCalendarView();
 
-const toggleEventRecurringOptions = () => {
-    const isRecurring = document.getElementById("event-is-recurring").checked;
-    const options = document.getElementById("event-recurring-options");
 
-    if (isRecurring) {
-        options.classList.add("open");
-    } else {
-        options.classList.remove("open");
+    } catch (error) {
+
+        const message =
+            document.getElementById(
+                "event-message"
+            );
+
+        if (message) {
+
+            message.textContent =
+                error.message;
+        }
     }
 };
 
-    /* -------------------------------- */
-    /* Init                             */
-    /* -------------------------------- */
+
+/* -------------------------------- */
+/* Cancel create event              */
+/* -------------------------------- */
+
+const cancelEventForm = () => {
+
+    /*
+     * No API request is needed.
+     *
+     * Just restore the normal calendar UI.
+     */
+
+    restoreCalendarView();
+};
+
+
+/* -------------------------------- */
+/* Recurring options/ All day options               */
+/* -------------------------------- */
+
+const toggleEventAllDay = () => {
+
+    const isAllDay =
+        document
+            .getElementById("event-is-all-day")
+            .checked;
+
+    const timeOptions =
+        document.getElementById(
+            "event-time-options"
+        );
+
+    const allDayOptions =
+        document.getElementById(
+            "event-all-day-options"
+        );
+
+    const startInput =
+        document.getElementById(
+            "event-start"
+        );
+
+    const allDayDateInput =
+        document.getElementById(
+            "event-all-day-date"
+        );
+
+
+    if (isAllDay) {
+
+        /*
+         * Copy the date from the normal start
+         * datetime field if one has been selected.
+         */
+
+        if (
+            startInput.value &&
+            !allDayDateInput.value
+        ) {
+
+            allDayDateInput.value =
+                startInput.value.split("T")[0];
+        }
+
+
+        timeOptions.style.display = "none";
+
+        allDayOptions.style.display = "block";
+
+    } else {
+
+        timeOptions.style.display = "block";
+
+        allDayOptions.style.display = "none";
+    }
+};
+
+const toggleEventRecurringOptions = () => {
+
+    const checkbox =
+        document.getElementById(
+            "event-is-recurring"
+        );
+
+    const options =
+        document.getElementById(
+            "event-recurring-options"
+        );
+
+    if (!checkbox || !options) {
+        return;
+    }
+
+    options.classList.toggle(
+        "open",
+        checkbox.checked
+    );
+};
+
+
+/* -------------------------------- */
+/* Init                             */
+/* -------------------------------- */
 
 const initPage = async () => {
 
