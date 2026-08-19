@@ -346,14 +346,11 @@ const renderSingleList = (list, tasks) => {
         isCurrentOccurrenceCompleted(list);
 
     const sortedTasks = [...tasks].sort((a, b) => {
-
         const aCompleted =
-            a.status === "DONE"
-            || (listCompleted && a.lastCompletedAt);
+            a.status === "DONE";
 
         const bCompleted =
-            b.status === "DONE"
-            || (listCompleted && b.lastCompletedAt);
+            b.status === "DONE";
 
         return aCompleted - bCompleted;
     });
@@ -396,15 +393,8 @@ const renderSingleList = (list, tasks) => {
         ${
         tasks.length
             ? sortedTasks.map(task => {
-                const isDone =
-                    task.status === "DONE";
-
-                const wasCompletedInCurrentOccurrence =
-                    listCompleted && task.lastCompletedAt;
-
                 const isVisuallyCompleted =
-                    isDone || wasCompletedInCurrentOccurrence;
-
+                    task.status === "DONE";
                 return `
     <div class="list-detail-task ${isVisuallyCompleted ? "done" : ""}">
 
@@ -453,9 +443,17 @@ const renderSingleList = (list, tasks) => {
     
     <button
     class="list-complete-btn"
-    onclick="completeList(${list.id})"
+    onclick="${
+        listCompleted && list.isRecurring
+            ? `undoListCompletion(${list.id})`
+            : `completeList(${list.id})`
+    }"
 >
-    ${t("completeList")}
+    ${
+        listCompleted && list.isRecurring
+            ? t("undoCompletion")
+            : t("completeList")
+    }
 </button>
 
     <div class="list-detail-footer">
@@ -598,21 +596,7 @@ const formatRecurrence = (frequency, intervalValue) => {
 };
 
 const isCurrentOccurrenceCompleted = (list) => {
-    if (!list.isRecurring) {
-        return list.status === "DONE";
-    }
-
-    if (!list.lastCompletedAt || !list.dueAt) {
-        return false;
-    }
-
-    const dueDate = new Date(list.dueAt);
-    const today = new Date();
-
-    dueDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    return dueDate > today;
+    return list.status === "DONE";
 };
 
 const isToday = (dateString) => {
@@ -676,6 +660,31 @@ const completeList = async (listId, reopenDetail = true) => {
         if (reopenDetail) {
             await openList(listId);
         }
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
+
+const undoListCompletion = async (listId) => {
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/undo-complete`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUndoListCompletion"));
+        }
+
+        await loadLists();
+        await openList(listId);
 
     } catch (error) {
         listsGrid.innerHTML = `
