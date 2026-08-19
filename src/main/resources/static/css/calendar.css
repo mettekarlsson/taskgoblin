@@ -325,7 +325,7 @@
 }
 
 
-.calendar-day.outside-month
+.calendar-day.outside-month,
 .calendar-day-number {
     opacity: 0.4;
 }
@@ -333,7 +333,7 @@
 
 /* Today */
 
-.calendar-day.today
+.calendar-day.today,
 .calendar-day-number {
     background: var(--primary);
     color: var(--background);
