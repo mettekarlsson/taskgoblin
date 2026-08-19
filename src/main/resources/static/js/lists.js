@@ -195,9 +195,16 @@ ${
 
         <button
     class="list-complete-check ${listCompleted ? "checked" : ""}"
-    onclick="completeListFromOverview(event, ${list.id})"
-    aria-label="${t("completeList")}"
-    ${listCompleted ? "disabled" : ""}
+    onclick="${
+                listCompleted && list.isRecurring
+                    ? `undoListCompletionFromOverview(event, ${list.id})`
+                    : `completeListFromOverview(event, ${list.id})`
+            }"
+    aria-label="${
+                listCompleted && list.isRecurring
+                    ? t("undoCompletion")
+                    : t("completeList")
+            }"
 >
     ${listCompleted ? "✓" : ""}
 </button>
@@ -685,7 +692,32 @@ const completeListFromOverview = async (event, listId) => {
 
     await completeList(listId, false);
 };
+const undoListCompletionFromOverview = async (event, listId) => {
+    event.preventDefault();
+    event.stopPropagation();
 
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/undo-complete`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUndoListCompletion"));
+        }
+
+        await loadLists();
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
 const renderCreateTaskInListForm = (listId) => {
     document.getElementById("create-task-in-list-container").innerHTML = `
         <section class="list-task-form">

@@ -166,6 +166,8 @@ const translations = {
         recurringList: "Recurring list",
 
         completeList: "Complete list",
+        undoCompletion: "Undo completion",
+        failedToUndoListCompletion: "Failed to undo list completion",
 
         listNameCannotBeEmpty: "List name cannot be empty",
         recurringListNeedsDueDate: "Recurring lists need a due date",
@@ -349,7 +351,10 @@ const translations = {
 
         chooseIcon: "Välj ikon",
         recurringList: "Återkommande lista",
+
         completeList: "Slutför lista",
+        undoCompletion: "Ångra slutförande",
+        failedToUndoListCompletion: "Kunde inte ångra slutförandet",
 
         listNameCannotBeEmpty: "Listans namn får inte vara tomt",
         recurringListNeedsDueDate: "Återkommande listor behöver ett förfallodatum",
