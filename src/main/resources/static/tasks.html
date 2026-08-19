@@ -16,81 +16,118 @@
 
 <header id="app-header"></header>
 
-<main class="task-page">
+<main class="tasks-page">
 
-    <!-- Note content -->
-    <section class="task-container">
+    <section class="tasks-header">
 
-        <div class="task-topbar">
-
-            <div>
-
-                <h1 class="task-title"
-                    data-translate="tasks"
-                >
-                    Tasks
-                </h1>
-
-                <p class="task-subtitle"
-                   data-translate="taskSubtitle"
-                >
-                    Keep track of your tasks.
-                </p>
-
-            </div>
-
-            <div class="task-top-actions">
-
-                <button class="task-search-btn">
-                    🔍
-                </button>
-
-                <button
-                        class="task-new-btn"
-                        onclick="renderCreateTaskForm()"
-                        data-translate="newTask">
-                    + New task
-                </button>
-
-            </div>
-
+        <div>
+            <h1 data-translate="tasks">Tasks</h1>
+            <p class="tasks-subtitle" data-translate="taskSubtitle">
+                Keep track of your tasks.
+            </p>
         </div>
 
-        <div class="task-filters">
-
-            <button class="task-filter active"
-                    data-translate="all"
+        <div class="tasks-header-actions">
+            <button
+                    class="tasks-search-btn"
+                    onclick="toggleTaskSearch()"
             >
-                All
+                🔍
             </button>
 
-            <button class="task-filter"
-                    data-translate="today"
-            >
-                Today
+            <button class="new-task-btn" onclick="renderCreateTaskForm()">
+                <span data-translate="newTask">+ New task</span>
             </button>
-
-            <button class="task-filter"
-                    data-translate="upcoming"
-            >
-                Upcoming
-            </button>
-
-            <button class="task-filter"
-                    data-translate="completed"
-            >
-                Completed
-            </button>
-
-        </div>
-
-        <div id="task-content">
-            Loading tasks...
         </div>
 
     </section>
 
+    <section class="tasks-search-view" id="tasks-search-view">
+        <input
+                id="tasks-search"
+                class="tasks-search-input"
+                type="text"
+                data-translate-placeholder="searchTasks"
+                placeholder="Search tasks..."
+        >
+    </section>
+
+    <section class="task-filters">
+        <button
+                class="task-filter active"
+                data-filter="all"
+                onclick="setTaskFilter('all')"
+                data-translate="all">
+            All
+        </button>
+
+        <button
+                class="task-filter"
+                data-filter="today"
+                onclick="setTaskFilter('today')"
+                data-translate="today">
+            Today
+        </button>
+
+        <button
+                class="task-filter"
+                data-filter="upcoming"
+                onclick="setTaskFilter('upcoming')"
+                data-translate="upcoming">
+            Upcoming
+        </button>
+
+        <button
+                class="task-filter"
+                data-filter="completed"
+                onclick="setTaskFilter('completed')"
+                data-translate="completed">
+            Completed
+        </button>
+
+    </section>
+
+    <section id="task-content">
+        Loading tasks...
+    </section>
+
 </main>
+
+<div class="modal" id="delete-task-modal">
+
+    <div class="modal-content">
+
+        <h2 data-translate="deleteTaskTitle">
+            Delete task?
+        </h2>
+
+        <p data-translate="deleteTaskMessage">
+            This action cannot be undone.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                    class="modal-cancel-btn"
+                    onclick="closeDeleteTaskModal()"
+                    data-translate="cancel"
+            >
+                Cancel
+            </button>
+
+            <button
+                    class="modal-confirm-btn"
+                    onclick="confirmDeleteTask()"
+                    data-translate="delete"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
 
 <footer id="app-footer"></footer>
 

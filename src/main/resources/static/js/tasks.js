@@ -1,9 +1,44 @@
 const taskContent =
     document.getElementById("task-content");
 
-// Stores tasks loaded from the backend.
 let currentTasks = [];
-// Stores which task card is currently expanded.
+
+let currentTaskFilter = "all";
+
+let taskToDeleteId = null;
+
+const setTaskFilter = (filter) => {
+
+    currentTaskFilter = filter;
+
+    document
+        .querySelectorAll(".task-filter")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.filter === filter
+            );
+
+        });
+
+    const searchInput =
+        document.getElementById("tasks-search");
+
+    const query =
+        searchInput
+            ? searchInput.value.trim().toLowerCase()
+            : "";
+
+    const filteredTasks =
+        currentTasks.filter(task =>
+            (task.title || "")
+                .toLowerCase()
+                .includes(query)
+        );
+
+    renderTasks(filteredTasks);
+};
 
 // Formats backend date into readable text.
 const formatDate = (dateString) => {
@@ -12,8 +47,106 @@ const formatDate = (dateString) => {
         return t("noDueDate");
     }
 
-    return new Date(dateString)
-        .toLocaleString();
+    const date =
+        new Date(dateString);
+
+    const today =
+        new Date();
+
+    date.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.round(
+            (date - today) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    if (diff === 0) {
+        return t("today");
+    }
+
+    if (diff === 1) {
+        return t("tomorrow");
+    }
+
+    if (diff === -1) {
+        return t("yesterday");
+    }
+
+    return date.toLocaleDateString(
+        currentSettings?.language === "sv"
+            ? "sv-SE"
+            : "en-GB",
+        {
+            day: "numeric",
+            month: "short",
+            year: "numeric"
+        }
+    );
+};
+
+const getStartOfToday = () => {
+
+    const today = new Date();
+
+    today.setHours(0, 0, 0, 0);
+
+    return today;
+};
+
+
+const getStartOfTomorrow = () => {
+
+    const tomorrow = getStartOfToday();
+
+    tomorrow.setDate(
+        tomorrow.getDate() + 1
+    );
+
+    return tomorrow;
+};
+
+
+const isTaskOverdue = (task) => {
+
+    if (!task.dueAt) {
+        return false;
+    }
+
+    const dueDate =
+        new Date(task.dueAt);
+
+    return dueDate < getStartOfToday();
+};
+
+
+const isTaskDueToday = (task) => {
+
+    if (!task.dueAt) {
+        return false;
+    }
+
+    const dueDate =
+        new Date(task.dueAt);
+
+    return (
+        dueDate >= getStartOfToday() &&
+        dueDate < getStartOfTomorrow()
+    );
+};
+
+
+const isTaskUpcoming = (task) => {
+
+    if (!task.dueAt) {
+        return false;
+    }
+
+    const dueDate =
+        new Date(task.dueAt);
+
+    return dueDate >= getStartOfTomorrow();
 };
 
 const toggleTaskMenu = (event, taskId) => {
@@ -43,6 +176,42 @@ const toggleTaskMenu = (event, taskId) => {
 
 };
 
+const toggleTaskSearch = () => {
+
+    const searchView =
+        document.getElementById("tasks-search-view");
+
+    const searchInput =
+        document.getElementById("tasks-search");
+
+    const isOpen =
+        searchView.classList.contains("open");
+
+    if (isOpen) {
+        closeTaskSearch();
+        return;
+    }
+
+    searchView.classList.add("open");
+
+    searchInput.value = "";
+    searchInput.focus();
+
+    renderTasks();
+};
+
+const closeTaskSearch = () => {
+
+    document
+        .getElementById("tasks-search-view")
+        .classList.remove("open");
+
+    document
+        .getElementById("tasks-search")
+        .value = "";
+
+    renderTasks();
+};
 
 // Loads all tasks for the current user.
 const loadTasks = async () => {
@@ -56,8 +225,13 @@ const loadTasks = async () => {
             throw new Error(t("failedToLoadTasks"));
         }
 
-        currentTasks =
+        const tasks =
             await response.json();
+
+        currentTasks =
+            tasks.filter(
+                task => task.listId == null
+            );
 
         renderTasks();
 
@@ -72,27 +246,57 @@ const loadTasks = async () => {
 };
 
 // Renders all tasks to the page.
-const renderTasks = () => {
+const renderTasks = (tasks = currentTasks) => {
 
     // Shows message if there are no tasks.
-    if (currentTasks.length === 0) {
+    if (tasks.length === 0) {
+
+        const searchQuery =
+            document
+                .getElementById("tasks-search")
+                ?.value
+                .trim();
 
         taskContent.innerHTML = `
-            <p>${t("noTasksYet")}</p>
-        `;
+        <p class="tasks-empty">
+            ${searchQuery
+            ? t("noTasksMatchSearch")
+            : t("noTasksYet")}
+        </p>
+    `;
 
         return;
     }
 
     // Splits active and completed tasks.
     const activeTasks =
-        currentTasks.filter(
+        tasks.filter(
             task => task.status !== "DONE"
         );
 
     const completedTasks =
-        currentTasks.filter(
+        tasks.filter(
             task => task.status === "DONE"
+        );
+
+    const overdueTasks =
+        activeTasks.filter(
+            task => isTaskOverdue(task)
+        );
+
+    const todayTasks =
+        activeTasks.filter(
+            task => isTaskDueToday(task)
+        );
+
+    const upcomingTasks =
+        activeTasks.filter(
+            task => isTaskUpcoming(task)
+        );
+
+    const noDueDateTasks =
+        activeTasks.filter(
+            task => !task.dueAt
         );
 
     // Renders a single task row.
@@ -103,7 +307,7 @@ const renderTasks = () => {
 
         return `
 
-            <div class="task-row">
+            <div class="task-row ${task.status === "DONE" ? "completed" : ""}">
 
                 <div class="task-row-content">
 
@@ -113,33 +317,55 @@ const renderTasks = () => {
 
     <div class="task-title-group">
 
-        <button
-            class="task-status-btn
-                ${task.status === "DONE"
+       <button
+    class="task-status-btn
+        ${task.status === "DONE"
             ? "completed"
             : ""}"
-            onclick="
-                ${task.status === "DONE"
+    data-task-id="${task.id}"
+    onclick="
+        ${task.status === "DONE"
             ? `reopenTask(${task.id})`
             : `completeTask(${task.id})`}
-            "
-        >
-            ${task.status === "DONE"
+    "
+>
+    <span class="task-status-icon">
+        ${task.status === "DONE"
             ? "✓"
-            : "○"}
-        </button>
+            : ""}
+    </span>
+</button>
 
-        <h3 class="task-row-title">
-            ${task.title}
-        </h3>
+        <div class="task-title-content">
+
+    <h3 class="task-row-title">
+        ${task.title}
+    </h3>
+
+    ${
+            task.isRecurring && task.lastCompletedAt
+                ? `
+                <span class="task-last-completed">
+                    ${t("lastCompleted")} ${formatDate(task.lastCompletedAt)}
+                </span>
+            `
+                : ""
+        }
+
+</div>
 
     </div>
 
                             <div class="task-row-meta">
 
-                                <span class="priority-badge ${priorityClass}">
-                                    ${task.priority || "NONE"}
-                                </span>
+                                ${task.priority && task.priority !== "NONE"
+            ? `
+        <span class="priority-badge ${priorityClass}">
+            ${t(task.priority.toLowerCase())}
+        </span>
+    `
+            : ""
+        }
 
                                 <p class="task-row-date">
                                     ${formatDate(task.dueAt)}
@@ -173,16 +399,16 @@ const renderTasks = () => {
                     openUpdateTaskModal(${task.id})
                 "
             >
-                ${t("updateTask")}
+                ${t("update")}
             </button>
 
             <button
-                onclick="
-                    deleteTask(${task.id})
-                "
-            >
-                ${t("deleteTask")}
-            </button>
+    onclick="
+        openDeleteTaskModal(${task.id})
+    "
+>
+    ${t("delete")}
+</button>
 
         </div>
 
@@ -197,39 +423,148 @@ const renderTasks = () => {
                 </div>
 
             </div>
+         </div>
 
         `;
     };
+    const renderTaskSection = (
+        title,
+        tasks
+    ) => {
 
+        if (tasks.length === 0) {
+            return "";
+        }
+
+        return `
+    <div class="task-section">
+
+        <h2 class="task-section-title">
+            ${title}
+        </h2>
+
+        <div class="task-section-list">
+            ${tasks
+            .map(renderTaskRow)
+            .join("")}
+        </div>
+
+    </div>
+`;
+    };
+
+    const renderEmptyTasks = () => {
+        return `
+        <p class="tasks-empty">
+            ${t("noTasksYet")}
+        </p>
+    `;
+    };
+
+    if (currentTaskFilter === "today") {
+
+        taskContent.innerHTML =
+            todayTasks.length > 0
+                ? renderTaskSection(
+                    t("today"),
+                    todayTasks
+                )
+                : renderEmptyTasks();
+
+        return;
+    }
+
+
+    if (currentTaskFilter === "upcoming") {
+
+        taskContent.innerHTML =
+            upcomingTasks.length > 0
+                ? renderTaskSection(
+                    t("upcoming"),
+                    upcomingTasks
+                )
+                : renderEmptyTasks();
+
+        return;
+    }
+
+
+    if (currentTaskFilter === "completed") {
+
+        taskContent.innerHTML =
+            completedTasks.length > 0
+                ? renderTaskSection(
+                    t("completed"),
+                    completedTasks
+                )
+                : renderEmptyTasks();
+
+        return;
+    }
+
+
+    // Default = All
     taskContent.innerHTML = `
 
-        <div class="task-section">
+        ${renderTaskSection(
+        t("overdue"),
+        overdueTasks
+    )}
 
-            <h2 class="task-section-title">
-                ${t("today")}
-            </h2>
+        ${renderTaskSection(
+        t("today"),
+        todayTasks
+    )}
 
-            ${activeTasks
-        .map(renderTaskRow)
-        .join("")}
+        ${renderTaskSection(
+        t("upcoming"),
+        upcomingTasks
+    )}
 
-        </div>
+        ${renderTaskSection(
+        t("noDueDate"),
+        noDueDateTasks
+    )}
 
-        <div class="task-section">
-
-            <h2 class="task-section-title">
-                ${t("completed")}
-            </h2>
-
-            ${completedTasks
-        .map(renderTaskRow)
-        .join("")}
-
-        </div>
+        ${renderTaskSection(
+        t("completed"),
+        completedTasks
+    )}
 
     `;
 
 };
+
+const taskSearchInput =
+    document.getElementById("tasks-search");
+
+if (taskSearchInput) {
+
+    taskSearchInput.addEventListener("input", (event) => {
+
+        const query =
+            event.target.value
+                .trim()
+                .toLowerCase();
+
+        const filteredTasks =
+            currentTasks.filter(task =>
+                (task.title || "")
+                    .toLowerCase()
+                    .includes(query)
+            );
+
+        renderTasks(filteredTasks);
+    });
+
+    taskSearchInput.addEventListener("keydown", (event) => {
+
+        if (event.key === "Escape") {
+            closeTaskSearch();
+        }
+
+    });
+}
 
 // Runs automatically when the page loads.
 const initPage = async () => {
@@ -246,6 +581,47 @@ const createTask = async () => {
             .value
             .trim();
 
+    const priorityInput =
+        document.getElementById("task-priority");
+
+    const dueDateInput =
+        document.getElementById("task-due-at");
+
+    const priority =
+        priorityInput
+            ? priorityInput.value
+            : null;
+
+    const dueDate =
+        dueDateInput
+            ? dueDateInput.value
+            : null;
+
+    const dueAt =
+        dueDate
+            ? `${dueDate}T00:00:00`
+            : null;
+
+    const isRecurringInput =
+        document.getElementById("task-is-recurring");
+
+    const isRecurring =
+        isRecurringInput
+            ? isRecurringInput.checked
+            : false;
+
+    const frequency =
+        isRecurring
+            ? document.getElementById("task-frequency").value
+            : null;
+
+    const intervalValue =
+        isRecurring
+            ? Number(
+                document.getElementById("task-interval-value").value
+            )
+            : null;
+
     if (!title) {
 
         alert(t("taskTitleRequired"));
@@ -253,14 +629,37 @@ const createTask = async () => {
         return;
     }
 
+    if (isRecurring && !dueAt) {
+
+        alert(
+            t("recurringTaskNeedsDueDate")
+        );
+
+        return;
+    }
+
     try {
+
+        const taskData = {
+            title,
+            priority,
+            dueAt,
+            isRecurring
+        };
+
+        if (isRecurring) {
+            taskData.frequency = frequency;
+            taskData.intervalValue = intervalValue;
+        }
 
         const response =
             await apiFetch("/tasks", {
                 method: "POST",
-                body: JSON.stringify({
-                    title
-                })
+                headers: {
+                    "Content-Type":
+                        "application/json"
+                },
+                body: JSON.stringify(taskData)
             });
 
         if (!response.ok) {
@@ -287,29 +686,85 @@ const createTask = async () => {
 // Marks a task as completed.
 const completeTask = async (taskId) => {
 
+    const task =
+        currentTasks.find(
+            task => task.id === taskId
+        );
+
+    const button =
+        document.querySelector(
+            `.task-status-btn[data-task-id="${taskId}"]`
+        );
+
+    const icon =
+        button?.querySelector(
+            ".task-status-icon"
+        );
+
+    const isRecurring =
+        task?.isRecurring;
+
+    if (
+        isRecurring &&
+        button &&
+        icon
+    ) {
+        button.classList.add(
+            "recurring-completing"
+        );
+
+        button.disabled = true;
+
+        icon.textContent = "↻";
+    }
+
     try {
 
-        const response =
-            await apiFetch(`/tasks/${taskId}/complete`, {
+        const request =
+            apiFetch(`/tasks/${taskId}/complete`, {
                 method: "PATCH"
             });
 
+        const minimumAnimation =
+            isRecurring
+                ? new Promise(resolve =>
+                    setTimeout(resolve, 700)
+                )
+                : Promise.resolve();
+
+        const [response] =
+            await Promise.all([
+                request,
+                minimumAnimation
+            ]);
+
         if (!response.ok) {
-            throw new Error("Failed to complete task");
+            throw new Error(
+                t("failedToUpdateTask")
+            );
         }
 
-        // Reload tasks after update.
         await loadTasks();
 
     } catch (error) {
 
+        if (
+            isRecurring &&
+            button &&
+            icon
+        ) {
+            button.classList.remove(
+                "recurring-completing"
+            );
+
+            button.disabled = false;
+
+            icon.textContent = "";
+        }
+
         alert(error.message);
-
     }
-
 };
-
-
 // Reopens a completed task.
 const reopenTask = async (taskId) => {
 
@@ -336,29 +791,421 @@ const reopenTask = async (taskId) => {
 };
 
 // Deletes a task.
-const deleteTask = async (taskId) => {
+        const openDeleteTaskModal = (taskId) => {
+            taskToDeleteId = taskId;
 
-    const confirmed =
-        confirm(t("deleteTaskConfirm"));
+            document
+                .getElementById("delete-task-modal")
+                .classList.add("open");
+        };
 
-    if (!confirmed) {
+        const closeDeleteTaskModal = () => {
+            taskToDeleteId = null;
+
+            document
+                .getElementById("delete-task-modal")
+                .classList.remove("open");
+        };
+
+        const confirmDeleteTask = async () => {
+
+            if (!taskToDeleteId) {
+                return;
+            }
+
+            try {
+
+                const response =
+                    await apiFetch(
+                        `/tasks/${taskToDeleteId}`,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+                if (!response.ok) {
+                    throw new Error(
+                        t("failedToDeleteTask")
+                    );
+                }
+
+                await loadTasks();
+
+                closeDeleteTaskModal();
+
+            } catch (error) {
+                alert(error.message);
+            }
+        };
+
+const openUpdateTaskModal = (taskId) => {
+
+    const task =
+        currentTasks.find(
+            task => task.id === taskId
+        );
+
+    if (!task) {
         return;
     }
+
+    document
+        .querySelector(".task-filters")
+        .style.display = "none";
+
+    const dueDate =
+        task.dueAt
+            ? task.dueAt.split("T")[0]
+            : "";
+
+    taskContent.innerHTML = `
+        <section class="task-form-card">
+
+            <h2>${t("updateTask")}</h2>
+
+            <label for="task-title">
+                ${t("title")}
+            </label>
+
+            <input
+                id="task-title"
+                class="task-input"
+                type="text"
+                value="${task.title || ""}"
+            >
+
+            <button
+                class="task-details-btn"
+                onclick="toggleUpdateTaskDetails(${task.id})"
+            >
+                ${t("addMoreDetails")} ⌄
+            </button>
+
+            <div id="task-extra-fields"></div>
+
+            <p id="task-message"></p>
+
+            <div class="task-form-actions">
+
+                <button
+                    class="task-save-btn"
+                    onclick="updateTask(${task.id})"
+                >
+                    ${t("save")}
+                </button>
+
+                <button
+                    class="task-cancel-btn"
+                    onclick="loadTasks()"
+                >
+                    ${t("cancel")}
+                </button>
+
+            </div>
+
+        </section>
+    `;
+};
+
+const toggleUpdateTaskDetails = (taskId) => {
+
+    const container =
+        document.getElementById(
+            "task-extra-fields"
+        );
+
+    const button =
+        document.querySelector(
+            ".task-details-btn"
+        );
+
+    const isOpen =
+        container.innerHTML.trim() !== "";
+
+    if (isOpen) {
+
+        container.innerHTML = "";
+
+        button.textContent =
+            `${t("addMoreDetails")} ⌄`;
+
+        return;
+    }
+
+    const task =
+        currentTasks.find(
+            task => task.id === taskId
+        );
+
+    if (!task) {
+        return;
+    }
+
+    const dueDate =
+        task.dueAt
+            ? task.dueAt.split("T")[0]
+            : "";
+
+    const priority =
+        task.priority || "NONE";
+
+    container.innerHTML = `
+        <label>
+            ${t("priority")}
+        </label>
+
+        <div class="task-priority-options">
+
+            <button
+                type="button"
+                class="task-priority-chip none
+                    ${priority === "NONE" ? "selected" : ""}"
+                data-priority="NONE"
+                onclick="selectTaskPriority(this)"
+            >
+                ${t("none")}
+            </button>
+
+            <button
+                type="button"
+                class="task-priority-chip low
+                    ${priority === "LOW" ? "selected" : ""}"
+                data-priority="LOW"
+                onclick="selectTaskPriority(this)"
+            >
+                ${t("low")}
+            </button>
+
+            <button
+                type="button"
+                class="task-priority-chip medium
+                    ${priority === "MEDIUM" ? "selected" : ""}"
+                data-priority="MEDIUM"
+                onclick="selectTaskPriority(this)"
+            >
+                ${t("medium")}
+            </button>
+
+            <button
+                type="button"
+                class="task-priority-chip high
+                    ${priority === "HIGH" ? "selected" : ""}"
+                data-priority="HIGH"
+                onclick="selectTaskPriority(this)"
+            >
+                ${t("high")}
+            </button>
+
+        </div>
+
+        <input
+            type="hidden"
+            id="task-priority"
+            value="${priority}"
+        >
+
+        <label for="task-due-at">
+            ${t("dueDate")}
+        </label>
+
+        <input
+            id="task-due-at"
+            class="task-input"
+            type="date"
+            value="${dueDate}"
+        >
+
+        <label class="task-checkbox-row">
+
+            <input
+                id="task-is-recurring"
+                type="checkbox"
+                onchange="toggleTaskRecurringOptions()"
+                ${task.isRecurring ? "checked" : ""}
+            >
+
+            ${t("recurringTask")}
+
+        </label>
+
+        <div
+            id="task-recurring-options"
+            class="task-recurring-options
+                ${task.isRecurring ? "open" : ""}"
+        >
+
+            <label for="task-interval-value">
+                ${t("repeatEvery")}
+            </label>
+
+            <div class="task-recurring-row">
+
+                <input
+                    id="task-interval-value"
+                    class="task-input"
+                    type="number"
+                    min="1"
+                    value="${task.intervalValue || 1}"
+                >
+
+                <select
+                    id="task-frequency"
+                    class="task-input"
+                >
+                    <option
+                        value="DAILY"
+                        ${task.frequency === "DAILY" ? "selected" : ""}
+                    >
+                        ${t("day")}
+                    </option>
+
+                    <option
+                        value="WEEKLY"
+                        ${task.frequency === "WEEKLY" ? "selected" : ""}
+                    >
+                        ${t("week")}
+                    </option>
+
+                    <option
+                        value="MONTHLY"
+                        ${task.frequency === "MONTHLY" ? "selected" : ""}
+                    >
+                        ${t("month")}
+                    </option>
+
+                    <option
+                        value="YEARLY"
+                        ${task.frequency === "YEARLY" ? "selected" : ""}
+                    >
+                        ${t("year")}
+                    </option>
+                </select>
+
+            </div>
+
+        </div>
+    `;
+
+    button.textContent =
+        `${t("lessDetails")} ⌃`;
+};
+
+const updateTask = async (taskId) => {
+
+    const existingTask =
+        currentTasks.find(
+            task => task.id === taskId
+        );
+
+    if (!existingTask) {
+        return;
+    }
+
+    const title =
+        document
+            .getElementById("task-title")
+            .value
+            .trim();
+
+    const priorityInput =
+        document.getElementById("task-priority");
+
+    const dueDateInput =
+        document.getElementById("task-due-at");
+
+    const recurringInput =
+        document.getElementById("task-is-recurring");
+
+    /*
+     If More details was never opened,
+     keep the task's existing values.
+    */
+    const priority =
+        priorityInput
+            ? priorityInput.value
+            : existingTask.priority;
+
+    const dueAt =
+        dueDateInput
+            ? (
+                dueDateInput.value
+                    ? `${dueDateInput.value}T00:00:00`
+                    : null
+            )
+            : existingTask.dueAt;
+
+    const isRecurring =
+        recurringInput
+            ? recurringInput.checked
+            : existingTask.isRecurring;
+
+    const frequency =
+        isRecurring
+            ? (
+                document.getElementById("task-frequency")?.value
+                ?? existingTask.frequency
+            )
+            : null;
+
+    const intervalValue =
+        isRecurring
+            ? Number(
+                document.getElementById("task-interval-value")?.value
+                ?? existingTask.intervalValue
+            )
+            : null;
+
+    if (!title) {
+
+        alert(t("taskTitleRequired"));
+
+        return;
+    }
+
+    if (isRecurring && !dueAt) {
+
+        alert(
+            t("recurringTaskNeedsDueDate")
+        );
+
+        return;
+    }
+
+    const taskData = {
+        title,
+        dueAt,
+        priority,
+        categoryId:
+            existingTask.categoryId ?? null,
+        taskListId:
+            existingTask.listId ?? null,
+        isRecurring,
+        frequency,
+        intervalValue
+    };
 
     try {
 
         const response =
-            await apiFetch(`/tasks/${taskId}`, {
-                method: "DELETE"
-            });
+            await apiFetch(
+                `/tasks/${taskId}`,
+                {
+                    method: "PUT",
+                    headers: {
+                        "Content-Type":
+                            "application/json"
+                    },
+                    body:
+                        JSON.stringify(taskData)
+                }
+            );
 
         if (!response.ok) {
             throw new Error(
-                t("failedToDeleteTask")
+                t("failedToUpdateTask")
             );
         }
 
-        // Reloads tasks after deletion.
         await loadTasks();
 
     } catch (error) {
@@ -366,13 +1213,6 @@ const deleteTask = async (taskId) => {
         alert(error.message);
 
     }
-
-};
-
-const openUpdateTaskModal = (taskId) => {
-
-    alert(`Update task ${taskId}`);
-
 };
 
 // Shows or hides additional task fields.
@@ -383,18 +1223,176 @@ const toggleTaskDetailsForm = () => {
             "task-extra-fields"
         );
 
-    if (container.innerHTML !== "") {
+    const button =
+        document.querySelector(
+            ".task-details-btn"
+        );
+
+    const isOpen =
+        container.innerHTML.trim() !== "";
+
+    if (isOpen) {
 
         container.innerHTML = "";
+
+        button.textContent =
+            `${t("addMoreDetails")} ⌄`;
 
         return;
     }
 
     container.innerHTML = `
-        <p>Priority</p>
-        <p>Due date</p>
-        <p>Reminder</p>
+
+        <div class="task-extra-fields">
+
+            <label for="task-priority">
+                ${t("priority")}
+            </label>
+
+            <div class="task-priority-options">
+
+    <button
+        type="button"
+        class="task-priority-chip none selected"
+        data-priority="NONE"
+        onclick="selectTaskPriority(this)"
+    >
+        ${t("none")}
+    </button>
+
+    <button
+        type="button"
+        class="task-priority-chip low"
+        data-priority="LOW"
+        onclick="selectTaskPriority(this)"
+    >
+        ${t("low")}
+    </button>
+
+    <button
+        type="button"
+        class="task-priority-chip medium"
+        data-priority="MEDIUM"
+        onclick="selectTaskPriority(this)"
+    >
+        ${t("medium")}
+    </button>
+
+    <button
+        type="button"
+        class="task-priority-chip high"
+        data-priority="HIGH"
+        onclick="selectTaskPriority(this)"
+    >
+        ${t("high")}
+    </button>
+
+</div>
+
+<input
+    type="hidden"
+    id="task-priority"
+    value="NONE"
+>
+
+            <label for="task-due-at">
+                ${t("dueDate")}
+            </label>
+
+            <input
+                id="task-due-at"
+                class="task-input"
+                type="date"
+            >
+
+        </div>
+        
+        <label class="task-checkbox-row">
+    <input
+        id="task-is-recurring"
+        type="checkbox"
+        onchange="toggleTaskRecurringOptions()"
+    >
+    ${t("recurringTask")}
+</label>
+
+<div
+    id="task-recurring-options"
+    class="task-recurring-options"
+>
+
+    <label for="task-interval-value">
+        ${t("repeatEvery")}
+    </label>
+
+    <div class="task-recurring-row">
+
+        <input
+            id="task-interval-value"
+            class="task-input"
+            type="number"
+            min="1"
+            value="1"
+        >
+
+        <select
+            id="task-frequency"
+            class="task-input"
+        >
+            <option value="DAILY">
+                ${t("day")}
+            </option>
+
+            <option value="WEEKLY">
+                ${t("week")}
+            </option>
+
+            <option value="MONTHLY">
+                ${t("month")}
+            </option>
+
+            <option value="YEARLY">
+                ${t("year")}
+            </option>
+        </select>
+
+    </div>
+
+</div>
+
     `;
+
+    button.textContent =
+        `${t("lessDetails")} ⌃`;
+};
+
+const toggleTaskRecurringOptions = () => {
+
+    const isRecurring =
+        document
+            .getElementById("task-is-recurring")
+            .checked;
+
+    document
+        .getElementById("task-recurring-options")
+        .classList
+        .toggle("open", isRecurring);
+};
+
+const selectTaskPriority = (button) => {
+
+    document
+        .querySelectorAll(".task-priority-chip")
+        .forEach(chip =>
+            chip.classList.remove("selected")
+        );
+
+    button.classList.add("selected");
+
+    document
+        .getElementById("task-priority")
+        .value =
+        button.dataset.priority;
 };
 
 //_______________________________________________________//
@@ -424,7 +1422,7 @@ const renderCreateTaskForm = () => {
                 class="task-details-btn"
                 onclick="toggleTaskDetailsForm()"
             >
-                ${t("addMoreDetails")}
+                ${t("addMoreDetails")} ⌄
             </button>
             
             <div id="task-extra-fields"></div>

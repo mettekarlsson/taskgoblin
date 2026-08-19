@@ -24,6 +24,7 @@ const translations = {
         cancel: "Cancel",
         back: "Back",
         delete: "Delete",
+        update: "Update",
 
         title: "Title",
         content: "Content",
@@ -35,6 +36,7 @@ const translations = {
 
 
         today: "Today",
+        tomorrow: "Tomorrow",
         yesterday: "Yesterday",
 
         repeatEvery: "Repeat every",
@@ -106,23 +108,31 @@ const translations = {
 
         // TASK
         noTasksYet: "No tasks yet.",
+        noTasksMatchSearch: "No tasks match your search.",
         failedToLoadTasks: "Failed to load tasks",
         status: "Status",
         priority: "Priority",
 
         addTask: "+ Add task",
         add: "Add",
+        updateTask: "Update task",
         taskTitleRequired: "Task title is required",
         failedToCreateTask: "Failed to create task",
         taskTitleCannotBeEmpty: "Task title cannot be empty",
         failedToUpdateTask: "Failed to update task",
+
+        none: "None",
+        low: "Low",
+        medium: "Medium",
+        high: "High",
 
         completeTask: "Complete task",
         lastCompleted: "Last completed",
         complete: "Complete",
         reopen: "Reopen",
 
-        deleteTaskConfirm: "Delete this task?",
+        deleteTaskTitle: "Delete this task?",
+        deleteTaskMessage: "This action cannot be undone.",
         failedToDeleteTask: "Failed to delete task",
 
         taskSubtitle: "Keep track of your tasks.",
@@ -132,11 +142,14 @@ const translations = {
         newTask: "+ New task",
         searchTasks: "Search tasks...",
 
-        updateTask: "Update task",
-        deleteTask: "Delete task",
-
         task: "Task",
+        tasksCount: "tasks",
+        recurringTask: "Recurring task",
+        recurringTaskNeedsDueDate:
+            "A recurring task needs a due date.",
+
         addMoreDetails: "Add more details",
+        lessDetails: "Less details",
 
         // LISTS
         listsSubtitle: "Keep your routines and tasks organized.",
@@ -146,10 +159,6 @@ const translations = {
         searchLists: "Search lists...",
         noListsYet: "No lists yet.",
         noListsMatchSearch: "No lists match your search.",
-
-        noTasksYet: "No tasks yet.",
-        task: "task",
-        tasksCount: "tasks",
 
         chooseIcon: "Choose icon",
         recurringList: "Recurring list",
@@ -194,6 +203,7 @@ const translations = {
         cancel: "Avbryt",
         back: "Tillbaka",
         delete: "Radera",
+        update: "Uppdatera",
 
         title: "Titel",
         content: "Innehåll",
@@ -204,6 +214,7 @@ const translations = {
         icon: "Ikon",
 
         today: "Idag",
+        tomorrow: "Imorgon",
         yesterday: "Igår",
 
         repeatEvery: "Upprepa varje",
@@ -276,49 +287,57 @@ const translations = {
 
         // TASK
         noTasksYet: "Inga uppgifter ännu.",
+        noTasksMatchSearch: "Inga uppgifter matchar sökningen.",
         failedToLoadTasks: "Kunde inte ladda uppgifter",
         status: "Status",
         priority: "Prioritet",
 
         addTask: "Lägg till uppgift",
         add: "Lägg till",
+        updateTask: "Uppdatera uppgift",
         taskTitleRequired: "Uppgiftens titel krävs",
         failedToCreateTask: "Kunde inte skapa uppgift",
         taskTitleCannotBeEmpty: "Uppgiftens titel får inte vara tom",
         failedToUpdateTask: "Kunde inte uppdatera uppgiften",
+
+        none: "Ingen",
+        low: "Låg",
+        medium: "Medel",
+        high: "Hög",
 
         completeTask: "Slutför uppgift",
         lastCompleted: "Senast gjord",
         complete: "Klar",
         reopen: "Återöppna",
 
-        deleteTaskConfirm: "Ta bort denna uppgift?",
+        deleteTaskTitle: "Radera uppgift?",
+        deleteTaskMessage: "Den här åtgärden kan inte ångras.",
         failedToDeleteTask: "Kunde inte ta bort uppgiften",
 
         taskSubtitle: "Håll koll på dina uppgifter.",
         all: "Alla",
         upcoming: "Kommande",
-        completed: "Klara",
+        completed: "Genomförda",
         newTask: "+ Ny uppgift",
         searchTasks: "Sök uppgifter...",
 
-        updateTask: "Uppdatera uppgift",
-        deleteTask: "Ta bort uppgift",
-
         task: "Uppgift",
+        tasksCount: "uppgifter",
+        recurringTask: "Återkommande uppgift",
+        recurringTaskNeedsDueDate:
+            "En återkommande uppgift behöver ett förfallodatum.",
+
         addMoreDetails: "Visa fler detaljer",
+        lessDetails: "Färre detaljer",
 
         // LISTS
         listsSubtitle: "Håll ordning på dina rutiner och uppgifter.",
-        addList: "+ Lägg till lista",
+        addList: "+ Ny lista",
         editList: "Redigera lista",
         deleteList: "Ta bort lista",
         searchLists: "Sök listor...",
         noListsYet: "Inga listor ännu.",
         noListsMatchSearch: "Inga listor matchar sökningen.",
-
-        task: "uppgift",
-        tasksCount: "uppgifter",
 
         chooseIcon: "Välj ikon",
         recurringList: "Återkommande lista",
