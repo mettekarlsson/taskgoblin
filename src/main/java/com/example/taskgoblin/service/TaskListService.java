@@ -100,6 +100,26 @@ public class TaskListService {
         );
     }
 
+    // Retrieves all task lists in a specific category for the current user.
+    public List<TaskListDTO> getListsByCategoryId(
+            Long categoryId,
+            Long userId
+    ) {
+
+        // Verify that the category belongs to the current user.
+        categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Category not found"));
+
+        // Find all task lists that belong to the selected category.
+        List<TaskList> taskLists =
+                taskListRepository.findByCategoryId(categoryId);
+
+        // Convert task lists to DTOs before returning them.
+        return taskLists.stream()
+                .map(TaskListMapper::mapToTaskListDTO)
+                .toList();
+    }
 
     /*
      * Create operations

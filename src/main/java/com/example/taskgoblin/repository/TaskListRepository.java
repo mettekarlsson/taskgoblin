@@ -18,4 +18,7 @@ public interface TaskListRepository
 
     void deleteByUserId(Long userId);
 
+    // Finds all task lists that belong to a specific category.
+    List<TaskList> findByCategoryId(Long categoryId);
+
 }

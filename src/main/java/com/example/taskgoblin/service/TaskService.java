@@ -165,7 +165,7 @@ public class TaskService {
 
         // Validate recurring task configuration
         validateRecurringConfiguration(
-                updateTaskDTO.getRecurring(),
+                updateTaskDTO.getIsRecurring(),
                 updateTaskDTO.getFrequency(),
                 updateTaskDTO.getIntervalValue()
         );
@@ -355,6 +355,25 @@ public class TaskService {
                         new ResourceNotFoundException("Category not found"));
     }
 
+    // Retrieves all tasks in a specific category for the current user.
+    public List<TaskDTO> getTasksByCategoryId(Long categoryId, Long userId) {
+
+        // Verify that the category belongs to the current user.
+        categoryRepository.findByIdAndUserId(categoryId, userId)
+                .orElseThrow(() ->
+                        new ResourceNotFoundException("Category not found"));
+
+        // Find all tasks that belong to the category.
+        List<Task> tasks = taskRepository.findByCategoryId(categoryId);
+
+        // Convert tasks to DTOs before returning them.
+        return tasks.stream()
+                .map(TaskMapper::mapToTaskDto)
+                .toList();
+    }
+
+
+
     /*
  Finds a task list and validates ownership.
  Returns null if no task list id was provided.
@@ -464,10 +483,13 @@ public class TaskService {
 */
     private void validateDueDate(LocalDateTime dueAt) {
 
-        if (
-                dueAt != null &&
-                        dueAt.isBefore(LocalDateTime.now())
-        ) {
+        if (dueAt == null) {
+            return;
+        }
+
+        if (dueAt.toLocalDate().isBefore(
+                LocalDateTime.now().toLocalDate()
+        )) {
             throw new InvalidDueDateException(
                     "Due date cannot be in the past."
             );
