@@ -16,7 +16,7 @@ public class CreateEventDTO {
 
     private String description;
 
-    @NotNull(message = "Start time cannot be null")
+
     private LocalDateTime startTime;
     private LocalDateTime endTime;
 

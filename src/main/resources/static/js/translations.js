@@ -62,6 +62,8 @@ const translations = {
         dueTomorrow: "Due tomorrow",
         dueYesterday: "Due yesterday",
         overdue: "Overdue",
+        dayOverdue: "day overdue",
+        daysOverdue: "days overdue",
         dueDate: "Due date",
         noDueDate: "No due date",
 
@@ -168,6 +170,9 @@ const translations = {
         listNameCannotBeEmpty: "List name cannot be empty",
         recurringListNeedsDueDate: "Recurring lists need a due date",
 
+        deleteListTitle: "Delete list?",
+        deleteListMessage: "This action cannot be undone.",
+
         failedToLoadLists: "Failed to load lists",
         failedToLoadList: "Failed to load list",
         failedToSaveList: "Failed to save list",
@@ -240,8 +245,11 @@ const translations = {
         dueTomorrow: "Förfaller imorgon",
         dueYesterday: "Förföll igår",
         overdue: "Försenad",
+        dayOverdue: "dag försenad",
+        daysOverdue: "dagar försenad",
         dueDate: "Förfallodatum",
         noDueDate: "Inget datum",
+
 
 
         fullNameValidation: "Fullständigt namn får bara innehålla bokstäver och måste innehålla både för- och efternamn",
@@ -345,6 +353,9 @@ const translations = {
 
         listNameCannotBeEmpty: "Listans namn får inte vara tomt",
         recurringListNeedsDueDate: "Återkommande listor behöver ett förfallodatum",
+
+        deleteListTitle: "Ta bort lista?",
+        deleteListMessage: "Den här åtgärden kan inte ångras.",
 
         failedToLoadLists: "Kunde inte ladda listor",
         failedToLoadList: "Kunde inte ladda listan",

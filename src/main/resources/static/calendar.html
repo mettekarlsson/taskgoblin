@@ -122,10 +122,30 @@
 
     </section>
 
+    <!-- Day view - shown when a day is clicked -->
+    <section class="calendar-day-view" id="calendar-day-view">
+    </section>
+
 </main>
 
 
 <footer id="app-footer"></footer>
+
+<div class="modal" id="event-detail-modal">
+    <div class="modal-content">
+
+        <h2 id="modal-event-title"></h2>
+
+        <div id="modal-event-details"></div>
+
+        <div class="modal-actions">
+            <button class="modal-cancel-btn" onclick="closeEventDetail()">
+                Close
+            </button>
+        </div>
+
+    </div>
+</div>
 
 <script src="/js/auth.js"></script>
 <script src="/js/translations.js"></script>
