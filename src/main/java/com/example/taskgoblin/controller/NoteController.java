@@ -77,7 +77,7 @@ public class NoteController {
     ) {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         noteService.deleteNote(id, userId);
-        return ResponseEntity.ok("Note deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 
     // PATCH (partial update) /notes/1
