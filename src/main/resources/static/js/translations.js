@@ -171,7 +171,7 @@ const translations = {
         completeList: "Complete list",
         undoCompletion: "Undo completion",
         failedToUndoListCompletion: "Failed to undo list completion",
-        nextOccurrence: "Next occurrence",
+        nextOccurrence: "Recurs",
         done: "Done",
 
         listNameCannotBeEmpty: "List name cannot be empty",
@@ -254,7 +254,7 @@ const translations = {
         due: "Slutdatum",
         dueToday: "Slutför idag",
         dueTomorrow: "Slutför imorgon",
-        overdue: "Försenad",
+        overdue: "Försenade",
         dayOverdue: "dag försenad",
         daysOverdue: "dagar försenad",
         dueDate: "Slutdatum",
@@ -363,7 +363,7 @@ const translations = {
         completeList: "Slutför lista",
         undoCompletion: "Ångra slutförande",
         failedToUndoListCompletion: "Kunde inte ångra slutförandet",
-        nextOccurrence: "Nästa tillfälle",
+        nextOccurrence: "Återkommer",
         done: "Färdig",
 
         listNameCannotBeEmpty: "Listans namn får inte vara tomt",

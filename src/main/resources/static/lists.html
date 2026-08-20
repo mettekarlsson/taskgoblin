@@ -51,6 +51,50 @@
         >
     </section>
 
+    <section class="list-filters">
+
+        <button
+                class="list-filter active"
+                data-filter="all"
+                onclick="setListFilter('all')"
+                data-translate="all">
+            All
+        </button>
+
+        <button
+                class="list-filter"
+                data-filter="today"
+                onclick="setListFilter('today')"
+                data-translate="today">
+            Today
+        </button>
+
+        <button
+                class="list-filter"
+                data-filter="overdue"
+                onclick="setListFilter('overdue')"
+                data-translate="overdue">
+            Overdue
+        </button>
+
+        <button
+                class="list-filter"
+                data-filter="upcoming"
+                onclick="setListFilter('upcoming')"
+                data-translate="upcoming">
+            Upcoming
+        </button>
+
+        <button
+                class="list-filter"
+                data-filter="completed"
+                onclick="setListFilter('completed')"
+                data-translate="completed">
+            Completed
+        </button>
+
+    </section>
+
     <section id="lists-grid" class="lists-grid">
         Loading lists...
     </section>
