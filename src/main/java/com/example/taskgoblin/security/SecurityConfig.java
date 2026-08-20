@@ -43,6 +43,7 @@ public class SecurityConfig {
                                 "/tasks.html",
                                 "/lists.html",
                                 "/calendar.html",
+                                "/today.html",
                                 "/css/**",
                                 "/js/**",
                                 "/images/**",
