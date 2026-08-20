@@ -65,7 +65,10 @@ const renderMenu = () => {
        <div class="quick-add-menu" id="quick-add-menu">
 
         <!-- Add task -->
-        <button class="quick-add-option">
+        <button
+            class="quick-add-option"
+            onclick="quickAddTask()"
+        >
 
         <span class="quick-add-icon task-icon">
 
@@ -89,7 +92,10 @@ const renderMenu = () => {
         </button>
 
         <!-- Add note -->
-        <button class="quick-add-option">
+        <button
+            class="quick-add-option"
+            onclick="quickAddNote()"
+        >
 
         <span class="quick-add-icon note-icon">
 
@@ -113,7 +119,10 @@ const renderMenu = () => {
         </button>
 
         <!-- Add list -->
-        <button class="quick-add-option">
+        <button
+            class="quick-add-option"
+            onclick="quickAddList()"
+        >
 
         <span class="quick-add-icon list-icon">
 
@@ -141,7 +150,11 @@ const renderMenu = () => {
         </button>
 
         <!-- Add event -->
-        <button class="quick-add-option">
+      
+        <button
+             class="quick-add-option"
+             onclick="quickAddEvent()"
+        >
 
         <span class="quick-add-icon event-icon">
 
@@ -262,4 +275,44 @@ const initializeMenu = () => {
 
     });
 
+};
+
+// Opens the create list form and remembers the current page.
+const quickAddList = () => {
+
+    const returnTo =
+        window.location.pathname;
+
+    window.location.href =
+        `/lists.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
+};
+
+// Opens the create task form and remembers the current page.
+const quickAddTask = () => {
+
+    const returnTo =
+        window.location.pathname;
+
+    window.location.href =
+        `/tasks.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
+};
+
+// Opens the create note form and remembers the current page.
+const quickAddNote = () => {
+
+    const returnTo =
+        window.location.pathname;
+
+    window.location.href =
+        `/notes.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
+};
+
+// Opens the create event form and remembers the current page.
+const quickAddEvent = () => {
+
+    const returnTo =
+        window.location.pathname;
+
+    window.location.href =
+        `/calendar.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
 };
