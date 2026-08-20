@@ -23,18 +23,21 @@ public class TaskService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final TaskListRepository taskListRepository;
+    private final TaskMapper taskMapper;
 
     // Constructor injection.
     public TaskService(
             TaskRepository taskRepository,
             UserRepository userRepository,
             CategoryRepository categoryRepository,
-            TaskListRepository taskListRepository
+            TaskListRepository taskListRepository,
+            TaskMapper taskMapper
     ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.taskListRepository = taskListRepository;
+        this.taskMapper = taskMapper;
     }
 
     // Creates and saves a new task for a specific user.
@@ -55,7 +58,7 @@ public class TaskService {
         );
 
         // Convert DTO into Task entity.
-        Task task = TaskMapper.mapToTaskEntity(createTaskDTO);
+        Task task = taskMapper.mapToTaskEntity(createTaskDTO);
 
         // Find category and validate ownership
         Category category = getCategoryIfOwned(
@@ -85,7 +88,7 @@ public class TaskService {
         Task savedTask = taskRepository.save(task);
 
         // Convert entity back into DTO.
-        return TaskMapper.mapToTaskDto(savedTask);
+        return taskMapper.mapToTaskDto(savedTask);
     }
 
 
@@ -97,7 +100,7 @@ public class TaskService {
 
         // Convert task entities into DTOs.
         return tasks.stream()
-                .map(TaskMapper::mapToTaskDto)
+                .map(taskMapper::mapToTaskDto)
                 .toList();
     }
 
@@ -116,7 +119,7 @@ public class TaskService {
         List<Task> tasks = taskRepository.findByListId(listId);
 
         return tasks.stream()
-                .map(TaskMapper::mapToTaskDto)
+                .map(taskMapper::mapToTaskDto)
                 .toList();
     }
 
@@ -127,7 +130,7 @@ public class TaskService {
         Task task = getTaskByIdAndUserId(taskId, userId);
 
         // Convert entity into DTO.
-        return TaskMapper.mapToTaskDto(task);
+        return taskMapper.mapToTaskDto(task);
     }
 
     // Deletes a task that belongs to a specific user.
@@ -171,7 +174,7 @@ public class TaskService {
         );
 
         // Apply updated values to the task entity
-        TaskMapper.updateEntity(
+        taskMapper.updateEntity(
                 task,
                 updateTaskDTO,
                 category,
@@ -185,7 +188,7 @@ public class TaskService {
         Task updatedTask = taskRepository.save(task);
 
         // Convert updated entity into DTO
-        return TaskMapper.mapToTaskDto(updatedTask);
+        return taskMapper.mapToTaskDto(updatedTask);
     }
 
     // Marks a task as completed
@@ -250,7 +253,7 @@ public class TaskService {
                 taskRepository.save(task);
 
         // Convert updated entity into DTO
-        return TaskMapper
+        return taskMapper
                 .mapToTaskDto(updatedTask);
     }
 
@@ -294,7 +297,7 @@ public class TaskService {
         Task updatedTask = taskRepository.save(task);
 
         // Convert updated entity into DTO
-        return TaskMapper.mapToTaskDto(updatedTask);
+        return taskMapper.mapToTaskDto(updatedTask);
     }
 
 
@@ -319,7 +322,7 @@ public class TaskService {
         Task updatedTask = taskRepository.save(task);
 
         // Convert updated entity into DTO
-        return TaskMapper.mapToTaskDto(updatedTask);
+        return taskMapper.mapToTaskDto(updatedTask);
     }
 
 
@@ -368,7 +371,7 @@ public class TaskService {
 
         // Convert tasks to DTOs before returning them.
         return tasks.stream()
-                .map(TaskMapper::mapToTaskDto)
+                .map(taskMapper::mapToTaskDto)
                 .toList();
     }
 

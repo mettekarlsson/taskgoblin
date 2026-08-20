@@ -12,9 +12,11 @@ import org.springframework.stereotype.Service;
 public class UserSettingsService {
 
     private final UserSettingsRepository userSettingsRepository;
+    private final UserMapper userMapper;
 
-    public UserSettingsService(UserSettingsRepository userSettingsRepository) {
+    public UserSettingsService(UserSettingsRepository userSettingsRepository, UserMapper userMapper) {
         this.userSettingsRepository = userSettingsRepository;
+        this.userMapper = userMapper;
     }
 
     public UserSettingsDTO getUserSettings(Long id) {
@@ -23,7 +25,7 @@ public class UserSettingsService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("User settings"));
 
-        return UserMapper.mapToUserSettingsDto(userSettings);
+        return userMapper.mapToUserSettingsDto(userSettings);
     }
 
     public UserSettingsDTO updateUserSettings(Long id, UserSettingsDTO userSettingsDTO) {
@@ -50,7 +52,7 @@ public class UserSettingsService {
 
         UserSettings updatedUserSettings = userSettingsRepository.save(userSettings);
 
-        return UserMapper.mapToUserSettingsDto(updatedUserSettings);
+        return userMapper.mapToUserSettingsDto(updatedUserSettings);
     }
 
 }

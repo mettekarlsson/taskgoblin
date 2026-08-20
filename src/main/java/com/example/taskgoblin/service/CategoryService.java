@@ -25,17 +25,20 @@ public class CategoryService {
      */
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final CategoryMapper categoryMapper;
 
     /*
      * Constructor injection
      */
     public CategoryService(
             UserRepository userRepository,
-            CategoryRepository categoryRepository
+            CategoryRepository categoryRepository,
+            CategoryMapper categoryMapper
     ) {
 
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.categoryMapper = categoryMapper;
     }
 
     /*
@@ -47,7 +50,7 @@ public class CategoryService {
         Category category = categoryRepository.findByIdAndUserId(categoryId, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Category"));
 
-        return CategoryMapper.mapToCategoryDto(category);
+        return categoryMapper.mapToCategoryDto(category);
     }
 
     // Returns all categories for a user
@@ -55,7 +58,7 @@ public class CategoryService {
         List<Category> categories = categoryRepository.findByUserId(userId);
 
         return categories.stream()
-                .map(CategoryMapper::mapToCategoryDto)
+                .map(categoryMapper::mapToCategoryDto)
                 .toList();
     }
 
@@ -67,11 +70,11 @@ public class CategoryService {
     public CategoryDTO createCategory(Long userId, CreateCategoryDTO createCategoryDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User"));
-        Category category = CategoryMapper.mapToCategoryEntity(createCategoryDto);
+        Category category = categoryMapper.mapToCategoryEntity(createCategoryDto);
         category.setUser(user);
 
         Category savedCategory = categoryRepository.save(category);
-        return CategoryMapper.mapToCategoryDto(savedCategory);
+        return categoryMapper.mapToCategoryDto(savedCategory);
     }
 
     /*
@@ -112,7 +115,7 @@ public class CategoryService {
                 categoryRepository.save(category);
 
         // Converts the updated entity into a response DTO.
-        return CategoryMapper
+        return categoryMapper
                 .mapToCategoryDto(updatedCategory);
     }
 

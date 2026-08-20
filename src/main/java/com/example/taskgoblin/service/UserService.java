@@ -29,8 +29,9 @@ public class UserService {
     private final CalendarRepository calendarRepository;
     private final TaskListRepository taskListRepository;
     private final CompletionHistoryRepository completionHistoryRepository;
+    private final UserMapper userMapper;
 
-    public UserService(UserRepository userRepository, UserSettingsRepository userSettingsRepository, PasswordEncoder passwordEncoder, TaskRepository taskRepository, NoteRepository noteRepository, CalendarRepository calendarRepository, TaskListRepository taskListRepository, CompletionHistoryRepository completionHistoryRepository) {
+    public UserService(UserRepository userRepository, UserSettingsRepository userSettingsRepository, PasswordEncoder passwordEncoder, TaskRepository taskRepository, NoteRepository noteRepository, CalendarRepository calendarRepository, TaskListRepository taskListRepository, CompletionHistoryRepository completionHistoryRepository, UserMapper userMapper) {
         this.userRepository = userRepository;
         this.userSettingsRepository = userSettingsRepository;
         this.passwordEncoder = passwordEncoder;
@@ -39,13 +40,14 @@ public class UserService {
         this.calendarRepository = calendarRepository;
         this.taskListRepository = taskListRepository;
         this.completionHistoryRepository = completionHistoryRepository;
+        this.userMapper = userMapper;
     }
 
     public UserProfileDTO getUserById(Long id) {
         User user = userRepository.findById(id)
          .orElseThrow(() -> new ResourceNotFoundException("User"));
 
-        return UserMapper.mapToUserProfileDto(user);
+        return userMapper.mapToUserProfileDto(user);
     }
 
     //find user to save in login-token
@@ -56,7 +58,7 @@ public class UserService {
 
     // register new user
     public UserProfileDTO register(RegisterDTO registerDto) {
-        User user = UserMapper.mapToUserEntity(registerDto);
+        User user = userMapper.mapToUserEntity(registerDto);
         user.setPassword(passwordEncoder.encode(registerDto.getPassword()));
         user.setRole("ROLE_USER");
         user.setCreatedAt(LocalDateTime.now());
@@ -71,7 +73,7 @@ public class UserService {
         userSettings.setLanguage(Language.en);
 
         userSettingsRepository.save(userSettings);
-        return UserMapper.mapToUserProfileDto(savedUser);
+        return userMapper.mapToUserProfileDto(savedUser);
     }
 
     public UserProfileDTO updateProfile(Long id, UserProfileDTO dto) {
@@ -108,7 +110,7 @@ public class UserService {
         User updatedUser = userRepository.save(user);
 
         // Convert the updated User entity into a DTO and return it.
-        return UserMapper.mapToUserProfileDto(updatedUser);
+        return userMapper.mapToUserProfileDto(updatedUser);
     }
 
         public void changePassword(Long id, ChangePasswordDTO dto){

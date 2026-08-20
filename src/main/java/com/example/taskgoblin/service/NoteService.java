@@ -19,12 +19,14 @@ public class NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
+    private final NoteMapper noteMapper;
 
     // Constructor injection.
     // Spring automatically injects the repositories here.
-    public NoteService(NoteRepository noteRepository, UserRepository userRepository) {
+    public NoteService(NoteRepository noteRepository, UserRepository userRepository, NoteMapper noteMapper) {
         this.noteRepository = noteRepository;
         this.userRepository = userRepository;
+        this.noteMapper = noteMapper;
     }
 
     // Returns all notes that belong to a specific user.
@@ -33,7 +35,7 @@ public class NoteService {
         List<Note> notes = noteRepository.findByUserId(id);
 
         return notes.stream()
-                .map(NoteMapper::mapToNoteDto)
+                .map(noteMapper::mapToNoteDto)
                 .toList();
     }
 
@@ -44,7 +46,7 @@ public class NoteService {
         Note note = noteRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Note"));
 
-        return NoteMapper.mapToNoteDto(note);
+        return noteMapper.mapToNoteDto(note);
     }
 
     // Creates and saves a new note for a specific user.
@@ -53,13 +55,13 @@ public class NoteService {
     public NoteDTO createNote(Long userId, CreateNoteDTO createNoteDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User"));
-        Note note = NoteMapper.mapToNoteEntity(createNoteDto);
+        Note note = noteMapper.mapToNoteEntity(createNoteDto);
         note.setUser(user);
         note.setCreatedAt(LocalDateTime.now());
         note.setLastInteractedAt(LocalDateTime.now());
         note.setPinned(false);
         Note savedNote = noteRepository.save(note);
-        return NoteMapper.mapToNoteDto(savedNote);
+        return noteMapper.mapToNoteDto(savedNote);
     }
 
     // Deletes a note for a specific user.
@@ -107,6 +109,6 @@ public class NoteService {
 
         Note updatedNote = noteRepository.save(note);
 
-        return NoteMapper.mapToNoteDto(updatedNote);
+        return noteMapper.mapToNoteDto(updatedNote);
     }
 }
