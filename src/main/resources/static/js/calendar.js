@@ -1431,11 +1431,20 @@ const submitCreateEvent = async () => {
         await loadEvents();
 
 
-        /*
-         * Return to calendar view.
-         */
+// Returns to the page where quick add was opened.
+        const quickAdd =
+            new URLSearchParams(window.location.search)
+                .get("quickAdd");
 
-        restoreCalendarView();
+        const returnTo =
+            new URLSearchParams(window.location.search)
+                .get("returnTo");
+
+        if (quickAdd === "true" && returnTo) {
+            window.location.href = returnTo;
+        } else {
+            restoreCalendarView();
+        }
 
 
     } catch (error) {
@@ -1688,6 +1697,14 @@ const initPage = async () => {
     renderWeekdays();
 
     await loadEvents();
+    // Opens the create event form when triggered from the quick add menu.
+    const quickAdd =
+        new URLSearchParams(window.location.search)
+            .get("quickAdd");
+
+    if (quickAdd === "true") {
+        renderCreateEventForm();
+    }
 
 };
 
