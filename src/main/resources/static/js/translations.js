@@ -251,13 +251,13 @@ const translations = {
         everyNMonths: "Var {n}:e månad",
         everyNYears: "Var {n}:e år",
 
-        due: "Klar senast",
-        dueToday: "Klar senast idag",
-        dueTomorrow: "Klar senast imorgon",
+        due: "Slutdatum",
+        dueToday: "Slutför idag",
+        dueTomorrow: "Slutför imorgon",
         overdue: "Försenad",
         dayOverdue: "dag försenad",
         daysOverdue: "dagar försenad",
-        dueDate: "Klart senast",
+        dueDate: "Slutdatum",
         noDueDate: "Inget slutdatum",
 
 

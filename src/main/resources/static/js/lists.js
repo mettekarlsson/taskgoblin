@@ -176,12 +176,21 @@ ${
         `
                     : ""
             }
+
 ${
-                listCompleted && list.isRecurring
+                list.dueAt && overdueDays === 0
                     ? `
-            <div class="list-completed-status">
-    ${t("nextOccurrence")} ${formatListDate(list.dueAt)}
-</div>
+            <div class="${
+                        listCompleted && list.isRecurring
+                            ? "list-completed-status"
+                            : "list-due-status"
+                    }">
+                ${
+                        listCompleted && list.isRecurring
+                            ? `${t("nextOccurrence")} ${formatListDate(list.dueAt)}`
+                            : formatUpcomingDueDate(list.dueAt)
+                    }
+            </div>
         `
                     : ""
             }
@@ -543,6 +552,30 @@ const formatDueDate = (dateString) => {
     }
 
     return `${t("due")} ${formatListDate(dateString)}`;
+};
+
+const formatUpcomingDueDate = (dateString) => {
+    const dueDate = new Date(dateString);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.round(
+            (dueDate - today) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    if (diff === 0) {
+        return t("today");
+    }
+
+    if (diff === 1) {
+        return t("tomorrow");
+    }
+
+    return formatListDate(dateString);
 };
 
 const getOverdueDays = (dateString) => {
