@@ -1,14 +1,24 @@
 package com.example.taskgoblin.dto;
 
+import jakarta.validation.constraints.Size;
+
 import java.time.LocalDateTime;
 
 public class UpdateEventDTO {
 
     private Long categoryId;
+    //Medvetet ingen @NotBlank/@NotNull, eftersom detta är en PATCH:
+    // null betyder "detta fält ska inte ändras".
+    // @Size validerar bara formatet om värdet skickas med, utan att tvinga fram ett värde.
+    // (Bean Validation låter null passera @Size automatiskt.)
+    @Size(max = 200, message = "Title cannot be longer than 200 characters.")
     private String title;
+
     private String description;
     private LocalDateTime startTime;
     private LocalDateTime endTime;
+
+    @Size(max = 255, message = "Location cannot exceed 255 characters")
     private String location;
     private Boolean isAllDay;
     private Boolean isRecurring;

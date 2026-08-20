@@ -22,11 +22,13 @@ public class CalendarService {
     private final CalendarRepository calendarRepository;
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
+    private final EventMapper eventMapper;
 
-    public CalendarService(CalendarRepository calendarRepository, UserRepository userRepository, CategoryRepository categoryRepository) {
+    public CalendarService(CalendarRepository calendarRepository, UserRepository userRepository, CategoryRepository categoryRepository, EventMapper eventMapper) {
         this.calendarRepository = calendarRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
+        this.eventMapper = eventMapper;
     }
 
     //view all events in calendar
@@ -34,7 +36,7 @@ public class CalendarService {
         List<Event> events = calendarRepository.findByUserId(userId);
 
         return events.stream()
-                .map(EventMapper::mapToEventSummaryDto)
+                .map(eventMapper::mapToEventSummaryDto)
                 .toList();
     }
 
@@ -42,7 +44,7 @@ public class CalendarService {
     public List<EventSummaryDTO> getEventsByDateRange (Long userId, LocalDateTime start, LocalDateTime end) {
         List<Event> events = calendarRepository.findByUserIdAndStartTimeBetween(userId, start, end);
         return events.stream()
-                .map(EventMapper::mapToEventSummaryDto)
+                .map(eventMapper::mapToEventSummaryDto)
                 .toList();
     }
 
@@ -50,7 +52,7 @@ public class CalendarService {
     public EventDTO getEventById(Long userId, Long id) {
         Event event = calendarRepository.findByIdAndUserId(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("Event"));
-        return EventMapper.mapToEventDto(event);
+        return eventMapper.mapToEventDto(event);
     }
 
     //create new event
@@ -58,7 +60,7 @@ public class CalendarService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User"));
 
-        Event event = EventMapper.mapToEventEntity(createEventDTO);
+        Event event = eventMapper.mapToEventEntity(createEventDTO);
 
         if (createEventDTO.getIsAllDay()) {
 
@@ -88,7 +90,7 @@ public class CalendarService {
 
         //sets category if it exists
         if (createEventDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(createEventDTO.getCategoryId())
+            Category category = categoryRepository.findByIdAndUserId(createEventDTO.getCategoryId(), userId)
                     .orElseThrow(() -> new ResourceNotFoundException("Category"));
             event.setCategory(category);
         }
@@ -108,7 +110,7 @@ public class CalendarService {
         }
 
         Event savedEvent = calendarRepository.save(event);
-        return EventMapper.mapToEventDto(savedEvent);
+        return eventMapper.mapToEventDto(savedEvent);
     }
 
 
@@ -130,7 +132,7 @@ public class CalendarService {
         boolean contentWasUpdated = false;
 
         if (updateEventDTO.getCategoryId() != null) {
-            Category category = categoryRepository.findById(updateEventDTO.getCategoryId())
+            Category category = categoryRepository.findByIdAndUserId(updateEventDTO.getCategoryId(), userId)
                     .orElseThrow(() -> new ResourceNotFoundException("Category"));
             event.setCategory(category);
         }
@@ -190,6 +192,6 @@ public class CalendarService {
 
         Event updatedEvent = calendarRepository.save(event);
 
-        return EventMapper.mapToEventDto(updatedEvent);
+        return eventMapper.mapToEventDto(updatedEvent);
     }
 }
