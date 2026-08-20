@@ -20,6 +20,11 @@ public class RegisterDTO {
     private String email;
 
     @NotBlank(message = "Password cannot be empty")
+    @Size(min = 8, message = "Password must be at least 8 characters")
+    @Pattern(
+            regexp = "^(?=.*[A-Za-z])(?=.*\\d).+$",
+            message = "Password must contain at least one letter and one number"
+    )
     private String password;
 
     public String getName() {

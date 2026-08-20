@@ -100,6 +100,12 @@ const renderLists = async (lists, searchQuery = "") => {
             const listColor =
                 list.color || DEFAULT_LIST_COLOR;
 
+            const overdueDays =
+                getOverdueDays(list.dueAt);
+
+            const listCompleted =
+                isCurrentOccurrenceCompleted(list);
+
             const previewTasks = tasks
                 .slice(0, 4)
                 .map(task => `
@@ -108,14 +114,14 @@ const renderLists = async (lists, searchQuery = "") => {
                     </div>
                 `)
                 .join("");
+            const hasMoreTasks =
+                tasks.length > 4;
 
             return `
 <article
-    class="list-card"
+    class="list-card ${listCompleted ? "completed" : ""}"
     onclick="openList(${list.id})"
-    style="
-        background: ${listColor};
-    "
+    style="background: ${listColor};"
 >
 
 <button
@@ -144,39 +150,105 @@ const renderLists = async (lists, searchQuery = "") => {
                 previewTasks ||
                 `<p class="list-task-preview">${t("noTasksYet")}</p>`
             }
-</div>
 
-<div class="list-meta">
-    ${tasks.length} ${t("tasksCount")}
     ${
-                list.isRecurring
-                    ? ` · ↻ ${formatRecurrence(
-                        list.frequency,
-                        list.intervalValue
-                    )}`
+                tasks.length > 4
+                    ? `
+                <div
+                    class="list-tasks-fade"
+                    style="--list-color: ${listColor};"
+                ></div>
+            `
                     : ""
             }
 </div>
 
+${
+                overdueDays > 0
+                    ? `
+            <div class="list-overdue">
+                ⚠ ${overdueDays} ${
+                        overdueDays === 1
+                            ? t("dayOverdue")
+                            : t("daysOverdue")
+                    }
+            </div>
+        `
+                    : ""
+            }
+
+${
+                list.dueAt && overdueDays === 0
+                    ? `
+            <div class="${
+                        listCompleted && list.isRecurring
+                            ? "list-completed-status"
+                            : "list-due-status"
+                    }">
+                ${
+                        listCompleted && list.isRecurring
+                            ? `${t("nextOccurrence")} ${formatListDate(list.dueAt)}`
+                            : formatUpcomingDueDate(list.dueAt)
+                    }
+            </div>
+        `
+                    : ""
+            }
+
 <div class="list-footer">
 
-    <span class="list-date">
-        ${formatListDate(list.lastInteractedAt || list.createdAt)}
-    </span>
+    <div class="list-footer-info">
+        <span>
+            ${tasks.length} ${t("tasksCount")}
+        </span>
 
-<button
-    class="list-trash-btn"
-    onclick="openDeleteListModal(event, ${list.id})"
-    aria-label="${t("deleteList")}"
+        ${
+                list.isRecurring
+                    ? `
+                    <span>
+                        ↻ ${formatRecurrence(
+                        list.frequency,
+                        list.intervalValue
+                    )}
+                    </span>
+                `
+                    : ""
+            }
+    </div>
+    
+    <div class="list-footer-actions">
+
+        <button
+    class="list-complete-check ${listCompleted ? "checked" : ""}"
+    onclick="${
+                listCompleted && list.isRecurring
+                    ? `undoListCompletionFromOverview(event, ${list.id})`
+                    : `completeListFromOverview(event, ${list.id})`
+            }"
+    aria-label="${
+                listCompleted && list.isRecurring
+                    ? t("undoCompletion")
+                    : t("completeList")
+            }"
 >
-    <svg viewBox="0 0 24 24" fill="none">
-        <path d="M4 7H20" />
-        <path d="M10 11V17" />
-        <path d="M14 11V17" />
-        <path d="M6 7L7 21H17L18 7" />
-        <path d="M9 7V4H15V7" />
-    </svg>
+    ${listCompleted ? "✓" : ""}
 </button>
+
+        <button
+            class="list-trash-btn"
+            onclick="openDeleteListModal(event, ${list.id})"
+            aria-label="${t("deleteList")}"
+        >
+            <svg viewBox="0 0 24 24" fill="none">
+                <path d="M4 7H20" />
+                <path d="M10 11V17" />
+                <path d="M14 11V17" />
+                <path d="M6 7L7 21H17L18 7" />
+                <path d="M9 7V4H15V7" />
+            </svg>
+        </button>
+
+    </div>
 
 </div>
 
@@ -188,34 +260,14 @@ const renderLists = async (lists, searchQuery = "") => {
     listsGrid.innerHTML = cards.join("");
 };
 
-const toggleListMenu = (event, listId) => {
-    event.stopPropagation();
-
-    document.querySelectorAll(".list-action-menu").forEach(menu => {
-        if (menu.id !== `list-menu-${listId}`) {
-            menu.classList.remove("open");
-        }
-    });
-
-    document
-        .getElementById(`list-menu-${listId}`)
-        .classList.toggle("open");
-};
-
 const toggleListPinned = async (event, listId) => {
     event.stopPropagation();
 
     const list =
         currentLists.find(list => list.id === listId);
-
-    await sendListRequest(
-        `/lists/${listId}`,
-        "PUT",
-        {
-            pinned: !list.pinned
-        }
-    );
 };
+
+
 
 const sendListRequest = async (
     url,
@@ -250,6 +302,19 @@ const sendListRequest = async (
         }
 
         await loadLists();
+
+        // Returns to the page where quick add was opened.
+        const quickAdd =
+            new URLSearchParams(window.location.search)
+                .get("quickAdd");
+
+        const returnTo =
+            new URLSearchParams(window.location.search)
+                .get("returnTo");
+
+        if (quickAdd === "true" && returnTo) {
+            window.location.href = returnTo;
+        }
 
     } catch (error) {
 
@@ -309,13 +374,15 @@ const renderSingleList = (list, tasks) => {
     const listColor =
         list.color || DEFAULT_LIST_COLOR;
 
-    const sortedTasks = [...tasks].sort((a, b) => {
+    const listCompleted =
+        isCurrentOccurrenceCompleted(list);
 
+    const sortedTasks = [...tasks].sort((a, b) => {
         const aCompleted =
-            a.status === "DONE" || isToday(a.lastCompletedAt);
+            a.status === "DONE";
 
         const bCompleted =
-            b.status === "DONE" || isToday(b.lastCompletedAt);
+            b.status === "DONE";
 
         return aCompleted - bCompleted;
     });
@@ -358,15 +425,8 @@ const renderSingleList = (list, tasks) => {
         ${
         tasks.length
             ? sortedTasks.map(task => {
-                const completedToday =
-                    isToday(task.lastCompletedAt);
-
-                const isDone =
-                    task.status === "DONE";
-
                 const isVisuallyCompleted =
-                    isDone || completedToday;
-
+                    task.status === "DONE";
                 return `
     <div class="list-detail-task ${isVisuallyCompleted ? "done" : ""}">
 
@@ -415,9 +475,17 @@ const renderSingleList = (list, tasks) => {
     
     <button
     class="list-complete-btn"
-    onclick="completeList(${list.id})"
+    onclick="${
+        listCompleted && list.isRecurring
+            ? `undoListCompletion(${list.id})`
+            : `completeList(${list.id})`
+    }"
 >
-    ${t("completeList")}
+    ${
+        listCompleted && list.isRecurring
+            ? t("undoCompletion")
+            : t("completeList")
+    }
 </button>
 
     <div class="list-detail-footer">
@@ -480,15 +548,63 @@ const formatDueDate = (dateString) => {
         return t("dueTomorrow");
     }
 
-    if (diff === -1) {
-        return t("dueYesterday");
-    }
-
     if (diff < 0) {
-        return `${t("overdue")} ${Math.abs(diff)} ${t("days")}`;
+        const daysOverdue = Math.abs(diff);
+
+        return `${daysOverdue} ${
+            daysOverdue === 1
+                ? t("dayOverdue")
+                : t("daysOverdue")
+        }`;
     }
 
     return `${t("due")} ${formatListDate(dateString)}`;
+};
+
+const formatUpcomingDueDate = (dateString) => {
+    const dueDate = new Date(dateString);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.round(
+            (dueDate - today) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    if (diff === 0) {
+        return t("today");
+    }
+
+    if (diff === 1) {
+        return t("tomorrow");
+    }
+
+    return formatListDate(dateString);
+};
+
+const getOverdueDays = (dateString) => {
+    if (!dateString) {
+        return 0;
+    }
+
+    const dueDate = new Date(dateString);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.floor(
+            (today - dueDate) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    return diff > 0
+        ? diff
+        : 0;
 };
 
 const formatListSchedule = (list) => {
@@ -506,35 +622,54 @@ const formatListSchedule = (list) => {
 };
 
 const formatRecurrence = (frequency, intervalValue) => {
-    const interval = intervalValue || 1;
 
-    if (interval === 1) {
+    if (intervalValue === 1) {
         switch (frequency) {
             case "DAILY":
                 return t("daily");
+
             case "WEEKLY":
                 return t("weekly");
+
             case "MONTHLY":
                 return t("monthly");
+
             case "YEARLY":
                 return t("yearly");
+
             default:
                 return "";
         }
     }
 
+    let key;
+
     switch (frequency) {
         case "DAILY":
-            return `${t("every")} ${interval} ${t("days")}`;
+            key = "everyNDays";
+            break;
+
         case "WEEKLY":
-            return `${t("every")} ${interval} ${t("weeks")}`;
+            key = "everyNWeeks";
+            break;
+
         case "MONTHLY":
-            return `${t("every")} ${interval} ${t("months")}`;
+            key = "everyNMonths";
+            break;
+
         case "YEARLY":
-            return `${t("every")} ${interval} ${t("years")}`;
+            key = "everyNYears";
+            break;
+
         default:
             return "";
     }
+
+    return t(key).replace("{n}", intervalValue);
+};
+
+const isCurrentOccurrenceCompleted = (list) => {
+    return list.status === "DONE";
 };
 
 const isToday = (dateString) => {
@@ -580,7 +715,7 @@ const toggleTaskComplete = async (event, taskId, status) => {
     }
 };
 
-const completeList = async (listId) => {
+const completeList = async (listId, reopenDetail = true) => {
     try {
         const response = await apiFetch(
             `/lists/${listId}/complete`,
@@ -591,6 +726,34 @@ const completeList = async (listId) => {
 
         if (!response.ok) {
             throw new Error(t("failedToCompleteList"));
+        }
+
+        await loadLists();
+
+        if (reopenDetail) {
+            await openList(listId);
+        }
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
+
+const undoListCompletion = async (listId) => {
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/undo-complete`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUndoListCompletion"));
         }
 
         await loadLists();
@@ -605,6 +768,38 @@ const completeList = async (listId) => {
     }
 };
 
+const completeListFromOverview = async (event, listId) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    await completeList(listId, false);
+};
+const undoListCompletionFromOverview = async (event, listId) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/undo-complete`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUndoListCompletion"));
+        }
+
+        await loadLists();
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
 const renderCreateTaskInListForm = (listId) => {
     document.getElementById("create-task-in-list-container").innerHTML = `
         <section class="list-task-form">
@@ -1324,4 +1519,21 @@ if (searchInput) {
     });
 }
 
-loadLists();
+// Runs automatically when the page loads.
+const initListsPage = async () => {
+
+    // Reloads lists from backend.
+    await loadLists();
+
+    // Opens the create list form when triggered from the quick add menu.
+    const quickAdd =
+        new URLSearchParams(window.location.search)
+            .get("quickAdd");
+
+    if (quickAdd === "true") {
+        renderCreateListForm();
+    }
+
+};
+
+initListsPage();

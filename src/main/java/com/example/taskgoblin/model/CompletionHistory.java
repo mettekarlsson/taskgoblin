@@ -27,6 +27,9 @@ public class CompletionHistory {
     @Column(nullable = false)
     private LocalDateTime completedAt;
 
+    @Column(name = "previous_due_at")
+    private LocalDateTime previousDueAt;
+
     public CompletionHistory() {
     }
 
@@ -64,5 +67,13 @@ public class CompletionHistory {
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public LocalDateTime getPreviousDueAt() {
+        return previousDueAt;
+    }
+
+    public void setPreviousDueAt(LocalDateTime previousDueAt) {
+        this.previousDueAt = previousDueAt;
     }
 }

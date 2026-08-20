@@ -56,12 +56,17 @@ const translations = {
         months: "months",
         years: "years",
 
+        everyNDays: "Every {n} days",
+        everyNWeeks: "Every {n} weeks",
+        everyNMonths: "Every {n} months",
+        everyNYears: "Every {n} years",
+
         due: "Due",
-        every: "Every",
         dueToday: "Due today",
         dueTomorrow: "Due tomorrow",
-        dueYesterday: "Due yesterday",
         overdue: "Overdue",
+        dayOverdue: "day overdue",
+        daysOverdue: "days overdue",
         dueDate: "Due date",
         noDueDate: "No due date",
 
@@ -164,9 +169,16 @@ const translations = {
         recurringList: "Recurring list",
 
         completeList: "Complete list",
+        undoCompletion: "Undo completion",
+        failedToUndoListCompletion: "Failed to undo list completion",
+        nextOccurrence: "Next occurrence",
+        done: "Done",
 
         listNameCannotBeEmpty: "List name cannot be empty",
         recurringListNeedsDueDate: "Recurring lists need a due date",
+
+        deleteListTitle: "Delete list?",
+        deleteListMessage: "This action cannot be undone.",
 
         failedToLoadLists: "Failed to load lists",
         failedToLoadList: "Failed to load list",
@@ -234,14 +246,20 @@ const translations = {
         months: "månader",
         years: "år",
 
-        due: "Förfaller",
-        every: "Varje",
-        dueToday: "Förfaller idag",
-        dueTomorrow: "Förfaller imorgon",
-        dueYesterday: "Förföll igår",
+        everyNDays: "Var {n}:e dag",
+        everyNWeeks: "Var {n}:e vecka",
+        everyNMonths: "Var {n}:e månad",
+        everyNYears: "Var {n}:e år",
+
+        due: "Slutdatum",
+        dueToday: "Slutför idag",
+        dueTomorrow: "Slutför imorgon",
         overdue: "Försenad",
-        dueDate: "Förfallodatum",
-        noDueDate: "Inget datum",
+        dayOverdue: "dag försenad",
+        daysOverdue: "dagar försenad",
+        dueDate: "Slutdatum",
+        noDueDate: "Inget slutdatum",
+
 
 
         fullNameValidation: "Fullständigt namn får bara innehålla bokstäver och måste innehålla både för- och efternamn",
@@ -341,10 +359,18 @@ const translations = {
 
         chooseIcon: "Välj ikon",
         recurringList: "Återkommande lista",
+
         completeList: "Slutför lista",
+        undoCompletion: "Ångra slutförande",
+        failedToUndoListCompletion: "Kunde inte ångra slutförandet",
+        nextOccurrence: "Nästa tillfälle",
+        done: "Färdig",
 
         listNameCannotBeEmpty: "Listans namn får inte vara tomt",
         recurringListNeedsDueDate: "Återkommande listor behöver ett förfallodatum",
+
+        deleteListTitle: "Ta bort lista?",
+        deleteListMessage: "Den här åtgärden kan inte ångras.",
 
         failedToLoadLists: "Kunde inte ladda listor",
         failedToLoadList: "Kunde inte ladda listan",

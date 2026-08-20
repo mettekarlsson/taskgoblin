@@ -1,8 +1,6 @@
 let currentCalendarDate = new Date();
 
 let currentEvents = [];
-let selectedEventId = null;
-let editingEventId = null;
 
 /* -------------------------------- */
 /* Search                           */
@@ -574,7 +572,16 @@ const renderDayView = (
                         "
                     ></span>
 
-                    <span class="event-time">${event.isAllDay ? "All day" : new Date(event.startTime).toLocaleTimeString([], {hour: "2-digit", minute: "2-digit"})}</span>
+                    <span class="event-time">
+                        ${new Date(event.startTime)
+        .toLocaleTimeString(
+            [],
+            {
+                hour: "2-digit",
+                minute: "2-digit"
+            }
+        )}
+                    </span>
 
                     <span class="event-title">
                         ${event.title}
@@ -610,7 +617,7 @@ const openEventDetail = async (id) => {
 
         const event =
             await response.json();
-        selectedEventId = event.id;
+
 
         document.getElementById(
             "modal-event-title"
@@ -806,7 +813,6 @@ const restoreCalendarView = () => {
 
     renderWeekdays();
     renderCalendar();
-    editingEventId = null;
 };
 
 
@@ -1039,179 +1045,6 @@ const renderCreateEventForm = () => {
     allDayOptions.style.display = "none";
 };
 
-
-//edit already created event
-const renderEditEventForm = async () => {
-
-    // Close the event detail modal immediately
-    closeEventDetail();
-
-    try {
-
-        const response =
-            await apiFetch(
-                `/events/${selectedEventId}`
-            );
-
-        if (!response.ok) {
-            throw new Error(
-                "Failed to load event"
-            );
-        }
-
-        const event =
-            await response.json();
-
-
-        // Store event ID that is being edited
-        editingEventId =
-            event.id;
-
-
-        // Render the event form
-        renderCreateEventForm();
-
-
-        /* -------------------------------- */
-        /* Basic information                */
-        /* -------------------------------- */
-
-        document.getElementById(
-            "event-title"
-        ).value =
-            event.title || "";
-
-
-        document.getElementById(
-            "event-location"
-        ).value =
-            event.location || "";
-
-
-        document.getElementById(
-            "event-description"
-        ).value =
-            event.description || "";
-
-
-        /* -------------------------------- */
-        /* All day                          */
-        /* -------------------------------- */
-
-        const allDayCheckbox =
-            document.getElementById(
-                "event-is-all-day"
-            );
-
-        allDayCheckbox.checked =
-            event.isAllDay;
-
-
-        /* -------------------------------- */
-        /* Date / time                      */
-        /* -------------------------------- */
-
-        if (event.startTime) {
-
-            document.getElementById(
-                "event-start"
-            ).value =
-                event.startTime.slice(0, 16);
-
-
-            /*
-             * For all-day events we need to
-             * populate the separate date field.
-             */
-
-            if (event.isAllDay) {
-
-                document.getElementById(
-                    "event-all-day-date"
-                ).value =
-                    event.startTime.slice(0, 10);
-            }
-        }
-
-
-        if (event.endTime) {
-
-            document.getElementById(
-                "event-end"
-            ).value =
-                event.endTime.slice(0, 16);
-        }
-
-
-        /*
-         * Make sure the correct time/date
-         * section is visible.
-         */
-
-        toggleEventAllDay();
-
-
-        /* -------------------------------- */
-        /* Recurring                        */
-        /* -------------------------------- */
-
-        const recurringCheckbox =
-            document.getElementById(
-                "event-is-recurring"
-            );
-
-        recurringCheckbox.checked =
-            event.isRecurring;
-
-
-        if (event.isRecurring) {
-
-            document.getElementById(
-                "event-frequency"
-            ).value =
-                event.frequency || "DAILY";
-
-
-            document.getElementById(
-                "event-interval-value"
-            ).value =
-                event.intervalValue || 1;
-        }
-
-
-        /*
-         * Show/hide recurring options.
-         */
-
-        toggleEventRecurringOptions();
-
-
-        /* -------------------------------- */
-        /* Change button to Update          */
-        /* -------------------------------- */
-
-        const saveButton =
-            document.querySelector(
-                ".event-save-btn"
-            );
-
-
-        if (saveButton) {
-
-            saveButton.textContent =
-                "Update";
-
-
-            saveButton.onclick =
-                updateEvent;
-        }
-
-
-    } catch (error) {
-
-        alert(error.message);
-    }
-};
 
 /* -------------------------------- */
 /* Submit create event              */
@@ -1453,131 +1286,6 @@ const submitCreateEvent = async () => {
     }
 };
 
-//submit edited event
-const updateEvent = async () => {
-
-    const title =
-        document.getElementById(
-            "event-title"
-        ).value.trim();
-
-    const startTime =
-        document.getElementById(
-            "event-start"
-        ).value;
-
-    const endTime =
-        document.getElementById(
-            "event-end"
-        ).value;
-
-    const location =
-        document.getElementById(
-            "event-location"
-        ).value.trim();
-
-    const description =
-        document.getElementById(
-            "event-description"
-        ).value.trim();
-
-    const isAllDay =
-        document.getElementById(
-            "event-is-all-day"
-        ).checked;
-
-    const isRecurring =
-        document.getElementById(
-            "event-is-recurring"
-        ).checked;
-
-    const frequency =
-        isRecurring
-            ? document.getElementById(
-                "event-frequency"
-            ).value
-            : null;
-
-    const intervalValue =
-        isRecurring
-            ? Number(
-                document.getElementById(
-                    "event-interval-value"
-                ).value
-            )
-            : null;
-
-    if (!title) {
-
-        document.getElementById(
-            "event-message"
-        ).textContent =
-            "Title cannot be empty";
-
-        return;
-    }
-
-    const eventData = {
-
-        title,
-        startTime,
-        endTime: endTime || null,
-
-        description:
-            description || null,
-
-        location:
-            location || null,
-
-        isAllDay,
-        isRecurring,
-        frequency,
-        intervalValue
-    };
-
-    try {
-
-        const response =
-            await apiFetch(
-                `/events/${editingEventId}`,
-                {
-                    method: "PATCH",
-
-                    headers: {
-                        "Content-Type":
-                            "application/json"
-                    },
-
-                    body:
-                        JSON.stringify(
-                            eventData
-                        )
-                }
-            );
-
-        if (!response.ok) {
-
-            throw new Error(
-                "Failed to update event"
-            );
-        }
-
-        editingEventId =
-            null;
-
-        await loadEvents();
-
-        restoreCalendarView();
-
-    } catch (error) {
-
-        document.getElementById(
-            "event-message"
-        ).textContent =
-            error.message;
-    }
-};
-
 
 /* -------------------------------- */
 /* Cancel create event              */
@@ -1689,39 +1397,4 @@ const initPage = async () => {
 
     await loadEvents();
 
-};
-
-//delete event
-const deleteEvent = async () => {
-
-    if (!confirm("Delete this event?")) {
-        return;
-    }
-
-    try {
-
-        const response =
-            await apiFetch(
-                `/events/${selectedEventId}`,
-                {
-                    method: "DELETE"
-                }
-            );
-
-        if (!response.ok) {
-            throw new Error("Failed to delete event");
-        }
-
-        closeEventDetail();
-
-        await loadEvents();
-
-        document.getElementById(
-            "calendar-day-view"
-        ).innerHTML = "";
-
-    } catch (error) {
-
-        alert(error.message);
-    }
 };

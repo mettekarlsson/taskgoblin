@@ -19,30 +19,47 @@
 
         <h1>Create account</h1>
 
-        <input
-                id="name"
-                class="auth-input"
-                type="text"
-                placeholder="Name"
-        >
+        <!-- Disable browser's built-in validation so custom error messages can be displayed. -->
+        <form id="register-form" novalidate>
 
-        <input
-                id="email"
-                class="auth-input"
-                type="email"
-                placeholder="E-mail"
-        >
+            <input
+                    id="name"
+                    class="auth-input"
+                    type="text"
+                    placeholder="First- and Lastname"
+            >
+            <p id="name-error" class="field-error"></p>
 
-        <input
-                id="password"
-                class="auth-input"
-                type="password"
-                placeholder="Password"
-        >
+            <input
+                    id="email"
+                    class="auth-input"
+                    type="email"
+                    placeholder="E-mail"
+            >
+            <p id="email-error" class="field-error"></p>
 
-        <button class="auth-btn" onclick="handleRegister()">
-            Register
-        </button>
+            <input
+                    id="password"
+                    class="auth-input"
+                    type="password"
+                    placeholder="Password"
+            >
+            <p id="password-error" class="field-error"></p>
+
+            <input
+                    id="confirm-password"
+                    class="auth-input"
+                    type="password"
+                    placeholder="Confirm password"
+            >
+
+            <p id="confirm-password-error" class="field-error"></p>
+
+            <button class="auth-btn" type="submit">
+                Register
+            </button>
+
+        </form>
 
         <p id="register-message" class="auth-message"></p>
 

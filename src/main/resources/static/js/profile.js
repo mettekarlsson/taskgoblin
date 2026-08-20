@@ -230,6 +230,17 @@ const updatePassword = async () => {
         return;
     }
 
+    // Check that the password contains at least one letter and one number.
+    const passwordComplexityRegex =
+        /^(?=.*[A-Za-z])(?=.*\d).+$/;
+
+    if (!passwordComplexityRegex.test(newPassword)) {
+        showProfileMessage(
+            "Password must contain at least one letter and one number"
+        );
+        return;
+    }
+
     if (newPassword !== confirmNewPassword) {
         showProfileMessage(t("passwordsDoNotMatch"));
         return;

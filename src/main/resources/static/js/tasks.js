@@ -568,7 +568,17 @@ if (taskSearchInput) {
 
 // Runs automatically when the page loads.
 const initPage = async () => {
+
+    // Reloads tasks from backend.
     await loadTasks();
+
+    // Opens the create task form when triggered from the quick add menu.
+    const quickAdd = new URLSearchParams(window.location.search)
+        .get("quickAdd");
+
+    if (quickAdd === "true") {
+        renderCreateTaskForm();
+    }
 
 };
 
@@ -674,6 +684,15 @@ const createTask = async () => {
 
         // Reloads tasks from backend.
         await loadTasks();
+
+        // Returns to the page where quick add was opened.
+        const returnTo =
+            new URLSearchParams(window.location.search)
+                .get("returnTo");
+
+        if (returnTo) {
+            window.location.href = returnTo;
+        }
 
     } catch (error) {
 

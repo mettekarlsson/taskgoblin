@@ -118,9 +118,9 @@ public class UserService {
             User user = userRepository.findById(id)
                     .orElseThrow(() -> new ResourceNotFoundException("User"));
 
-            // Verify that the current password entered by the user is correct.
-            // If not, return a 400 BAD REQUEST error.
-            if (!user.getPassword().equals(dto.getCurrentPassword())) {
+            // Verify the current password against the stored BCrypt hash.
+            if (!passwordEncoder.matches(dto.getCurrentPassword(), user.getPassword())) {
+
                 throw new ResponseStatusException(
                         HttpStatus.BAD_REQUEST,
                         "Current password is incorrect"
@@ -137,11 +137,8 @@ public class UserService {
             }
 
             // Update the password.
-            // NOTE:
-            // Right now passwords are stored as plain text because
-            // authentication/security is not implemented yet.
-            // Later this should use PasswordEncoder before saving.
-            user.setPassword(dto.getNewPassword());
+            // Hash the new password before storing it in the database.
+            user.setPassword(passwordEncoder.encode(dto.getNewPassword()));
 
             // Save the updated password in the database.
             userRepository.save(user);

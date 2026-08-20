@@ -551,6 +551,19 @@ const sendNoteRequest = async (url, method, noteData) => {
 
         await loadNotes();
 
+        // Returns to the page where quick add was opened.
+        const quickAdd =
+            new URLSearchParams(window.location.search)
+                .get("quickAdd");
+
+        const returnTo =
+            new URLSearchParams(window.location.search)
+                .get("returnTo");
+
+        if (quickAdd === "true" && returnTo) {
+            window.location.href = returnTo;
+        }
+
     } catch (error) {
         showNoteMessage(error.message);
     }
@@ -674,4 +687,20 @@ if (searchInput) {
     });
 
 }
-loadNotes();
+
+// Runs automatically when the page loads.
+const initPage = async () => {
+
+    // Reloads notes from backend.
+    await loadNotes();
+
+    // Opens the create note form when triggered from the quick add menu.
+    const quickAdd =
+        new URLSearchParams(window.location.search)
+            .get("quickAdd");
+
+    if (quickAdd === "true") {
+        renderCreateNoteForm();
+    }
+
+};
