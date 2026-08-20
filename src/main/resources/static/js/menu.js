@@ -65,7 +65,10 @@ const renderMenu = () => {
        <div class="quick-add-menu" id="quick-add-menu">
 
         <!-- Add task -->
-        <button class="quick-add-option">
+        <button
+            class="quick-add-option"
+            onclick="quickAddTask()"
+        >
 
         <span class="quick-add-icon task-icon">
 
@@ -262,4 +265,14 @@ const initializeMenu = () => {
 
     });
 
+};
+
+// Opens the create task form and remembers the current page.
+const quickAddTask = () => {
+
+    const returnTo =
+        window.location.pathname;
+
+    window.location.href =
+        `/tasks.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
 };
