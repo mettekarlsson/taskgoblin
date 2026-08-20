@@ -130,6 +130,18 @@
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.05);
 }
 
+.list-due-status {
+    width: fit-content;
+    padding: 4px 8px;
+    border-radius: 6px;
+
+    background: var(--neutral-soft);
+    color: var(--text-muted);
+
+    font-size: 0.75rem;
+    font-weight: 600;
+}
+
 .list-card.completed {
     opacity: 0.72;
 }
@@ -230,7 +242,7 @@
     right: 0;
     bottom: 0;
 
-    height: 42px;
+    height: 39px;
 
     pointer-events: none;
 
