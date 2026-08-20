@@ -3,17 +3,12 @@ package com.example.taskgoblin.service;
 import com.example.taskgoblin.dto.*;
 import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.CategoryMapper;
-import com.example.taskgoblin.mapper.NoteMapper;
-import com.example.taskgoblin.mapper.TaskListMapper;
 import com.example.taskgoblin.model.Category;
-import com.example.taskgoblin.model.Note;
-import com.example.taskgoblin.model.TaskList;
 import com.example.taskgoblin.model.User;
 import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 
