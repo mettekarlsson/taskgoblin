@@ -256,15 +256,9 @@ const toggleListPinned = async (event, listId) => {
 
     const list =
         currentLists.find(list => list.id === listId);
-
-    await sendListRequest(
-        `/lists/${listId}`,
-        "PUT",
-        {
-            pinned: !list.pinned
-        }
-    );
 };
+
+
 
 const sendListRequest = async (
     url,
@@ -299,6 +293,19 @@ const sendListRequest = async (
         }
 
         await loadLists();
+
+        // Returns to the page where quick add was opened.
+        const quickAdd =
+            new URLSearchParams(window.location.search)
+                .get("quickAdd");
+
+        const returnTo =
+            new URLSearchParams(window.location.search)
+                .get("returnTo");
+
+        if (quickAdd === "true" && returnTo) {
+            window.location.href = returnTo;
+        }
 
     } catch (error) {
 
@@ -1479,4 +1486,21 @@ if (searchInput) {
     });
 }
 
-loadLists();
+// Runs automatically when the page loads.
+const initListsPage = async () => {
+
+    // Reloads lists from backend.
+    await loadLists();
+
+    // Opens the create list form when triggered from the quick add menu.
+    const quickAdd =
+        new URLSearchParams(window.location.search)
+            .get("quickAdd");
+
+    if (quickAdd === "true") {
+        renderCreateListForm();
+    }
+
+};
+
+initListsPage();

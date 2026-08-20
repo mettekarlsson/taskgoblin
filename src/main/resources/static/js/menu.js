@@ -119,7 +119,10 @@ const renderMenu = () => {
         </button>
 
         <!-- Add list -->
-        <button class="quick-add-option">
+        <button
+            class="quick-add-option"
+            onclick="quickAddList()"
+        >
 
         <span class="quick-add-icon list-icon">
 
@@ -268,6 +271,16 @@ const initializeMenu = () => {
 
     });
 
+};
+
+// Opens the create list form and remembers the current page.
+const quickAddList = () => {
+
+    const returnTo =
+        window.location.pathname;
+
+    window.location.href =
+        `/lists.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
 };
 
 // Opens the create task form and remembers the current page.
