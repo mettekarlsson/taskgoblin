@@ -3,12 +3,13 @@ package com.example.taskgoblin.mapper;
 import com.example.taskgoblin.dto.CategoryDTO;
 import com.example.taskgoblin.dto.CreateCategoryDTO;
 import com.example.taskgoblin.model.Category;
+import org.springframework.stereotype.Component;
 
-
+@Component
 public class CategoryMapper {
 
         //mapping from entity to dto
-        public static CategoryDTO mapToCategoryDto(Category category) {
+        public CategoryDTO mapToCategoryDto(Category category) {
             return new CategoryDTO(
                     category.getId(),
                     category.getName(),
@@ -18,7 +19,7 @@ public class CategoryMapper {
         }
 
         //mapping from dto to entity
-        public static Category mapToCategoryEntity(CreateCategoryDTO createCategoryDTO) {
+        public Category mapToCategoryEntity(CreateCategoryDTO createCategoryDTO) {
 
             Category category = new Category();
 

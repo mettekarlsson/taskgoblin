@@ -6,7 +6,9 @@ import com.example.taskgoblin.dto.UpdateTaskDTO;
 import com.example.taskgoblin.model.Category;
 import com.example.taskgoblin.model.Task;
 import com.example.taskgoblin.model.TaskList;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TaskMapper {
 
     /*
@@ -14,7 +16,7 @@ public class TaskMapper {
 
      Used when sending task data back to the client.
     */
-    public static TaskDTO mapToTaskDto(Task task) {
+    public TaskDTO mapToTaskDto(Task task) {
 
         return new TaskDTO(
                 task.getId(),
@@ -44,7 +46,7 @@ public class TaskMapper {
      Only fields that the client is allowed to set
      should be mapped here.
     */
-    public static Task mapToTaskEntity(CreateTaskDTO createTaskDTO) {
+    public Task mapToTaskEntity(CreateTaskDTO createTaskDTO) {
 
         Task task = new Task();
 
@@ -66,7 +68,7 @@ public class TaskMapper {
  The mapper is only responsible for transferring data.
  Validation and business rules belong in the service layer.
 */
-    public static void updateEntity(
+    public void updateEntity(
             Task task,
             UpdateTaskDTO updateTaskDTO,
             Category category,

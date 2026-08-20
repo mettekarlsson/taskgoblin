@@ -4,11 +4,13 @@ import com.example.taskgoblin.dto.CreateTaskListDTO;
 import com.example.taskgoblin.dto.TaskListDTO;
 import com.example.taskgoblin.model.TaskList;
 import com.example.taskgoblin.model.TaskListStatus;
+import org.springframework.stereotype.Component;
 
+@Component
 public class TaskListMapper {
 
 
-    public static TaskListDTO mapToTaskListDTO(TaskList taskList) {
+    public TaskListDTO mapToTaskListDTO(TaskList taskList) {
 
         return new TaskListDTO(
                 taskList.getId(),
@@ -32,7 +34,7 @@ public class TaskListMapper {
     }
 
 
-    public static TaskList mapToTaskList(CreateTaskListDTO dto) {
+    public TaskList mapToTaskList(CreateTaskListDTO dto) {
 
         TaskList taskList = new TaskList();
 

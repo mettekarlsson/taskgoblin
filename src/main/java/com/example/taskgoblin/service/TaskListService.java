@@ -28,6 +28,7 @@ public class TaskListService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final CompletionHistoryRepository completionHistoryRepository;
+    private final TaskListMapper taskListMapper;
 
 
 
@@ -39,13 +40,15 @@ public class TaskListService {
             TaskRepository taskRepository,
             UserRepository userRepository,
             CategoryRepository categoryRepository,
-            CompletionHistoryRepository completionHistoryRepository
-    ) {
+            CompletionHistoryRepository completionHistoryRepository,
+            TaskListMapper taskListMapper
+            ) {
         this.taskListRepository = taskListRepository;
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.completionHistoryRepository = completionHistoryRepository;
+        this.taskListMapper = taskListMapper;
     }
 
 
@@ -58,7 +61,7 @@ public class TaskListService {
 
         return taskLists.stream()
                 .map(this::activateNextOccurrenceIfDue)
-                .map(TaskListMapper::mapToTaskListDTO)
+                .map(taskListMapper::mapToTaskListDTO)
                 .toList();
     }
 
@@ -72,7 +75,7 @@ public class TaskListService {
         taskList =
                 activateNextOccurrenceIfDue(taskList);
 
-        return TaskListMapper
+        return taskListMapper
                 .mapToTaskListDTO(taskList);
     }
 
@@ -127,7 +130,7 @@ public class TaskListService {
 
         // Convert task lists to DTOs before returning them.
         return taskLists.stream()
-                .map(TaskListMapper::mapToTaskListDTO)
+                .map(taskListMapper::mapToTaskListDTO)
                 .toList();
     }
 
@@ -144,7 +147,7 @@ public class TaskListService {
                         new ResourceNotFoundException("User not found"));
 
         TaskList taskList =
-                TaskListMapper.mapToTaskList(dto);
+                taskListMapper.mapToTaskList(dto);
 
         taskList.setUser(user);
         taskList.setCreatedAt(LocalDateTime.now());
@@ -165,7 +168,7 @@ public class TaskListService {
         TaskList savedList =
                 taskListRepository.save(taskList);
 
-        return TaskListMapper
+        return taskListMapper
                 .mapToTaskListDTO(savedList);
     }
 
@@ -262,7 +265,7 @@ public class TaskListService {
                 taskListRepository.save(taskList);
 
         // Converts the updated entity into a response DTO.
-        return TaskListMapper
+        return taskListMapper
                 .mapToTaskListDTO(updatedList);
     }
 
@@ -340,7 +343,7 @@ public class TaskListService {
         completionHistoryRepository.save(history);
 
         // Convert updated entity into DTO
-        return TaskListMapper
+        return taskListMapper
                 .mapToTaskListDTO(updatedList);
     }
 
@@ -408,7 +411,7 @@ public class TaskListService {
         TaskList updatedList =
                 taskListRepository.save(taskList);
 
-        return TaskListMapper
+        return taskListMapper
                 .mapToTaskListDTO(updatedList);
     }
 
@@ -451,7 +454,7 @@ public class TaskListService {
                 taskListRepository.save(taskList);
 
         // Convert updated entity into DTO
-        return TaskListMapper
+        return taskListMapper
                 .mapToTaskListDTO(updatedList);
     }
 
@@ -473,7 +476,7 @@ public class TaskListService {
         TaskList updatedList =
                 taskListRepository.save(taskList);
 
-        return TaskListMapper.mapToTaskListDTO(updatedList);
+        return taskListMapper.mapToTaskListDTO(updatedList);
     }
 
 

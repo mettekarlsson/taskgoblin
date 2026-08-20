@@ -106,6 +106,6 @@ public class CategoryController {
     ) {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         categoryService.deleteCategory(id, userId);
-        return ResponseEntity.ok("Category deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 }

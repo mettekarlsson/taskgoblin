@@ -3,11 +3,13 @@ package com.example.taskgoblin.mapper;
 import com.example.taskgoblin.dto.CreateNoteDTO;
 import com.example.taskgoblin.dto.NoteDTO;
 import com.example.taskgoblin.model.Note;
+import org.springframework.stereotype.Component;
 
+@Component
 public class NoteMapper {
 
     //mapping from entity to dto
-    public static NoteDTO mapToNoteDto(Note note) {
+    public NoteDTO mapToNoteDto(Note note) {
         return new NoteDTO(
                 note.getId(),
                 note.getTitle(),
@@ -20,7 +22,7 @@ public class NoteMapper {
     }
 
     //mapping from dto to entity
-    public static Note mapToNoteEntity(CreateNoteDTO createNoteDto) {
+    public Note mapToNoteEntity(CreateNoteDTO createNoteDto) {
 
         Note note = new Note();
 
