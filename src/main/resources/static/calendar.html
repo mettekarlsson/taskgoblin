@@ -132,19 +132,47 @@
 <footer id="app-footer"></footer>
 
 <div class="modal" id="event-detail-modal">
+
     <div class="modal-content">
+
+        <button
+                type="button"
+                class="modal-close-btn"
+                onclick="closeEventDetail()"
+                aria-label="Close"
+        >
+            ×
+        </button>
+
 
         <h2 id="modal-event-title"></h2>
 
         <div id="modal-event-details"></div>
 
+
         <div class="modal-actions">
-            <button class="modal-cancel-btn" onclick="closeEventDetail()">
-                Close
+
+            <button
+                    type="button"
+                    class="event-edit-btn"
+                    onclick="renderEditEventForm()"
+            >
+                Edit
             </button>
+
+
+            <button
+                    type="button"
+                    class="event-delete-btn"
+                    onclick="deleteEvent()"
+            >
+                Delete
+            </button>
+
         </div>
 
     </div>
+
 </div>
 
 <script src="/js/auth.js"></script>
