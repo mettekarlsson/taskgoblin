@@ -114,6 +114,8 @@ const renderLists = async (lists, searchQuery = "") => {
                     </div>
                 `)
                 .join("");
+            const hasMoreTasks =
+                tasks.length > 4;
 
             return `
 <article
@@ -148,16 +150,15 @@ const renderLists = async (lists, searchQuery = "") => {
                 previewTasks ||
                 `<p class="list-task-preview">${t("noTasksYet")}</p>`
             }
-</div>
 
-<div class="list-meta">
-    ${tasks.length} ${t("tasksCount")}
     ${
-                list.isRecurring
-                    ? ` · ↻ ${formatRecurrence(
-                        list.frequency,
-                        list.intervalValue
-                    )}`
+                tasks.length > 4
+                    ? `
+                <div
+                    class="list-tasks-fade"
+                    style="--list-color: ${listColor};"
+                ></div>
+            `
                     : ""
             }
 </div>
@@ -179,25 +180,47 @@ ${
                 listCompleted && list.isRecurring
                     ? `
             <div class="list-completed-status">
-                ✓ ${t("completed")} · ${formatDueDate(list.dueAt)}
-            </div>
+    ${t("nextOccurrence")} ${formatListDate(list.dueAt)}
+</div>
         `
                     : ""
             }
 
 <div class="list-footer">
 
-    <span class="list-date">
-        ${formatListDate(list.lastInteractedAt || list.createdAt)}
-    </span>
+    <div class="list-footer-info">
+        <span>
+            ${tasks.length} ${t("tasksCount")}
+        </span>
 
+        ${
+                list.isRecurring
+                    ? `
+                    <span>
+                        ↻ ${formatRecurrence(
+                        list.frequency,
+                        list.intervalValue
+                    )}
+                    </span>
+                `
+                    : ""
+            }
+    </div>
+    
     <div class="list-footer-actions">
 
         <button
     class="list-complete-check ${listCompleted ? "checked" : ""}"
-    onclick="completeListFromOverview(event, ${list.id})"
-    aria-label="${t("completeList")}"
-    ${listCompleted ? "disabled" : ""}
+    onclick="${
+                listCompleted && list.isRecurring
+                    ? `undoListCompletionFromOverview(event, ${list.id})`
+                    : `completeListFromOverview(event, ${list.id})`
+            }"
+    aria-label="${
+                listCompleted && list.isRecurring
+                    ? t("undoCompletion")
+                    : t("completeList")
+            }"
 >
     ${listCompleted ? "✓" : ""}
 </button>
@@ -339,14 +362,11 @@ const renderSingleList = (list, tasks) => {
         isCurrentOccurrenceCompleted(list);
 
     const sortedTasks = [...tasks].sort((a, b) => {
-
         const aCompleted =
-            a.status === "DONE"
-            || (listCompleted && a.lastCompletedAt);
+            a.status === "DONE";
 
         const bCompleted =
-            b.status === "DONE"
-            || (listCompleted && b.lastCompletedAt);
+            b.status === "DONE";
 
         return aCompleted - bCompleted;
     });
@@ -389,15 +409,8 @@ const renderSingleList = (list, tasks) => {
         ${
         tasks.length
             ? sortedTasks.map(task => {
-                const isDone =
-                    task.status === "DONE";
-
-                const wasCompletedInCurrentOccurrence =
-                    listCompleted && task.lastCompletedAt;
-
                 const isVisuallyCompleted =
-                    isDone || wasCompletedInCurrentOccurrence;
-
+                    task.status === "DONE";
                 return `
     <div class="list-detail-task ${isVisuallyCompleted ? "done" : ""}">
 
@@ -446,9 +459,17 @@ const renderSingleList = (list, tasks) => {
     
     <button
     class="list-complete-btn"
-    onclick="completeList(${list.id})"
+    onclick="${
+        listCompleted && list.isRecurring
+            ? `undoListCompletion(${list.id})`
+            : `completeList(${list.id})`
+    }"
 >
-    ${t("completeList")}
+    ${
+        listCompleted && list.isRecurring
+            ? t("undoCompletion")
+            : t("completeList")
+    }
 </button>
 
     <div class="list-detail-footer">
@@ -511,12 +532,14 @@ const formatDueDate = (dateString) => {
         return t("dueTomorrow");
     }
 
-    if (diff === -1) {
-        return t("dueYesterday");
-    }
-
     if (diff < 0) {
-        return `${t("overdue")} ${Math.abs(diff)} ${t("days")}`;
+        const daysOverdue = Math.abs(diff);
+
+        return `${daysOverdue} ${
+            daysOverdue === 1
+                ? t("dayOverdue")
+                : t("daysOverdue")
+        }`;
     }
 
     return `${t("due")} ${formatListDate(dateString)}`;
@@ -559,53 +582,54 @@ const formatListSchedule = (list) => {
 };
 
 const formatRecurrence = (frequency, intervalValue) => {
-    const interval = intervalValue || 1;
 
-    if (interval === 1) {
+    if (intervalValue === 1) {
         switch (frequency) {
             case "DAILY":
                 return t("daily");
+
             case "WEEKLY":
                 return t("weekly");
+
             case "MONTHLY":
                 return t("monthly");
+
             case "YEARLY":
                 return t("yearly");
+
             default:
                 return "";
         }
     }
 
+    let key;
+
     switch (frequency) {
         case "DAILY":
-            return `${t("every")} ${interval} ${t("days")}`;
+            key = "everyNDays";
+            break;
+
         case "WEEKLY":
-            return `${t("every")} ${interval} ${t("weeks")}`;
+            key = "everyNWeeks";
+            break;
+
         case "MONTHLY":
-            return `${t("every")} ${interval} ${t("months")}`;
+            key = "everyNMonths";
+            break;
+
         case "YEARLY":
-            return `${t("every")} ${interval} ${t("years")}`;
+            key = "everyNYears";
+            break;
+
         default:
             return "";
     }
+
+    return t(key).replace("{n}", intervalValue);
 };
 
 const isCurrentOccurrenceCompleted = (list) => {
-    if (!list.isRecurring) {
-        return list.status === "DONE";
-    }
-
-    if (!list.lastCompletedAt || !list.dueAt) {
-        return false;
-    }
-
-    const dueDate = new Date(list.dueAt);
-    const today = new Date();
-
-    dueDate.setHours(0, 0, 0, 0);
-    today.setHours(0, 0, 0, 0);
-
-    return dueDate > today;
+    return list.status === "DONE";
 };
 
 const isToday = (dateString) => {
@@ -679,13 +703,63 @@ const completeList = async (listId, reopenDetail = true) => {
     }
 };
 
+const undoListCompletion = async (listId) => {
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/undo-complete`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUndoListCompletion"));
+        }
+
+        await loadLists();
+        await openList(listId);
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
+
 const completeListFromOverview = async (event, listId) => {
     event.preventDefault();
     event.stopPropagation();
 
     await completeList(listId, false);
 };
+const undoListCompletionFromOverview = async (event, listId) => {
+    event.preventDefault();
+    event.stopPropagation();
 
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/undo-complete`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUndoListCompletion"));
+        }
+
+        await loadLists();
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
 const renderCreateTaskInListForm = (listId) => {
     document.getElementById("create-task-in-list-container").innerHTML = `
         <section class="list-task-form">

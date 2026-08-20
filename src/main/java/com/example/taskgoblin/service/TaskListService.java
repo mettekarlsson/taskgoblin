@@ -57,6 +57,7 @@ public class TaskListService {
         List<TaskList> taskLists = taskListRepository.findByUserId(userId);
 
         return taskLists.stream()
+                .map(this::activateNextOccurrenceIfDue)
                 .map(TaskListMapper::mapToTaskListDTO)
                 .toList();
     }
@@ -68,7 +69,11 @@ public class TaskListService {
                 .orElseThrow(() ->
                         new ResourceNotFoundException("Task list not found"));
 
-        return TaskListMapper.mapToTaskListDTO(taskList);
+        taskList =
+                activateNextOccurrenceIfDue(taskList);
+
+        return TaskListMapper
+                .mapToTaskListDTO(taskList);
     }
 
     // Show progress in List
@@ -289,22 +294,22 @@ public class TaskListService {
 
         if (taskList.isRecurring()) {
 
-            // Store latest completion timestamp
+            // Mark the current occurrence as completed
+            taskList.setStatus(TaskListStatus.DONE);
+
+            // Store completion timestamps
+            taskList.setCompletedAt(now);
             taskList.setLastCompletedAt(now);
 
-            // Move list to next occurrence
+            // Schedule next occurrence from actual completion time
             taskList.setDueAt(
                     calculateNextDueAt(taskList, now)
             );
 
-            // Keep recurring list active
-            taskList.setStatus(TaskListStatus.TODO);
-
-            // Recurring lists are never permanently completed
-            taskList.setCompletedAt(null);
-
-            // Reset completed child tasks for next occurrence
-            resetCompletedTasksForNextOccurrence(taskList);
+            /*
+             * Do NOT reset child tasks here.
+             * They stay as they are until the next occurrence begins.
+             */
 
         } else {
 
@@ -600,5 +605,47 @@ public class TaskListService {
                             taskList.getIntervalValue()
                     );
         };
+    }
+
+    private TaskList activateNextOccurrenceIfDue(
+            TaskList taskList
+    ) {
+
+        // Only applies to completed recurring lists
+        if (!taskList.isRecurring()
+                || taskList.getStatus() != TaskListStatus.DONE
+                || taskList.getDueAt() == null) {
+
+            return taskList;
+        }
+
+        LocalDateTime now =
+                LocalDateTime.now();
+
+        // Next occurrence has not started yet
+        if (taskList.getDueAt().isAfter(now)) {
+            return taskList;
+        }
+
+        // Reset completed child tasks for the new occurrence
+        resetCompletedTasksForNextOccurrence(taskList);
+
+        // Make the recurring list active again
+        taskList.setStatus(TaskListStatus.TODO);
+
+        // It is no longer the currently completed occurrence
+        taskList.setCompletedAt(null);
+
+        /*
+         * Keep lastCompletedAt.
+         * It tells us when the previous occurrence was completed.
+         */
+
+        /*
+         * Do NOT update lastInteractedAt here.
+         * This is an automatic rollover, not a user interaction.
+         */
+
+        return taskListRepository.save(taskList);
     }
 }
