@@ -92,7 +92,10 @@ const renderMenu = () => {
         </button>
 
         <!-- Add note -->
-        <button class="quick-add-option">
+        <button
+            class="quick-add-option"
+            onclick="quickAddNote()"
+        >
 
         <span class="quick-add-icon note-icon">
 
@@ -275,4 +278,14 @@ const quickAddTask = () => {
 
     window.location.href =
         `/tasks.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
+};
+
+// Opens the create note form and remembers the current page.
+const quickAddNote = () => {
+
+    const returnTo =
+        window.location.pathname;
+
+    window.location.href =
+        `/notes.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
 };
