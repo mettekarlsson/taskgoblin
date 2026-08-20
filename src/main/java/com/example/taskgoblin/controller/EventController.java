@@ -43,7 +43,7 @@ public class EventController {
     @PatchMapping("/{id}")
     public ResponseEntity<EventDTO> updateEvent(
             @PathVariable Long id,
-            @RequestBody UpdateEventDTO updateEventDTO,
+            @Valid @RequestBody UpdateEventDTO updateEventDTO,
             @AuthenticationPrincipal UserDetails userDetails
     ) {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
@@ -60,6 +60,6 @@ public class EventController {
     ) {
         Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
         calendarService.deleteEvent(id, userId);
-        return ResponseEntity.ok("Event deleted successfully");
+        return ResponseEntity.noContent().build();
     }
 }

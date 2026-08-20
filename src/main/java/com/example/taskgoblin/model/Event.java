@@ -129,7 +129,7 @@ public class Event {
         this.updatedAt = updatedAt;
     }
 
-    public boolean getIsAllDay() {
+    public Boolean getIsAllDay() {
         return isAllDay;
     }
 
@@ -137,7 +137,7 @@ public class Event {
         isAllDay = allDay;
     }
 
-    public boolean getIsRecurring() {
+    public Boolean getIsRecurring() {
         return isRecurring;
     }
 

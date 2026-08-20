@@ -5,11 +5,13 @@ import com.example.taskgoblin.dto.CreateEventDTO;
 import com.example.taskgoblin.dto.EventDTO;
 import com.example.taskgoblin.dto.EventSummaryDTO;
 import com.example.taskgoblin.model.Event;
+import org.springframework.stereotype.Component;
 
+@Component
 public class EventMapper {
 
     //map from entity to dto
-    public static EventDTO mapToEventDto(Event event) {
+    public EventDTO mapToEventDto(Event event) {
 
         CategoryDTO categoryDTO = null;
         if (event.getCategory() != null) {
@@ -37,7 +39,7 @@ public class EventMapper {
     }
 
     //map to entity from dto
-    public static Event mapToEventEntity(CreateEventDTO createEventDTO) {
+    public Event mapToEventEntity(CreateEventDTO createEventDTO) {
     Event event = new Event();
 
         event.setTitle(createEventDTO.getTitle());
@@ -53,7 +55,7 @@ public class EventMapper {
 }
 
 //map from entity to eventsummarydto
-    public static EventSummaryDTO mapToEventSummaryDto(Event event) {
+    public EventSummaryDTO mapToEventSummaryDto(Event event) {
 
         String color = null;
         if (event.getCategory() != null) {
