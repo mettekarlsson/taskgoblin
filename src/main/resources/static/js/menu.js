@@ -30,6 +30,7 @@ const renderMenu = () => {
 
                 <a href="/index.html" data-translate="home">Home</a>
                 <a href="/profile.html" data-translate="profile">Profile</a>
+                <a href="/today.html" data-translate="today">Today</a>
                 <a href="/tasks.html" data-translate="tasks">Tasks</a>
                 <a href="/lists.html" data-translate="lists">Lists</a>
                 <a href="/notes.html" data-translate="notes">Notes</a>
