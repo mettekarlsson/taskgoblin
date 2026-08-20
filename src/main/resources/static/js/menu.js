@@ -150,7 +150,11 @@ const renderMenu = () => {
         </button>
 
         <!-- Add event -->
-        <button class="quick-add-option">
+      
+        <button
+             class="quick-add-option"
+             onclick="quickAddEvent()"
+        >
 
         <span class="quick-add-icon event-icon">
 
@@ -301,4 +305,14 @@ const quickAddNote = () => {
 
     window.location.href =
         `/notes.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
+};
+
+// Opens the create event form and remembers the current page.
+const quickAddEvent = () => {
+
+    const returnTo =
+        window.location.pathname;
+
+    window.location.href =
+        `/calendar.html?quickAdd=true&returnTo=${encodeURIComponent(returnTo)}`;
 };
