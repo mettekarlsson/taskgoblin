@@ -242,6 +242,7 @@ const renderTodayTasks = (tasks) => {
                     <button
                         class="today-task-check"
                         type="button"
+                        onclick="completeTodayTask(${task.id})"
                     ></button>
 
                     <div class="today-row-main">
@@ -262,6 +263,35 @@ const renderTodayTasks = (tasks) => {
         }).join("");
 };
 
+// Complete a task from today view
+const completeTodayTask = async (taskId) => {
+
+    try {
+
+        const response =
+            await apiFetch(
+                `/tasks/${taskId}/complete`,
+                {
+                    method: "PATCH"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to complete task"
+            );
+        }
+
+        await loadTodayTasks();
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+};
+
+// Later add a functionality that saves a completed task in today view? Or should they just disappear when completed?
 
 /* -------------------------------- */
 /* Init                             */
