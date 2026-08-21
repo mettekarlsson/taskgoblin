@@ -134,6 +134,14 @@ public class CalendarService {
             if (createEventDTO.getFrequency() == null) {
                 throw new InvalidEventException("Frequency must be set when event is recurring");
             }
+
+            // Recurring events must repeat at some positive interval (e.g. "every 2 weeks").
+            // null or non-positive values would make the occurrence loop in expandRecurringEvent
+            // either crash or never advance (infinite loop).
+            if (createEventDTO.getIntervalValue() == null || createEventDTO.getIntervalValue() <= 0) {
+                throw new InvalidEventException("Interval value must be set to a positive number when event is recurring");
+            }
+
             // Validates frequency value even though frontend restricts input via dropdown.
             // Guards against direct API calls (e.g. via Postman) with invalid values.
             try {
@@ -218,6 +226,19 @@ public class CalendarService {
         if (updateEventDTO.getIntervalValue() != null) {
             event.setIntervalValue(updateEventDTO.getIntervalValue());
             contentWasUpdated = true;
+        }
+
+        // Checked on the event's final state (not just the DTO) because this is a
+        // PATCH - isRecurring, frequency and intervalValue might have been set in
+        // an earlier request, not this one. This also catches a PATCH that flips
+        // isRecurring to true without supplying a valid frequency/intervalValue.
+        if (Boolean.TRUE.equals(event.getIsRecurring())) {
+            if (event.getFrequency() == null) {
+                throw new InvalidEventException("Frequency must be set when event is recurring");
+            }
+            if (event.getIntervalValue() == null || event.getIntervalValue() <= 0) {
+                throw new InvalidEventException("Interval value must be set to a positive number when event is recurring");
+            }
         }
 
         if (contentWasUpdated){
