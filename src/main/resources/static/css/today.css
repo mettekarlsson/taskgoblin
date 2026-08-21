@@ -360,6 +360,24 @@
     cursor: pointer;
 }
 
+/* =========================================================
+   COLLAPSIBLE LISTS
+   ========================================================= */
+
+.today-list-tasks {
+    display: none;
+
+    padding: 0 14px 12px 58px;
+}
+
+.today-list-card.expanded .today-list-tasks {
+    display: block;
+}
+
+.today-list-card.expanded .today-row-arrow {
+    transform: rotate(90deg);
+}
+
 
 /* =========================================================
    CATEGORY / META BADGES
@@ -504,6 +522,102 @@
     font-size: 0.8rem;
 }
 
+/* =========================================================
+   COLLAPSIBLE LISTS
+   ========================================================= */
+
+.today-list-card {
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.today-list-card:last-child {
+    border-bottom: none;
+}
+
+.today-list-tasks {
+    display: none;
+
+    padding: 4px 14px 14px 58px;
+
+    background: var(--surface);
+}
+
+.today-list-card.expanded .today-list-tasks {
+    display: block;
+}
+
+
+/* =========================================================
+   LIST TASKS
+   ========================================================= */
+
+.today-list-task {
+    min-height: 42px;
+
+    display: flex;
+    align-items: center;
+
+    gap: 10px;
+
+    padding: 6px 0;
+}
+
+.today-list-check {
+    width: 19px;
+    height: 19px;
+
+    flex-shrink: 0;
+
+    padding: 0;
+
+    border: 2px solid var(--text-muted);
+    border-radius: 50%;
+
+    background: transparent;
+
+    color: white;
+
+    cursor: pointer;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    font-size: 0.65rem;
+    font-weight: 700;
+}
+
+.today-list-check.completed {
+    border-color: var(--primary);
+
+    background: var(--primary);
+}
+
+.today-list-task-title {
+    color: var(--text);
+
+    font-size: 0.85rem;
+}
+
+.today-list-task-title.completed {
+    text-decoration: line-through;
+
+    color: var(--text-muted);
+}
+
+.today-list-header {
+    cursor: pointer;
+}
+
+.today-list-header .today-row-arrow {
+    transition: transform 0.2s ease;
+}
+
+.today-list-card.expanded
+.today-list-header
+.today-row-arrow {
+    transform: rotate(90deg);
+}
 
 /* =========================================================
    MOBILE

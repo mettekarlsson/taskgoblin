@@ -293,9 +293,287 @@ const completeTodayTask = async (taskId) => {
 
 // Later add a functionality that saves a completed task in today view? Or should they just disappear when completed?
 
+
+/* -------------------------------- */
+/* Lists                            */
+/* -------------------------------- */
+
+// Check if a list is due today
+const isListDueToday = (list) => {
+
+    if (!list.dueAt || list.status === "DONE") {
+        return false;
+    }
+
+    const dueDate =
+        new Date(list.dueAt);
+
+    return (
+        dueDate >= getStartOfToday()
+        && dueDate < getStartOfTomorrow()
+    );
+};
+
+
+// Get tasks belonging to a list
+const loadTasksForTodayList = async (listId) => {
+
+    try {
+
+        const response =
+            await apiFetch(`/lists/${listId}/tasks`);
+
+        if (!response.ok) {
+            return [];
+        }
+
+        return await response.json();
+
+    } catch (error) {
+
+        console.error(error);
+
+        return [];
+    }
+};
+
+
+// Load today's lists
+const loadTodayLists = async (expandedListId = null) => {
+
+    try {
+
+        const response =
+            await apiFetch("/lists");
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to load lists"
+            );
+        }
+
+        const lists =
+            await response.json();
+
+        const todayLists =
+            lists.filter(isListDueToday);
+
+        const listsWithTasks =
+            await Promise.all(
+                todayLists.map(async list => {
+
+                    const tasks =
+                        await loadTasksForTodayList(list.id);
+
+                    return {
+                        ...list,
+                        tasks
+                    };
+                })
+            );
+
+        renderTodayLists(
+            listsWithTasks,
+            expandedListId
+        );
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+};
+
+
+// Render today's lists
+const renderTodayLists = (lists, expandedListId = null) => {
+
+    const container =
+        document.getElementById("today-lists");
+
+    if (!container) {
+        return;
+    }
+
+    if (lists.length === 0) {
+
+        container.innerHTML = `
+            <div class="today-empty">
+                No lists today
+            </div>
+        `;
+
+        return;
+    }
+
+    container.innerHTML =
+        lists.map(list => {
+
+            const completedTasks =
+                list.tasks.filter(
+                    task => task.status === "DONE"
+                ).length;
+
+            const totalTasks =
+                list.tasks.length;
+
+            return `
+                <div
+                    class="today-list-card ${
+                        list.id === expandedListId
+                            ? "expanded"
+                            : ""
+                    }"
+                    id="today-list-${list.id}"
+                >
+
+                    <div
+                        class="today-row today-list-header"
+                        onclick="toggleTodayList(${list.id})"
+                    >
+
+                        <span class="today-list-icon">
+                            📋
+                        </span>
+
+                        <div class="today-row-main">
+
+                            <p class="today-row-title">
+                                ${list.name}
+                            </p>
+
+                        </div>
+
+                        <div class="today-row-meta">
+
+                            <span class="today-category">
+                                ${completedTasks} / ${totalTasks}
+                            </span>
+
+                        </div>
+
+                        <span class="today-row-arrow">
+                            ›
+                        </span>
+
+                    </div>
+
+                    <div class="today-list-tasks">
+
+                        ${
+                            list.tasks.length === 0
+                                ? `
+                                    <div class="today-empty">
+                                        No tasks in this list
+                                    </div>
+                                `
+                                : list.tasks.map(task => `
+
+                                    <div class="today-list-task">
+
+                                        <button
+                                            class="today-list-check ${
+                                                task.status === "DONE"
+                                                    ? "completed"
+                                                    : ""
+                                            }"
+                                            type="button"
+                                            onclick="toggleTodayListTask(event, ${task.id}, '${task.status}', ${list.id})"
+                                        >
+                                            ${
+                                                task.status === "DONE"
+                                                    ? "✓"
+                                                    : ""
+                                            }
+                                        </button>
+
+                                        <span
+                                            class="today-list-task-title ${
+                                                task.status === "DONE"
+                                                    ? "completed"
+                                                    : ""
+                                            }"
+                                        >
+                                            ${task.title}
+                                        </span>
+
+                                    </div>
+
+                                `).join("")
+                        }
+
+                    </div>
+
+                </div>
+            `;
+
+        }).join("");
+};
+
+
+// Expand or collapse a list
+const toggleTodayList = (listId) => {
+
+    const listElement =
+        document.getElementById(
+            `today-list-${listId}`
+        );
+
+    if (!listElement) {
+        return;
+    }
+
+    listElement.classList.toggle("expanded");
+};
+
+
+// Complete or reopen a task inside a list
+const toggleTodayListTask = async (
+    event,
+    taskId,
+    currentStatus,
+    listId
+) => {
+
+    event.stopPropagation();
+
+    try {
+
+        const isCompleted =
+            currentStatus === "DONE";
+
+        const endpoint =
+            isCompleted
+                ? `/tasks/${taskId}/reopen`
+                : `/tasks/${taskId}/complete`;
+
+        const response =
+            await apiFetch(
+                endpoint,
+                {
+                    method: "PATCH"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                "Failed to update list task"
+            );
+        }
+
+        await loadTodayLists(listId);
+
+    } catch (error) {
+
+        console.error(error);
+
+    }
+};
+
 /* -------------------------------- */
 /* Init                             */
 /* -------------------------------- */
 
 loadTodayEvents();
 loadTodayTasks();
+loadTodayLists();
