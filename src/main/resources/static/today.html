@@ -14,6 +14,7 @@
 </head>
 
 <body>
+
 <header id="app-header"></header>
 
 <main class="today-page">
@@ -23,19 +24,15 @@
             <h1>Today</h1>
             <p>Your overview for today.</p>
         </div>
-
     </header>
 
 
     <div class="today-date-card">
         <div class="today-date">
             <span class="today-date-icon">📅</span>
-            Thursday 20 August
         </div>
 
-        <span class="today-date-message">
-            Have a great day!
-        </span>
+        <span class="today-date-message"></span>
     </div>
 
 
@@ -44,24 +41,11 @@
 
         <div class="today-section-title">
             <span>Events</span>
-            <span class="today-section-count">2</span>
+            <span class="today-section-count"></span>
         </div>
 
-        <div class="today-section-list">
+        <div class="today-section-list" id="today-events"></div>
 
-            <div class="today-row">
-                <span class="today-event-time">09:00</span>
-
-                <div class="today-row-main">
-                    <span class="today-row-title">
-                        Team meeting
-                    </span>
-                </div>
-
-                <span class="today-row-arrow">›</span>
-            </div>
-
-        </div>
     </section>
 
 
@@ -70,32 +54,14 @@
 
         <div class="today-section-title">
             <span>Tasks</span>
-            <span class="today-section-count">3</span>
+            <span class="today-section-count"></span>
         </div>
 
-        <div class="today-section-list">
-
-            <div class="today-row today-task">
-
-                <button class="today-task-check"></button>
-
-                <div class="today-row-main">
-                    <span class="today-row-title">
-                        Finish project report
-                    </span>
-                </div>
-
-                <div class="today-row-meta">
-                    <span class="today-category">
-                        Work
-                    </span>
-
-                    <span class="today-row-arrow">›</span>
-                </div>
-
-            </div>
-
+        <div class="today-section-list" id="today-tasks">
         </div>
+
+
+
     </section>
 
 
@@ -104,32 +70,11 @@
 
         <div class="today-section-title">
             <span>Lists</span>
-            <span class="today-section-count">1</span>
+            <span class="today-section-count"></span>
         </div>
 
-        <div class="today-section-list">
+        <div class="today-section-list" id="today-lists"></div>
 
-            <div class="today-row">
-
-                <span class="today-list-icon">☷</span>
-
-                <div class="today-row-main">
-                    <span class="today-row-title">
-                        Morning routine
-                    </span>
-                </div>
-
-                <div class="today-row-meta">
-                    <span class="today-category">
-                        Routine
-                    </span>
-
-                    <span class="today-row-arrow">›</span>
-                </div>
-
-            </div>
-
-        </div>
     </section>
 
 
@@ -138,47 +83,13 @@
 
         <div class="today-section-title">
             <span>Overdue</span>
-            <span class="today-section-count">1</span>
+            <span class="today-section-count"></span>
         </div>
 
         <div class="today-section-list">
-
-            <div class="today-row today-overdue-row">
-
-                <button class="today-task-check"></button>
-
-                <div class="today-row-main">
-                    <span class="today-row-title">
-                        Submit application
-                    </span>
-
-                    <span class="today-overdue-label">
-                        Due yesterday
-                    </span>
-                </div>
-
-                <span class="today-row-arrow">›</span>
-
-            </div>
-
         </div>
+
     </section>
-
-
-    <!-- OPTIONAL -->
-    <div class="today-tip">
-        <span class="today-tip-icon">🌿</span>
-
-        <div class="today-tip-content">
-            <span class="today-tip-title">
-                Take it one step at a time.
-            </span>
-
-            <span class="today-tip-text">
-                You've got this!
-            </span>
-        </div>
-    </div>
 
 </main>
 
