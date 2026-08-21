@@ -18,4 +18,6 @@ public interface CalendarRepository extends JpaRepository<Event, Long> {
     void deleteByUserId(Long userId);
 
     List<Event> findByUserIdAndStartTimeBetween(Long userId, LocalDateTime start, LocalDateTime end);
+
+    List<Event> findByUserIdAndStartTimeLessThanEqual(Long userId, LocalDateTime end);
 }
