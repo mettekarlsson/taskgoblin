@@ -13,6 +13,9 @@ import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import java.time.Duration;
+import java.util.ArrayList;
+
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -31,21 +34,52 @@ public class CalendarService {
         this.eventMapper = eventMapper;
     }
 
-    //view all events in calendar
-    public List<EventSummaryDTO> getAllEvents(Long userId) {
-        List<Event> events = calendarRepository.findByUserId(userId);
-
-        return events.stream()
-                .map(eventMapper::mapToEventSummaryDto)
-                .toList();
-    }
-
     //view events between certain dates in calendar
     public List<EventSummaryDTO> getEventsByDateRange (Long userId, LocalDateTime start, LocalDateTime end) {
-        List<Event> events = calendarRepository.findByUserIdAndStartTimeBetween(userId, start, end);
-        return events.stream()
-                .map(eventMapper::mapToEventSummaryDto)
-                .toList();
+        List<Event> events = calendarRepository.findByUserIdAndStartTimeLessThanEqual(userId, end);
+        List<EventSummaryDTO> result = new ArrayList<>();
+
+        for (Event event : events) {
+            if (Boolean.FALSE.equals(event.getIsRecurring()) && !event.getStartTime().isBefore(start)) {
+                result.add(eventMapper.mapToEventSummaryDto(event));
+            }
+            else if (Boolean.TRUE.equals(event.getIsRecurring())) {
+                result.addAll(expandRecurringEvent(event, start, end));
+            }
+        }
+        return result;
+    }
+
+    //method for recurring events
+    private List<EventSummaryDTO> expandRecurringEvent(Event event, LocalDateTime windowStart, LocalDateTime windowEnd) {
+        List<EventSummaryDTO> occurrences = new ArrayList<>();
+        LocalDateTime occurrenceStart = event.getStartTime(); //the "original" event's start time
+
+        while (!occurrenceStart.isAfter(windowEnd)) {
+            if (!occurrenceStart.isBefore(windowStart)) {
+               EventSummaryDTO dto = eventMapper.mapToEventSummaryDto(event);
+               //update the dto's start time (for next occurrance)
+                dto.setStartTime(occurrenceStart);
+                //if event has an end time - update it too
+                if (event.getEndTime() != null) {
+                    Duration duration = Duration.between(event.getStartTime(), event.getEndTime());
+                    LocalDateTime newEndTime = occurrenceStart.plus(duration);
+                    dto.setEndTime(newEndTime);
+                }
+                occurrences.add(dto);
+            }
+            //update occurrencestart to the next occurrence
+            //if intervalvalue isn't null - step takes it's value, if it's null - step is 1
+            int step = (event.getIntervalValue() != null) ? event.getIntervalValue() : 1;
+            occurrenceStart = switch (event.getFrequency()) {
+                case DAILY -> occurrenceStart.plusDays(step);
+                case WEEKLY -> occurrenceStart.plusWeeks(step);
+                case MONTHLY -> occurrenceStart.plusMonths(step);
+                case YEARLY -> occurrenceStart.plusYears(step);
+            };
+        }
+
+        return occurrences;
     }
 
     //view detailed information of specific event
@@ -100,6 +134,14 @@ public class CalendarService {
             if (createEventDTO.getFrequency() == null) {
                 throw new InvalidEventException("Frequency must be set when event is recurring");
             }
+
+            // Recurring events must repeat at some positive interval (e.g. "every 2 weeks").
+            // null or non-positive values would make the occurrence loop in expandRecurringEvent
+            // either crash or never advance (infinite loop).
+            if (createEventDTO.getIntervalValue() == null || createEventDTO.getIntervalValue() <= 0) {
+                throw new InvalidEventException("Interval value must be set to a positive number when event is recurring");
+            }
+
             // Validates frequency value even though frontend restricts input via dropdown.
             // Guards against direct API calls (e.g. via Postman) with invalid values.
             try {
@@ -184,6 +226,19 @@ public class CalendarService {
         if (updateEventDTO.getIntervalValue() != null) {
             event.setIntervalValue(updateEventDTO.getIntervalValue());
             contentWasUpdated = true;
+        }
+
+        // Checked on the event's final state (not just the DTO) because this is a
+        // PATCH - isRecurring, frequency and intervalValue might have been set in
+        // an earlier request, not this one. This also catches a PATCH that flips
+        // isRecurring to true without supplying a valid frequency/intervalValue.
+        if (Boolean.TRUE.equals(event.getIsRecurring())) {
+            if (event.getFrequency() == null) {
+                throw new InvalidEventException("Frequency must be set when event is recurring");
+            }
+            if (event.getIntervalValue() == null || event.getIntervalValue() <= 0) {
+                throw new InvalidEventException("Interval value must be set to a positive number when event is recurring");
+            }
         }
 
         if (contentWasUpdated){
