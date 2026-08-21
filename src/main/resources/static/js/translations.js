@@ -187,6 +187,11 @@ const translations = {
         failedToDeleteList: "Failed to delete list",
         failedToCompleteList: "Failed to complete list",
 
+        quickAddTask: "Add task",
+        quickAddNote: "Add note",
+        quickAddList: "Add list",
+        quickAddEvent: "Add event",
+
     },
 
 
@@ -378,6 +383,11 @@ const translations = {
         failedToUpdateList: "Kunde inte uppdatera listan",
         failedToDeleteList: "Kunde inte ta bort listan",
         failedToCompleteList: "Kunde inte slutföra listan",
+
+        quickAddTask: "Ny uppgift",
+        quickAddNote: "Ny anteckning",
+        quickAddList: "Ny lista",
+        quickAddEvent: "Ny händelse",
 
     }
 };

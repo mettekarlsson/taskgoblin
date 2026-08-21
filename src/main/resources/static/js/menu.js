@@ -88,7 +88,7 @@ const renderMenu = () => {
 
         </span>
 
-            <span>Add task</span>
+            <span data-translate="quickAddTask">Add task</span>
 
         </button>
 
@@ -115,7 +115,7 @@ const renderMenu = () => {
 
         </span>
 
-            <span>Add note</span>
+            <span data-translate="quickAddNote">Add note</span>
 
         </button>
 
@@ -146,7 +146,7 @@ const renderMenu = () => {
 
         </span>
 
-            <span>Add list</span>
+            <span data-translate="quickAddList">Add list</span>
 
         </button>
 
@@ -176,7 +176,7 @@ const renderMenu = () => {
 
         </span>
 
-            <span>Add event</span>
+            <span data-translate="quickAddEvent">Add event</span>
 
         </button>
 
