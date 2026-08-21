@@ -97,6 +97,47 @@
     color: var(--text);
 }
 
+/* ---------------- */
+/*   List filters   */
+/* ---------------- */
+
+.list-filters {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+
+    margin-bottom: 28px;
+
+    overflow-x: auto;
+}
+
+.list-filter {
+    flex-shrink: 0;
+
+    padding: 8px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 999px;
+
+    background: transparent;
+    color: var(--text-muted);
+
+    font-size: 0.9rem;
+    font-weight: 600;
+
+    cursor: pointer;
+}
+
+.list-filter:hover {
+    background: var(--hover-soft);
+}
+
+.list-filter.active {
+    border-color: var(--primary-border);
+
+    background: var(--primary-soft);
+    color: var(--primary);
+}
 
 /* =========================================================
    LIST GRID
@@ -920,6 +961,17 @@
         align-items: flex-start;
     }
 
+    .list-filters {
+        gap: 6px;
+        margin-bottom: 22px;
+    }
+
+    .list-filter {
+        padding: 6px 10px;
+
+        font-size: 0.78rem;
+    }
+
     .lists-grid {
         gap: 12px;
     }
@@ -934,7 +986,9 @@
 
     }
 
-    .list-completed-status {
+    .list-completed-status,
+    .list-due-status,
+    .list-overdue {
         width: fit-content;
         max-width: none;
 

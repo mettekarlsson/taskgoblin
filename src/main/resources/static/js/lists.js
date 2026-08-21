@@ -45,7 +45,71 @@ let selectedListIcon = "clipboard";
 
 let currentLists = [];
 
+let currentListFilter = "all";
+
 let listToDeleteId = null;
+
+const setListFilter = (filter) => {
+
+    currentListFilter = filter;
+
+    document
+        .querySelectorAll(".list-filter")
+        .forEach(button => {
+
+            button.classList.toggle(
+                "active",
+                button.dataset.filter === filter
+            );
+
+        });
+
+    renderLists(currentLists);
+};
+
+const isListOverdue = (list) => {
+    if (!list.dueAt || list.status === "DONE") {
+        return false;
+    }
+
+    const dueDate = new Date(list.dueAt);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    return dueDate < today;
+};
+
+const isListDueToday = (list) => {
+    if (!list.dueAt || list.status === "DONE") {
+        return false;
+    }
+
+    const dueDate = new Date(list.dueAt);
+    const today = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    return dueDate.getTime() === today.getTime();
+};
+
+const isListUpcoming = (list) => {
+    if (!list.dueAt || list.status === "DONE") {
+        return false;
+    }
+
+    const dueDate = new Date(list.dueAt);
+    const tomorrow = new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+
+    tomorrow.setHours(0, 0, 0, 0);
+    tomorrow.setDate(tomorrow.getDate() + 1);
+
+    return dueDate >= tomorrow;
+};
 
 const loadLists = async () => {
     try {
@@ -89,8 +153,28 @@ const renderLists = async (lists, searchQuery = "") => {
         return;
     }
 
+    let filteredLists = lists;
+
+    if (currentListFilter === "today") {
+        filteredLists = lists.filter(isListDueToday);
+    }
+
+    if (currentListFilter === "overdue") {
+        filteredLists = lists.filter(isListOverdue);
+    }
+
+    if (currentListFilter === "upcoming") {
+        filteredLists = lists.filter(isListUpcoming);
+    }
+
+    if (currentListFilter === "completed") {
+        filteredLists = lists.filter(
+            list => list.status === "DONE"
+        );
+    }
+
     const cards = await Promise.all(
-        lists.map(async list => {
+        filteredLists.map(async list => {
 
             const tasks = await loadTasksForList(list.id);
 
