@@ -34,15 +34,6 @@ public class CalendarService {
         this.eventMapper = eventMapper;
     }
 
-    //view all events in calendar
-    public List<EventSummaryDTO> getAllEvents(Long userId) {
-        List<Event> events = calendarRepository.findByUserId(userId);
-
-        return events.stream()
-                .map(eventMapper::mapToEventSummaryDto)
-                .toList();
-    }
-
     //view events between certain dates in calendar
     public List<EventSummaryDTO> getEventsByDateRange (Long userId, LocalDateTime start, LocalDateTime end) {
         List<Event> events = calendarRepository.findByUserIdAndStartTimeLessThanEqual(userId, end);
