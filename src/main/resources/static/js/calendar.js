@@ -68,6 +68,44 @@ if (calendarSearchInput) {
 /* Calendar                         */
 /* -------------------------------- */
 
+// Formats a Date object into "YYYY-MM-DDTHH:mm:ss" (no "Z", no milliseconds),
+// since that's the format the backend expects for LocalDateTime query params.
+const formatDateTimeForApi = (date) => {
+
+    const pad = (number) =>
+        String(number).padStart(2, "0");
+
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
+
+
+// Calculates the first and last day of the currently displayed month,
+// so we can ask the backend for exactly the events this month needs.
+const getCurrentMonthDateRange = () => {
+
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+
+    // Day 1 of this month, at midnight.
+    const firstDay = new Date(year, month, 1, 0, 0, 0);
+
+    // "Day 0 of next month" = the last day of this month (same trick
+    // renderCalendar() already uses for lastDayOfMonth).
+    const lastDay = new Date(year, month + 1, 0, 23, 59, 59);
+
+    return {
+        startDate: formatDateTimeForApi(firstDay),
+        endDate: formatDateTimeForApi(lastDay)
+    };
+};
+
 const loadEvents = async () => {
 
     const calendarContent =
@@ -75,8 +113,15 @@ const loadEvents = async () => {
 
     try {
 
+        // Only request events for the month currently shown, since the
+        // backend now requires startDate/endDate on every call.
+        const { startDate, endDate } =
+            getCurrentMonthDateRange();
+
         const response =
-            await apiFetch("/calendar");
+            await apiFetch(
+                `/calendar?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+            );
 
         if (!response.ok) {
             throw new Error("Failed to load events");
@@ -737,7 +782,7 @@ const closeEventDetail = () => {
 /* Change month                     */
 /* -------------------------------- */
 
-const changeCalendarMonth = (
+const changeCalendarMonth = async (
     amount
 ) => {
 
@@ -746,7 +791,9 @@ const changeCalendarMonth = (
         + amount
     );
 
-    renderCalendar();
+    // Re-fetch events for the newly selected month, since the backend
+    // only returns events within the requested date range now.
+    await loadEvents();
 };
 
 
