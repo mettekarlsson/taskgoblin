@@ -475,8 +475,7 @@ const renderCalendar = () => {
                                 ${event.color || "var(--primary)"}
                             "
                             data-event-id="${event.id}"
-                            onclick="event.stopPropagation(); openEventDetail(${event.id})"
-                        >
+onclick="event.stopPropagation(); openEventDetail(${event.id}, '${event.startTime}', ${event.endTime ? `'${event.endTime}'` : "null"})"                        >
 
                             <span class="calendar-event-dot"></span>
 
@@ -608,8 +607,8 @@ const renderDayView = (
             ${events.map(event => `
 
                 <li
-                    onclick="openEventDetail(${event.id})"
-                >
+    onclick="openEventDetail(${event.id}, '${event.startTime}', ${event.endTime ? `'${event.endTime}'` : "null"})"
+>
 
                     <span
                         class="event-dot"
@@ -640,7 +639,7 @@ const renderDayView = (
 /* Event detail modal               */
 /* -------------------------------- */
 
-const openEventDetail = async (id) => {
+const openEventDetail = async (id, occurrenceStartTime, occurrenceEndTime) => {
 
     try {
 
@@ -656,6 +655,16 @@ const openEventDetail = async (id) => {
         const event =
             await response.json();
         selectedEventId = event.id;
+
+        // GET /events/{id} always returns the series' original startTime/
+        // endTime (there's only one database row per recurring series).
+        // Override with the specific occurrence's dates - passed in from
+        // wherever the click happened - so the modal shows the date the
+        // user actually clicked, not the series' first occurrence.
+        if (occurrenceStartTime) {
+            event.startTime = occurrenceStartTime;
+            event.endTime = occurrenceEndTime || null;
+        }
 
         document.getElementById(
             "modal-event-title"
