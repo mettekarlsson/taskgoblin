@@ -810,11 +810,30 @@ const formatListSchedule = (list) => {
     const parts = [];
 
     if (list.isRecurring) {
-        parts.push(`↻ ${formatRecurrence(list.frequency, list.intervalValue)}`);
+        parts.push(
+            `↻ ${formatRecurrence(
+                list.frequency,
+                list.intervalValue
+            )}`
+        );
     }
 
     if (list.dueAt) {
-        parts.push(formatDueDate(list.dueAt));
+
+        if (
+            list.status === "DONE"
+            && list.isRecurring
+        ) {
+            parts.push(
+                `${t("nextOccurrence")} ${formatListDate(list.dueAt)}`
+            );
+        }
+
+        if (list.status !== "DONE") {
+            parts.push(
+                formatDueDate(list.dueAt)
+            );
+        }
     }
 
     return parts.join(" · ");
