@@ -1238,7 +1238,7 @@ const renderCreateListForm = () => {
 
                 <button
                     class="list-cancel-btn"
-                    onclick="renderLists(currentLists)"
+                    onclick="cancelCreateList()"
                 >
                     ${t("cancel")}
                 </button>
@@ -1247,6 +1247,21 @@ const renderCreateListForm = () => {
 
         </section>
     `;
+};
+
+const cancelCreateList = () => {
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const returnTo =
+        params.get("returnTo");
+
+    if (returnTo) {
+        window.location.href = returnTo;
+        return;
+    }
+
+    renderLists(currentLists);
 };
 
 const renderEditListForm = (event, listId) => {
