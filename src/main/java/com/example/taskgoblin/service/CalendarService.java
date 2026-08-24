@@ -50,6 +50,15 @@ public class CalendarService {
         return result;
     }
 
+    //search events by title, across all dates (used by the list view's
+    //backend-search mode, when no custom date range has been chosen)
+    public List<EventSummaryDTO> searchEvents(Long userId, String query) {
+        List<Event> events = calendarRepository.findByUserIdAndTitleContainingIgnoreCase(userId, query);
+        return events.stream()
+                .map(eventMapper::mapToEventSummaryDto)
+                .toList();
+    }
+
     //method for recurring events
     private List<EventSummaryDTO> expandRecurringEvent(Event event, LocalDateTime windowStart, LocalDateTime windowEnd) {
         List<EventSummaryDTO> occurrences = new ArrayList<>();
