@@ -216,6 +216,13 @@ const closeTaskSearch = () => {
 // Loads all tasks for the current user.
 const loadTasks = async () => {
 
+    const taskFilters =
+        document.querySelector(".task-filters");
+
+    if (taskFilters) {
+        taskFilters.style.display = "";
+    }
+
     try {
 
         const response =
