@@ -185,7 +185,7 @@ const renderLists = async (lists, searchQuery = "") => {
                 getListIconEmoji(list.icon);
 
             const listColor =
-                list.color || DEFAULT_LIST_COLOR;
+                getListColorVariable(list.color);
 
             const overdueDays =
                 getOverdueDays(list.dueAt);
@@ -497,7 +497,7 @@ const renderSingleList = (list, tasks) => {
         getListIconEmoji(list.icon);
 
     const listColor =
-        list.color || DEFAULT_LIST_COLOR;
+        getListColorVariable(list.color);
 
     const listCompleted =
         isCurrentOccurrenceCompleted(list);
@@ -706,6 +706,19 @@ const renderSingleList = (list, tasks) => {
 };
 
 //Helper
+
+const getListColorVariable = (color) => {
+    const colorMap = {
+        "#EEE5D9": "var(--note-default-bg)",
+        "#FFF8DD": "var(--note-yellow-bg)",
+        "#E8F5E9": "var(--note-green-bg)",
+        "#DCE7F4": "var(--note-blue-bg)",
+        "#FDE2E4": "var(--note-red-bg)",
+        "#EDE0EF": "var(--note-lilac-bg)"
+    };
+
+    return colorMap[color] || "var(--note-default-bg)";
+};
 
 const getCurrentLocale = () => {
     return currentSettings?.language === "sv"
