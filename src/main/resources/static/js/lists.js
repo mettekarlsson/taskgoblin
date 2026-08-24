@@ -41,6 +41,7 @@ document.addEventListener("click", (event) => {
 });
 
 let selectedListColor = DEFAULT_LIST_COLOR;
+
 let selectedListIcon = "clipboard";
 
 let currentLists = [];
@@ -48,6 +49,8 @@ let currentLists = [];
 let currentListFilter = "all";
 
 let listToDeleteId = null;
+
+let pendingListTasks = [];
 
 const setListFilter = (filter) => {
 
@@ -1143,6 +1146,7 @@ const renderCreateListForm = () => {
 
     selectedListColor = DEFAULT_LIST_COLOR;
     selectedListIcon = "clipboard";
+    pendingListTasks = [];
 
     listsGrid.innerHTML = `
         <section class="list-form-card">
@@ -1151,6 +1155,12 @@ const renderCreateListForm = () => {
 
             <label for="list-name">${t("name")}</label>
             <input id="list-name" class="list-input" type="text">
+            
+            <label>${t("tasks")}</label>
+<div
+    id="pending-list-tasks"
+    class="pending-list-tasks"
+></div>
 
             <label>${t("color")}</label>
 
@@ -1247,6 +1257,7 @@ const renderCreateListForm = () => {
 
         </section>
     `;
+    renderPendingListTasks();
 };
 
 const cancelCreateList = () => {
@@ -1262,6 +1273,84 @@ const cancelCreateList = () => {
     }
 
     renderLists(currentLists);
+};
+
+const addPendingListTask = () => {
+    const input =
+        document.getElementById("pending-list-task-input");
+
+    const title =
+        input.value.trim();
+
+    if (!title) {
+        return;
+    }
+
+    pendingListTasks.push(title);
+
+    renderPendingListTasks();
+};
+
+const removePendingListTask = (index) => {
+    pendingListTasks.splice(index, 1);
+
+    renderPendingListTasks();
+};
+
+const renderPendingListTasks = () => {
+    const container =
+        document.getElementById("pending-list-tasks");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = `
+        ${
+        pendingListTasks
+            .map((title, index) => `
+                    <div class="pending-list-task-row">
+                        
+                        <span class="pending-list-task-title">
+                            ${title}
+                        </span>
+
+                        <button
+                            type="button"
+                            class="pending-list-task-remove"
+                            onclick="removePendingListTask(${index})"
+                        >
+                            ×
+                        </button>
+                    </div>
+                `)
+            .join("")
+    }
+
+        <div class="pending-list-task-add-row">
+            
+            <input
+                id="pending-list-task-input"
+                class="pending-list-task-input"
+                type="text"
+                placeholder="${t("addTask")}"
+                onkeydown="
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        addPendingListTask();
+                    }
+                "
+            >
+
+            <button
+                type="button"
+                class="pending-list-task-add"
+                onclick="addPendingListTask()"
+            >
+                +
+            </button>
+        </div>
+    `;
 };
 
 const renderEditListForm = (event, listId) => {
@@ -1609,7 +1698,60 @@ const createList = async () => {
         listData.intervalValue = intervalValue;
     }
 
-    await sendListRequest("/lists", "POST", listData);
+    try {
+        const response = await apiFetch("/lists", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(listData)
+        });
+
+        if (!response.ok) {
+            throw new Error(t("failedToSaveList"));
+        }
+
+        const createdList =
+            await response.json();
+
+        for (const title of pendingListTasks) {
+            const taskResponse = await apiFetch(
+                `/lists/${createdList.id}/tasks`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        title
+                    })
+                }
+            );
+
+            if (!taskResponse.ok) {
+                throw new Error(t("failedToCreateTask"));
+            }
+        }
+
+        await loadLists();
+
+        const params =
+            new URLSearchParams(window.location.search);
+
+        const quickAdd =
+            params.get("quickAdd");
+
+        const returnTo =
+            params.get("returnTo");
+
+        if (quickAdd === "true" && returnTo) {
+            window.location.href = returnTo;
+        }
+
+    } catch (error) {
+        document.getElementById("list-message").textContent =
+            error.message;
+    }
 };
 
 const createTaskInList = async (listId) => {

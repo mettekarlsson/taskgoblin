@@ -520,6 +520,95 @@
     margin-bottom: 12px;
 }
 
+/* =========================================================
+   CREATE LIST - PENDING TASKS
+   ========================================================= */
+
+.pending-list-tasks {
+    margin-bottom: 18px;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: var(--surface);
+
+    overflow: hidden;
+}
+
+.pending-list-task-row,
+.pending-list-task-add-row {
+    min-height: 46px;
+
+    display: flex;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 12px;
+}
+
+.pending-list-task-row {
+    border-bottom: 1px solid var(--border-soft);
+}
+
+.pending-list-task-title {
+    flex: 1;
+
+    color: var(--text);
+
+    font-size: 0.95rem;
+}
+
+.pending-list-task-input {
+    flex: 1;
+
+    min-width: 0;
+
+    border: none;
+    outline: none;
+
+    background: transparent;
+    color: var(--text);
+
+    font-size: 0.95rem;
+}
+
+.pending-list-task-input::placeholder {
+    color: var(--text-muted);
+}
+
+.pending-list-task-add,
+.pending-list-task-remove {
+    width: 28px;
+    height: 28px;
+
+    flex-shrink: 0;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+    color: var(--text-muted);
+
+    font-size: 1.1rem;
+
+    cursor: pointer;
+}
+
+.pending-list-task-add:hover {
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+.pending-list-task-remove:hover {
+    background: var(--danger-soft);
+    color: var(--danger);
+}
 
 /* =========================================================
    COLOR PICKER
