@@ -185,7 +185,7 @@ const renderLists = async (lists, searchQuery = "") => {
                 getListIconEmoji(list.icon);
 
             const listColor =
-                list.color || DEFAULT_LIST_COLOR;
+                getListColorVariable(list.color);
 
             const overdueDays =
                 getOverdueDays(list.dueAt);
@@ -497,7 +497,7 @@ const renderSingleList = (list, tasks) => {
         getListIconEmoji(list.icon);
 
     const listColor =
-        list.color || DEFAULT_LIST_COLOR;
+        getListColorVariable(list.color);
 
     const listCompleted =
         isCurrentOccurrenceCompleted(list);
@@ -599,14 +599,14 @@ const renderSingleList = (list, tasks) => {
                                 </span>
 
                                 ${
-                    task.isRecurring
+                    list.isRecurring
                     && task.lastCompletedAt
                         ? `
-                                            <span class="list-task-badge">
-                                                ${t("lastCompleted")}
-                                                ${formatListDate(task.lastCompletedAt)}
-                                            </span>
-                                        `
+            <span class="list-task-badge">
+                ${t("lastCompleted")}
+                ${formatListDate(task.lastCompletedAt)}
+            </span>
+        `
                         : ""
                 }
 
@@ -707,6 +707,19 @@ const renderSingleList = (list, tasks) => {
 
 //Helper
 
+const getListColorVariable = (color) => {
+    const colorMap = {
+        "#EEE5D9": "var(--note-default-bg)",
+        "#FFF8DD": "var(--note-yellow-bg)",
+        "#E8F5E9": "var(--note-green-bg)",
+        "#DCE7F4": "var(--note-blue-bg)",
+        "#FDE2E4": "var(--note-red-bg)",
+        "#EDE0EF": "var(--note-lilac-bg)"
+    };
+
+    return colorMap[color] || "var(--note-default-bg)";
+};
+
 const getCurrentLocale = () => {
     return currentSettings?.language === "sv"
         ? "sv-SE"
@@ -797,11 +810,30 @@ const formatListSchedule = (list) => {
     const parts = [];
 
     if (list.isRecurring) {
-        parts.push(`↻ ${formatRecurrence(list.frequency, list.intervalValue)}`);
+        parts.push(
+            `↻ ${formatRecurrence(
+                list.frequency,
+                list.intervalValue
+            )}`
+        );
     }
 
     if (list.dueAt) {
-        parts.push(formatDueDate(list.dueAt));
+
+        if (
+            list.status === "DONE"
+            && list.isRecurring
+        ) {
+            parts.push(
+                `${t("nextOccurrence")} ${formatListDate(list.dueAt)}`
+            );
+        }
+
+        if (list.status !== "DONE") {
+            parts.push(
+                formatDueDate(list.dueAt)
+            );
+        }
     }
 
     return parts.join(" · ");
@@ -892,6 +924,7 @@ const toggleTaskComplete = async (event, taskId, status) => {
                 .dataset
                 .listId;
 
+        await loadLists();
         await openList(openListId);
 
     } catch (error) {

@@ -12,6 +12,7 @@ import com.example.taskgoblin.repository.TaskListRepository;
 import com.example.taskgoblin.repository.TaskRepository;
 import com.example.taskgoblin.repository.UserRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -24,6 +25,7 @@ public class TaskService {
     private final CategoryRepository categoryRepository;
     private final TaskListRepository taskListRepository;
     private final TaskMapper taskMapper;
+    private final TaskListService taskListService;
 
     // Constructor injection.
     public TaskService(
@@ -31,13 +33,15 @@ public class TaskService {
             UserRepository userRepository,
             CategoryRepository categoryRepository,
             TaskListRepository taskListRepository,
-            TaskMapper taskMapper
+            TaskMapper taskMapper,
+            TaskListService taskListService
     ) {
         this.taskRepository = taskRepository;
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.taskListRepository = taskListRepository;
         this.taskMapper = taskMapper;
+        this.taskListService = taskListService;
     }
 
     // Creates and saves a new task for a specific user.
@@ -191,7 +195,8 @@ public class TaskService {
         return taskMapper.mapToTaskDto(updatedTask);
     }
 
-    // Marks a task as completed
+        // Marks a task as completed
+    @Transactional
     public TaskDTO completeTask(
             Long taskId,
             Long userId
@@ -251,6 +256,48 @@ public class TaskService {
         // Save updated task
         Task updatedTask =
                 taskRepository.save(task);
+
+        if (updatedTask.getList() != null
+                && updatedTask.getStatus() == TaskStatus.DONE) {
+
+            Long listId =
+                    updatedTask.getList().getId();
+
+            List<Task> listTasks =
+                    taskRepository.findByListId(listId);
+
+            boolean allTasksCompleted =
+                    !listTasks.isEmpty()
+                            && listTasks.stream()
+                            .allMatch(
+                                    listTask ->
+                                            listTask.getStatus()
+                                                    == TaskStatus.DONE
+                            );
+
+            if (allTasksCompleted) {
+
+                TaskList taskList =
+                        taskListRepository
+                                .findByIdAndUserId(
+                                        listId,
+                                        userId
+                                )
+                                .orElseThrow(() ->
+                                        new ResourceNotFoundException(
+                                                "Task list not found"
+                                        ));
+
+                if (taskList.getStatus()
+                        != TaskListStatus.DONE) {
+
+                    taskListService.completeList(
+                            listId,
+                            userId
+                    );
+                }
+            }
+        }
 
         // Convert updated entity into DTO
         return taskMapper
