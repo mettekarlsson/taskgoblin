@@ -38,6 +38,7 @@
 
             <button
                     class="calendar-search-btn"
+                    id="calendar-search-btn"
                     onclick="toggleCalendarSearch()"
             >
                 🔍
@@ -54,18 +55,23 @@
 
     </section>
 
+
+    <!-- Search - only meaningful in List view -->
     <section
             class="calendar-search-view"
             id="calendar-search-view"
     >
+
         <input
                 id="event-list-search"
                 class="calendar-search-input"
                 type="text"
                 placeholder="Search events..."
-                oninput="renderEventList()"
+                oninput="onEventSearchInput()"
         >
+
     </section>
+
 
     <!-- Month / List switch -->
     <section class="calendar-view-tabs">
@@ -145,20 +151,37 @@
     <!-- List view -->
     <section class="event-list-container" id="event-list-container">
 
+        <div class="event-list-date-range">
+
+            <label for="event-list-start-date">
+                From
+            </label>
+
+            <input
+                    id="event-list-start-date"
+                    class="event-input"
+                    type="date"
+                    onchange="onEventListDateRangeChanged()"
+            >
+
+            <label for="event-list-end-date">
+                To
+            </label>
+
+            <input
+                    id="event-list-end-date"
+                    class="event-input"
+                    type="date"
+                    onchange="onEventListDateRangeChanged()"
+            >
+
+        </div>
+
         <div id="event-list-content">
             <p class="calendar-loading">
                 Loading events...
             </p>
         </div>
-
-        <button
-                type="button"
-                class="event-list-load-more-btn"
-                id="event-list-load-more-btn"
-                onclick="loadMoreEventList()"
-        >
-            Load more
-        </button>
 
     </section>
 

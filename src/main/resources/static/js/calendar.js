@@ -14,16 +14,6 @@ const switchCalendarView = (view) => {
 
     currentCalendarView = view;
 
-    const searchButton =
-        document.querySelector(
-            ".calendar-search-btn"
-        );
-
-    searchButton.style.display =
-        view === "list"
-            ? "flex"
-            : "none";
-
     document
         .querySelectorAll(".calendar-view-tab")
         .forEach(tab => {
@@ -42,12 +32,19 @@ const switchCalendarView = (view) => {
     const listContainer =
         document.getElementById("event-list-container");
 
+    const searchBtn =
+        document.getElementById("calendar-search-btn");
+
     if (view === "month") {
 
         monthContainer.style.display = "block";
         dayView.style.display = "block";
 
         listContainer.classList.remove("active");
+
+        // Search only makes sense in the list view.
+        searchBtn.style.display = "none";
+        closeCalendarSearch();
 
     } else {
 
@@ -56,112 +53,179 @@ const switchCalendarView = (view) => {
 
         listContainer.classList.add("active");
 
-        // Only fetch the first time the List tab is opened.
-        if (listViewEvents.length === 0) {
-            loadEventList(true);
+        searchBtn.style.display = "flex";
+
+        // Only set up defaults + fetch the first time List is opened.
+        if (!listViewInitialized) {
+            listViewInitialized = true;
+            initEventListDefaults();
+            updateEventList();
         }
     }
 };
 
+const toggleCalendarSearch = () => {
 
-/* -------------------------------- */
-/* List view - "load more" paging   */
-/* -------------------------------- */
+    const searchView =
+        document.getElementById("calendar-search-view");
 
-// Accumulated events across every month chunk loaded so far.
-let listViewEvents = [];
+    const searchInput =
+        document.getElementById("event-list-search");
 
-// How many month-chunks have been loaded (0 = none yet).
-let listViewMonthsLoaded = 0;
+    const isOpen =
+        searchView.classList.contains("open");
 
-let listViewLoading = false;
-
-// Returns the [start, end] window for one "chunk" of the list view.
-// Chunk 0 is "today until the end of this month". Every chunk after
-// that is one full calendar month further ahead.
-const getListViewChunkRange = (chunkIndex) => {
-
-    const now = new Date();
-
-    if (chunkIndex === 0) {
-
-        const start = new Date(
-            now.getFullYear(),
-            now.getMonth(),
-            now.getDate(),
-            0, 0, 0
-        );
-
-        const end = new Date(
-            now.getFullYear(),
-            now.getMonth() + 1,
-            0,
-            23, 59, 59
-        );
-
-        return { start, end };
-    }
-
-    const start = new Date(
-        now.getFullYear(),
-        now.getMonth() + chunkIndex,
-        1,
-        0, 0, 0
-    );
-
-    const end = new Date(
-        now.getFullYear(),
-        now.getMonth() + chunkIndex + 1,
-        0,
-        23, 59, 59
-    );
-
-    return { start, end };
-};
-
-
-// Fetches the next chunk and appends it to listViewEvents.
-// reset=true clears everything first (used when the List tab is opened).
-const loadEventList = async (reset) => {
-
-    if (listViewLoading) {
+    if (isOpen) {
+        closeCalendarSearch();
         return;
     }
 
-    listViewLoading = true;
+    searchView.classList.add("open");
 
-    if (reset) {
-        listViewEvents = [];
-        listViewMonthsLoaded = 0;
+    searchInput.value = "";
+    searchInput.focus();
+};
+
+
+const closeCalendarSearch = () => {
+
+    document
+        .getElementById("calendar-search-view")
+        .classList.remove("open");
+
+    document
+        .getElementById("event-list-search")
+        .value = "";
+
+    // An empty query means "just browse the chosen date range" again.
+    if (currentCalendarView === "list") {
+        updateEventList();
     }
+};
+
+let listViewEvents = [];
+let listViewInitialized = false;
+// Incremented every time updateEventList() runs. Used to detect and
+// discard "late" responses from an older, now-outdated request (e.g. if
+// the user changes the date range again before the first fetch returns).
+let listViewRequestId = 0;
+
+let defaultListStartDate = null;
+let defaultListEndDate = null;
+
+// Formats a Date as "YYYY-MM-DD", matching what a <input type="date"> expects/returns.
+const formatDateForInput = (date) => {
+    const pad = (n) => String(n).padStart(2, "0");
+    return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}`;
+};
+
+// Sets the two date fields to today -> one year from today,
+// and remembers those values so we can later tell whether the
+// user has changed them.
+const initEventListDefaults = () => {
+
+    const today = new Date();
+
+    defaultListStartDate =
+        new Date(today.getFullYear(), today.getMonth(), today.getDate());
+
+    defaultListEndDate =
+        new Date(today.getFullYear() + 1, today.getMonth(), today.getDate());
+
+    document.getElementById("event-list-start-date").value =
+        formatDateForInput(defaultListStartDate);
+
+    document.getElementById("event-list-end-date").value =
+        formatDateForInput(defaultListEndDate);
+};
+
+// True if the date fields still show the default (today -> +1 year) range,
+// i.e. the user hasn't deliberately picked their own range.
+const isEventListDateRangeAtDefault = () => {
+
+    const startInput =
+        document.getElementById("event-list-start-date").value;
+
+    const endInput =
+        document.getElementById("event-list-end-date").value;
+
+    return (
+        startInput === formatDateForInput(defaultListStartDate)
+        && endInput === formatDateForInput(defaultListEndDate)
+    );
+};
+
+
+// The single entry point for refreshing the list view. Called whenever the
+// date fields OR the search field change. Decides which of the two backend
+// endpoints to use, fetches, stores the result, and renders.
+const updateEventList = async () => {
+
+    const requestId = ++listViewRequestId;
 
     const listContent =
         document.getElementById("event-list-content");
 
+    const query =
+        document
+            .getElementById("event-list-search")
+            .value
+            .trim();
+
     try {
 
-        const { start, end } =
-            getListViewChunkRange(listViewMonthsLoaded);
+        let events;
 
-        const startDate = formatDateTimeForApi(start);
-        const endDate = formatDateTimeForApi(end);
+        if (query && isEventListDateRangeAtDefault()) {
 
-        const response =
-            await apiFetch(
-                `/calendar?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
-            );
+            // Date range hasn't been customized - search across every
+            // event the user has, regardless of date.
+            const response =
+                await apiFetch(
+                    `/calendar/search?query=${encodeURIComponent(query)}`
+                );
 
-        if (!response.ok) {
-            throw new Error("Failed to load events");
+            if (!response.ok) {
+                throw new Error("Failed to search events");
+            }
+
+            events = await response.json();
+
+        } else {
+
+            // Either no search query, or the user picked their own range -
+            // fetch events within exactly the chosen dates.
+            const startDateInput =
+                document.getElementById("event-list-start-date").value;
+
+            const endDateInput =
+                document.getElementById("event-list-end-date").value;
+
+            const startDate =
+                formatDateTimeForApi(new Date(`${startDateInput}T00:00:00`));
+
+            const endDate =
+                formatDateTimeForApi(new Date(`${endDateInput}T23:59:59`));
+
+            const response =
+                await apiFetch(
+                    `/calendar?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+                );
+
+            if (!response.ok) {
+                throw new Error("Failed to load events");
+            }
+
+            events = await response.json();
         }
 
-        const newEvents =
-            await response.json();
+        // A newer request has already started since this one began -
+        // this response is stale, don't let it overwrite fresher data.
+        if (requestId !== listViewRequestId) {
+            return;
+        }
 
-        listViewEvents =
-            listViewEvents.concat(newEvents);
-
-        listViewMonthsLoaded += 1;
+        listViewEvents = events;
 
         renderEventList();
 
@@ -174,27 +238,28 @@ const loadEventList = async (reset) => {
         `;
 
         console.error(error);
-
-    } finally {
-
-        listViewLoading = false;
     }
 };
 
 
-const loadMoreEventList = () => {
-    loadEventList(false);
+const onEventListDateRangeChanged = () => {
+    updateEventList();
 };
 
+
+// Small debounce so we don't fire a network request on every keystroke.
+let eventSearchDebounceTimer = null;
+
+const onEventSearchInput = () => {
+    clearTimeout(eventSearchDebounceTimer);
+    eventSearchDebounceTimer = setTimeout(updateEventList, 300);
+};
 
 // Renders listViewEvents, grouped by date, filtered by the search box.
 const renderEventList = () => {
 
     const listContent =
         document.getElementById("event-list-content");
-
-    const loadMoreBtn =
-        document.getElementById("event-list-load-more-btn");
 
     const query =
         document
@@ -209,14 +274,6 @@ const renderEventList = () => {
                 .toLowerCase()
                 .includes(query)
         );
-
-    // Load more is always available (there's no "final" chunk with this
-    // rolling-month pagination), but hide it while a search is active -
-    // the user is filtering what's already loaded, not asking for more.
-    loadMoreBtn.classList.toggle(
-        "hidden",
-        query.length > 0
-    );
 
     if (filteredEvents.length === 0) {
 
@@ -267,19 +324,28 @@ const renderEventList = () => {
             ? "sv-SE"
             : "en-GB";
 
-    listContent.innerHTML = groups.map(group => `
+    const currentYear = new Date().getFullYear();
+
+    listContent.innerHTML = groups.map(group => {
+
+        // Only show the year if it's not the current year - avoids
+        // cluttering near-term dates with an obvious "2026" everywhere.
+        const dateOptions = {
+            weekday: "long",
+            day: "numeric",
+            month: "long"
+        };
+
+        if (group.date.getFullYear() !== currentYear) {
+            dateOptions.year = "numeric";
+        }
+
+        return `
 
         <section class="event-section">
 
             <h3 class="event-section-title">
-                ${group.date.toLocaleDateString(
-        locale,
-        {
-            weekday: "long",
-            day: "numeric",
-            month: "long"
-        }
-    )}
+                ${group.date.toLocaleDateString(locale, dateOptions)}
             </h3>
 
             <div class="event-section-list">
@@ -301,9 +367,9 @@ const renderEventList = () => {
 
                         <span class="event-row-time">
                             ${event.isAllDay
-        ? "All day"
-        : new Date(event.startTime)
-            .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+            ? "All day"
+            : new Date(event.startTime)
+                .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
                         </span>
 
                     </button>
@@ -314,68 +380,9 @@ const renderEventList = () => {
 
         </section>
 
-    `).join("");
+    `;
+    }).join("");
 };
-
-const toggleCalendarSearch = () => {
-
-    const searchView =
-        document.getElementById(
-            "calendar-search-view"
-        );
-
-    const searchInput =
-        document.getElementById(
-            "event-list-search"
-        );
-
-    const isOpen =
-        searchView.classList.contains(
-            "open"
-        );
-
-    if (isOpen) {
-
-        closeCalendarSearch();
-        return;
-    }
-
-    searchView.classList.add("open");
-
-    searchInput.value = "";
-    searchInput.focus();
-
-    renderEventList();
-};
-
-const closeCalendarSearch = () => {
-
-    document
-        .getElementById(
-            "calendar-search-view"
-        )
-        .classList.remove("open");
-
-    document
-        .getElementById(
-            "event-list-search"
-        )
-        .value = "";
-
-    renderEventList();
-};
-
-document
-    .getElementById("event-list-search")
-    ?.addEventListener(
-        "keydown",
-        (event) => {
-
-            if (event.key === "Escape") {
-                closeCalendarSearch();
-            }
-        }
-    );
 
 /* -------------------------------- */
 /* Calendar                         */
@@ -2064,13 +2071,9 @@ const toggleEventRecurringOptions = () => {
 const initPage = async () => {
 
     renderWeekdays();
+    switchCalendarView("month");
 
     await loadEvents();
-
-    document.querySelector(
-        ".calendar-search-btn"
-    ).style.display = "none";
-
     // Opens the create event form when triggered from the quick add menu.
     const quickAdd =
         new URLSearchParams(window.location.search)
