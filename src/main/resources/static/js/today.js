@@ -46,6 +46,32 @@ todayDateElement.innerHTML = `
     ${formattedDate}
 `;
 
+// Format a Date object for the Calendar API
+const formatDateTimeForApi = (date) => {
+
+    const pad = (number) =>
+        String(number).padStart(2, "0");
+
+    const year =
+        date.getFullYear();
+
+    const month =
+        pad(date.getMonth() + 1);
+
+    const day =
+        pad(date.getDate());
+
+    const hours =
+        pad(date.getHours());
+
+    const minutes =
+        pad(date.getMinutes());
+
+    const seconds =
+        pad(date.getSeconds());
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
 
 /* -------------------------------- */
 /* Events                           */
@@ -134,8 +160,20 @@ const loadTodayEvents = async () => {
 
     try {
 
+        const startDate =
+            formatDateTimeForApi(
+                getStartOfToday()
+            );
+
+        const endDate =
+            formatDateTimeForApi(
+                getStartOfTomorrow()
+            );
+
         const response =
-            await apiFetch("/calendar");
+            await apiFetch(
+                `/calendar?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+            );
 
         if (!response.ok) {
             throw new Error(
