@@ -304,13 +304,17 @@ ${
 
         <button
     class="list-complete-check ${listCompleted ? "checked" : ""}"
-    onclick="${
-                listCompleted && list.isRecurring
-                    ? `undoListCompletionFromOverview(event, ${list.id})`
+  onclick="${
+                listCompleted
+                    ? (
+                        list.isRecurring
+                            ? `undoListCompletionFromOverview(event, ${list.id})`
+                            : `reopenListFromOverview(event, ${list.id})`
+                    )
                     : `completeListFromOverview(event, ${list.id})`
             }"
     aria-label="${
-                listCompleted && list.isRecurring
+                listCompleted
                     ? t("undoCompletion")
                     : t("completeList")
             }"
@@ -349,6 +353,38 @@ const toggleListPinned = async (event, listId) => {
 
     const list =
         currentLists.find(list => list.id === listId);
+
+    if (!list) {
+        return;
+    }
+
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    pinned: !list.pinned
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUpdateList"));
+        }
+
+        await loadLists();
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
 };
 
 
@@ -559,14 +595,18 @@ const renderSingleList = (list, tasks) => {
     
     <button
     class="list-complete-btn"
-    onclick="${
-        listCompleted && list.isRecurring
-            ? `undoListCompletion(${list.id})`
+   onclick="${
+        listCompleted
+            ? (
+                list.isRecurring
+                    ? `undoListCompletion(${list.id})`
+                    : `reopenList(${list.id})`
+            )
             : `completeList(${list.id})`
     }"
 >
-    ${
-        listCompleted && list.isRecurring
+${
+        listCompleted
             ? t("undoCompletion")
             : t("completeList")
     }
@@ -852,6 +892,31 @@ const undoListCompletion = async (listId) => {
     }
 };
 
+const reopenList = async (listId) => {
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/reopen`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUndoListCompletion"));
+        }
+
+        await loadLists();
+        await openList(listId);
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
+
 const completeListFromOverview = async (event, listId) => {
     event.preventDefault();
     event.stopPropagation();
@@ -884,6 +949,33 @@ const undoListCompletionFromOverview = async (event, listId) => {
         `;
     }
 };
+const reopenListFromOverview = async (event, listId) => {
+    event.preventDefault();
+    event.stopPropagation();
+
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}/reopen`,
+            {
+                method: "PATCH"
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUndoListCompletion"));
+        }
+
+        await loadLists();
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
+
 const renderCreateTaskInListForm = (listId) => {
     document.getElementById("create-task-in-list-container").innerHTML = `
         <section class="list-task-form">
@@ -1146,7 +1238,7 @@ const renderCreateListForm = () => {
 
                 <button
                     class="list-cancel-btn"
-                    onclick="renderLists(currentLists)"
+                    onclick="cancelCreateList()"
                 >
                     ${t("cancel")}
                 </button>
@@ -1155,6 +1247,21 @@ const renderCreateListForm = () => {
 
         </section>
     `;
+};
+
+const cancelCreateList = () => {
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const returnTo =
+        params.get("returnTo");
+
+    if (returnTo) {
+        window.location.href = returnTo;
+        return;
+    }
+
+    renderLists(currentLists);
 };
 
 const renderEditListForm = (event, listId) => {
