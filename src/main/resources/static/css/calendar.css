@@ -132,30 +132,53 @@
     display: block;
 }
 
+.calendar-search-btn {
+    width: 48px;
+    height: 48px;
 
-.event-list-search-input {
-    width: 100%;
-
-    margin-bottom: 24px;
-    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
 
     background: var(--surface);
     color: var(--text);
 
-    font-family: inherit;
-    font-size: 15px;
+    font-size: 1.25rem;
+    line-height: 1;
 
+    cursor: pointer;
+}
+
+.calendar-search-view {
+    display: none;
+    margin-bottom: 18px;
+}
+
+.calendar-search-view.open {
+    display: block;
+}
+
+.calendar-search-input {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 1rem;
+}
+
+.calendar-search-input:focus {
     outline: none;
+    border-color: var(--text);
 }
-
-
-.event-list-search-input:focus {
-    border-color: var(--primary-border);
-}
-
 
 .event-section {
     margin-bottom: 34px;
@@ -251,41 +274,34 @@
     font-size: 0.82rem;
 }
 
-
-.event-list-load-more-btn {
-    display: block;
-
-    width: 100%;
-
-    margin-top: 20px;
-    padding: 12px;
-
-    border: 1px solid var(--border);
-    border-radius: 12px;
-
-    background: var(--surface);
-    color: var(--text);
-
-    font-family: inherit;
-    font-weight: 600;
-
-    cursor: pointer;
-}
-
-
-.event-list-load-more-btn:hover {
-    background: var(--hover-soft);
-}
-
-
-.event-list-load-more-btn.hidden {
-    display: none;
-}
-
-
 .events-empty {
     color: var(--text-muted);
     font-weight: 600;
+}
+
+.event-list-date-range {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+
+    gap: 10px;
+
+    margin-bottom: 24px;
+}
+
+
+.event-list-date-range label {
+    color: var(--text-muted);
+
+    font-size: 0.85rem;
+    font-weight: 600;
+}
+
+
+.event-list-date-range .event-input {
+    width: auto;
+
+    margin-bottom: 0;
 }
 
 /* ----------------------------- */

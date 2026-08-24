@@ -36,4 +36,14 @@ public class CalendarController {
 
         return ResponseEntity.ok(calendarService.getEventsByDateRange(userId, startDate, endDate));
     }
+
+    //search events by title, no date range required
+    @GetMapping("/search")
+    public ResponseEntity<List<EventSummaryDTO>> searchEvents(
+            @RequestParam String query,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+        Long userId = userService.getUserByEmail(userDetails.getUsername()).getId();
+        return ResponseEntity.ok(calendarService.searchEvents(userId, query));
+    }
 }
