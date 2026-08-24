@@ -55,6 +55,13 @@ public class CalendarService {
         List<EventSummaryDTO> occurrences = new ArrayList<>();
         LocalDateTime occurrenceStart = event.getStartTime(); //the "original" event's start time
 
+        // Defensive guard: frequency should never be null for a recurring event
+        // (createEvent/updateEvent already validate this), but this protects
+        // against corrupted data or rows written before that validation existed.
+        if (event.getFrequency() == null) {
+            return occurrences;
+        }
+
         while (!occurrenceStart.isAfter(windowEnd)) {
             if (!occurrenceStart.isBefore(windowStart)) {
                EventSummaryDTO dto = eventMapper.mapToEventSummaryDto(event);
@@ -68,9 +75,13 @@ public class CalendarService {
                 }
                 occurrences.add(dto);
             }
-            //update occurrencestart to the next occurrence
-            //if intervalvalue isn't null - step takes it's value, if it's null - step is 1
-            int step = (event.getIntervalValue() != null) ? event.getIntervalValue() : 1;
+
+            // Move occurrenceStart to the next occurrence. Falls back to step 1 for
+            // null/non-positive intervalValue, since 0 or negative would cause an
+            // infinite loop (occurrenceStart never moving forward).
+            int step = (event.getIntervalValue() != null && event.getIntervalValue() > 0)
+                    ? event.getIntervalValue()
+                    : 1;
             occurrenceStart = switch (event.getFrequency()) {
                 case DAILY -> occurrenceStart.plusDays(step);
                 case WEEKLY -> occurrenceStart.plusWeeks(step);

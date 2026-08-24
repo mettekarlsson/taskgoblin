@@ -5,68 +5,349 @@ let selectedEventId = null;
 let editingEventId = null;
 
 /* -------------------------------- */
-/* Search                           */
+/* View switching (Month / List)    */
 /* -------------------------------- */
 
-const toggleCalendarSearch = () => {
+let currentCalendarView = "month";
 
-    const searchView =
-        document.getElementById("calendar-search-view");
+const switchCalendarView = (view) => {
 
-    const searchInput =
-        document.getElementById("calendar-search");
+    currentCalendarView = view;
 
-    const isOpen =
-        searchView.classList.contains("open");
+    document
+        .querySelectorAll(".calendar-view-tab")
+        .forEach(tab => {
+            tab.classList.toggle(
+                "active",
+                tab.dataset.view === view
+            );
+        });
 
-    if (isOpen) {
-        closeCalendarSearch();
+    const monthContainer =
+        document.querySelector(".calendar-container");
+
+    const dayView =
+        document.getElementById("calendar-day-view");
+
+    const listContainer =
+        document.getElementById("event-list-container");
+
+    if (view === "month") {
+
+        monthContainer.style.display = "block";
+        dayView.style.display = "block";
+
+        listContainer.classList.remove("active");
+
+    } else {
+
+        monthContainer.style.display = "none";
+        dayView.style.display = "none";
+
+        listContainer.classList.add("active");
+
+        // Only fetch the first time the List tab is opened.
+        if (listViewEvents.length === 0) {
+            loadEventList(true);
+        }
+    }
+};
+
+
+/* -------------------------------- */
+/* List view - "load more" paging   */
+/* -------------------------------- */
+
+// Accumulated events across every month chunk loaded so far.
+let listViewEvents = [];
+
+// How many month-chunks have been loaded (0 = none yet).
+let listViewMonthsLoaded = 0;
+
+let listViewLoading = false;
+
+// Returns the [start, end] window for one "chunk" of the list view.
+// Chunk 0 is "today until the end of this month". Every chunk after
+// that is one full calendar month further ahead.
+const getListViewChunkRange = (chunkIndex) => {
+
+    const now = new Date();
+
+    if (chunkIndex === 0) {
+
+        const start = new Date(
+            now.getFullYear(),
+            now.getMonth(),
+            now.getDate(),
+            0, 0, 0
+        );
+
+        const end = new Date(
+            now.getFullYear(),
+            now.getMonth() + 1,
+            0,
+            23, 59, 59
+        );
+
+        return { start, end };
+    }
+
+    const start = new Date(
+        now.getFullYear(),
+        now.getMonth() + chunkIndex,
+        1,
+        0, 0, 0
+    );
+
+    const end = new Date(
+        now.getFullYear(),
+        now.getMonth() + chunkIndex + 1,
+        0,
+        23, 59, 59
+    );
+
+    return { start, end };
+};
+
+
+// Fetches the next chunk and appends it to listViewEvents.
+// reset=true clears everything first (used when the List tab is opened).
+const loadEventList = async (reset) => {
+
+    if (listViewLoading) {
         return;
     }
 
-    searchView.classList.add("open");
+    listViewLoading = true;
 
-    searchInput.value = "";
-    searchInput.focus();
-};
+    if (reset) {
+        listViewEvents = [];
+        listViewMonthsLoaded = 0;
+    }
 
+    const listContent =
+        document.getElementById("event-list-content");
 
-const closeCalendarSearch = () => {
+    try {
 
-    const searchView =
-        document.getElementById("calendar-search-view");
+        const { start, end } =
+            getListViewChunkRange(listViewMonthsLoaded);
 
-    const searchInput =
-        document.getElementById("calendar-search");
+        const startDate = formatDateTimeForApi(start);
+        const endDate = formatDateTimeForApi(end);
 
-    searchView.classList.remove("open");
-    searchInput.value = "";
-};
+        const response =
+            await apiFetch(
+                `/calendar?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+            );
 
-
-/* Close search with Escape */
-
-const calendarSearchInput =
-    document.getElementById("calendar-search");
-
-if (calendarSearchInput) {
-
-    calendarSearchInput.addEventListener(
-        "keydown",
-        event => {
-
-            if (event.key === "Escape") {
-                closeCalendarSearch();
-            }
-
+        if (!response.ok) {
+            throw new Error("Failed to load events");
         }
-    );
-}
 
+        const newEvents =
+            await response.json();
+
+        listViewEvents =
+            listViewEvents.concat(newEvents);
+
+        listViewMonthsLoaded += 1;
+
+        renderEventList();
+
+    } catch (error) {
+
+        listContent.innerHTML = `
+            <p class="calendar-error">
+                ${error.message}
+            </p>
+        `;
+
+        console.error(error);
+
+    } finally {
+
+        listViewLoading = false;
+    }
+};
+
+
+const loadMoreEventList = () => {
+    loadEventList(false);
+};
+
+
+// Renders listViewEvents, grouped by date, filtered by the search box.
+const renderEventList = () => {
+
+    const listContent =
+        document.getElementById("event-list-content");
+
+    const loadMoreBtn =
+        document.getElementById("event-list-load-more-btn");
+
+    const query =
+        document
+            .getElementById("event-list-search")
+            .value
+            .trim()
+            .toLowerCase();
+
+    const filteredEvents =
+        listViewEvents.filter(event =>
+            (event.title || "")
+                .toLowerCase()
+                .includes(query)
+        );
+
+    // Load more is always available (there's no "final" chunk with this
+    // rolling-month pagination), but hide it while a search is active -
+    // the user is filtering what's already loaded, not asking for more.
+    loadMoreBtn.classList.toggle(
+        "hidden",
+        query.length > 0
+    );
+
+    if (filteredEvents.length === 0) {
+
+        listContent.innerHTML = `
+            <p class="events-empty">
+                ${query
+            ? "No events match your search."
+            : "No events found."}
+            </p>
+        `;
+
+        return;
+    }
+
+    const sortedEvents =
+        [...filteredEvents].sort((a, b) =>
+            new Date(a.startTime) - new Date(b.startTime)
+        );
+
+    // Groups events by calendar date (YYYY-MM-DD), in encounter order,
+    // which is already chronological since sortedEvents is sorted.
+    const groups = [];
+    let currentGroup = null;
+
+    sortedEvents.forEach(event => {
+
+        const eventDate = new Date(event.startTime);
+
+        const dateKey =
+            eventDate.toDateString();
+
+        if (!currentGroup || currentGroup.dateKey !== dateKey) {
+
+            currentGroup = {
+                dateKey,
+                date: eventDate,
+                events: []
+            };
+
+            groups.push(currentGroup);
+        }
+
+        currentGroup.events.push(event);
+    });
+
+    const locale =
+        currentSettings?.language === "sv"
+            ? "sv-SE"
+            : "en-GB";
+
+    listContent.innerHTML = groups.map(group => `
+
+        <section class="event-section">
+
+            <h3 class="event-section-title">
+                ${group.date.toLocaleDateString(
+        locale,
+        {
+            weekday: "long",
+            day: "numeric",
+            month: "long"
+        }
+    )}
+            </h3>
+
+            <div class="event-section-list">
+
+                ${group.events.map(event => `
+
+                    <button
+                        type="button"
+                        class="event-row"
+                        style="--event-color: ${event.color || "var(--primary)"}"
+                        onclick="openEventDetail(${event.id}, '${event.startTime}', ${event.endTime ? `'${event.endTime}'` : "null"})"
+                    >
+
+                        <span class="event-row-dot"></span>
+
+                        <span class="event-row-title">
+                            ${event.title}
+                        </span>
+
+                        <span class="event-row-time">
+                            ${event.isAllDay
+        ? "All day"
+        : new Date(event.startTime)
+            .toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                        </span>
+
+                    </button>
+
+                `).join("")}
+
+            </div>
+
+        </section>
+
+    `).join("");
+};
 
 /* -------------------------------- */
 /* Calendar                         */
 /* -------------------------------- */
+
+// Formats a Date object into "YYYY-MM-DDTHH:mm:ss" (no "Z", no milliseconds),
+// since that's the format the backend expects for LocalDateTime query params.
+const formatDateTimeForApi = (date) => {
+
+    const pad = (number) =>
+        String(number).padStart(2, "0");
+
+    const year = date.getFullYear();
+    const month = pad(date.getMonth() + 1);
+    const day = pad(date.getDate());
+    const hours = pad(date.getHours());
+    const minutes = pad(date.getMinutes());
+    const seconds = pad(date.getSeconds());
+
+    return `${year}-${month}-${day}T${hours}:${minutes}:${seconds}`;
+};
+
+
+// Calculates the first and last day of the currently displayed month,
+// so we can ask the backend for exactly the events this month needs.
+const getCurrentMonthDateRange = () => {
+
+    const year = currentCalendarDate.getFullYear();
+    const month = currentCalendarDate.getMonth();
+
+    // Day 1 of this month, at midnight.
+    const firstDay = new Date(year, month, 1, 0, 0, 0);
+
+    // "Day 0 of next month" = the last day of this month (same trick
+    // renderCalendar() already uses for lastDayOfMonth).
+    const lastDay = new Date(year, month + 1, 0, 23, 59, 59);
+
+    return {
+        startDate: formatDateTimeForApi(firstDay),
+        endDate: formatDateTimeForApi(lastDay)
+    };
+};
 
 const loadEvents = async () => {
 
@@ -75,8 +356,15 @@ const loadEvents = async () => {
 
     try {
 
+        // Only request events for the month currently shown, since the
+        // backend now requires startDate/endDate on every call.
+        const { startDate, endDate } =
+            getCurrentMonthDateRange();
+
         const response =
-            await apiFetch("/calendar");
+            await apiFetch(
+                `/calendar?startDate=${encodeURIComponent(startDate)}&endDate=${encodeURIComponent(endDate)}`
+            );
 
         if (!response.ok) {
             throw new Error("Failed to load events");
@@ -430,8 +718,7 @@ const renderCalendar = () => {
                                 ${event.color || "var(--primary)"}
                             "
                             data-event-id="${event.id}"
-                            onclick="event.stopPropagation(); openEventDetail(${event.id})"
-                        >
+onclick="event.stopPropagation(); openEventDetail(${event.id}, '${event.startTime}', ${event.endTime ? `'${event.endTime}'` : "null"})"                        >
 
                             <span class="calendar-event-dot"></span>
 
@@ -563,8 +850,8 @@ const renderDayView = (
             ${events.map(event => `
 
                 <li
-                    onclick="openEventDetail(${event.id})"
-                >
+    onclick="openEventDetail(${event.id}, '${event.startTime}', ${event.endTime ? `'${event.endTime}'` : "null"})"
+>
 
                     <span
                         class="event-dot"
@@ -595,7 +882,7 @@ const renderDayView = (
 /* Event detail modal               */
 /* -------------------------------- */
 
-const openEventDetail = async (id) => {
+const openEventDetail = async (id, occurrenceStartTime, occurrenceEndTime) => {
 
     try {
 
@@ -611,6 +898,16 @@ const openEventDetail = async (id) => {
         const event =
             await response.json();
         selectedEventId = event.id;
+
+        // GET /events/{id} always returns the series' original startTime/
+        // endTime (there's only one database row per recurring series).
+        // Override with the specific occurrence's dates - passed in from
+        // wherever the click happened - so the modal shows the date the
+        // user actually clicked, not the series' first occurrence.
+        if (occurrenceStartTime) {
+            event.startTime = occurrenceStartTime;
+            event.endTime = occurrenceEndTime || null;
+        }
 
         document.getElementById(
             "modal-event-title"
@@ -737,7 +1034,7 @@ const closeEventDetail = () => {
 /* Change month                     */
 /* -------------------------------- */
 
-const changeCalendarMonth = (
+const changeCalendarMonth = async (
     amount
 ) => {
 
@@ -746,7 +1043,9 @@ const changeCalendarMonth = (
         + amount
     );
 
-    renderCalendar();
+    // Re-fetch events for the newly selected month, since the backend
+    // only returns events within the requested date range now.
+    await loadEvents();
 };
 
 

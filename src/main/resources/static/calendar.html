@@ -37,14 +37,6 @@
         <div class="calendar-header-actions">
 
             <button
-                    class="calendar-search-btn"
-                    onclick="toggleCalendarSearch()"
-                    aria-label="Search events"
-            >
-                🔍
-            </button>
-
-            <button
                     class="new-event-btn"
                     onclick="renderCreateEventForm()"
             >
@@ -56,21 +48,26 @@
     </section>
 
 
-    <!-- Search -->
-    <section
-            class="calendar-search-view"
-            id="calendar-search-view"
-    >
+    <!-- Month / List switch -->
+    <section class="calendar-view-tabs">
 
-        <input
-                id="calendar-search"
-                class="calendar-search-input"
-                type="text"
-                placeholder="Search events..."
+        <button
+                class="calendar-view-tab active"
+                data-view="month"
+                onclick="switchCalendarView('month')"
         >
+            Month
+        </button>
+
+        <button
+                class="calendar-view-tab"
+                data-view="list"
+                onclick="switchCalendarView('list')"
+        >
+            List
+        </button>
 
     </section>
-
 
     <!-- Calendar -->
     <section class="calendar-container">
@@ -124,6 +121,34 @@
 
     <!-- Day view - shown when a day is clicked -->
     <section class="calendar-day-view" id="calendar-day-view">
+    </section>
+
+    <!-- List view -->
+    <section class="event-list-container" id="event-list-container">
+
+        <input
+                id="event-list-search"
+                class="event-list-search-input"
+                type="text"
+                placeholder="Search events..."
+                oninput="renderEventList()"
+        >
+
+        <div id="event-list-content">
+            <p class="calendar-loading">
+                Loading events...
+            </p>
+        </div>
+
+        <button
+                type="button"
+                class="event-list-load-more-btn"
+                id="event-list-load-more-btn"
+                onclick="loadMoreEventList()"
+        >
+            Load more
+        </button>
+
     </section>
 
 </main>
