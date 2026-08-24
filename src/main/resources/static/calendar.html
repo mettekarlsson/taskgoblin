@@ -37,6 +37,13 @@
         <div class="calendar-header-actions">
 
             <button
+                    class="calendar-search-btn"
+                    onclick="toggleCalendarSearch()"
+            >
+                🔍
+            </button>
+
+            <button
                     class="new-event-btn"
                     onclick="renderCreateEventForm()"
             >
@@ -47,6 +54,18 @@
 
     </section>
 
+    <section
+            class="calendar-search-view"
+            id="calendar-search-view"
+    >
+        <input
+                id="event-list-search"
+                class="calendar-search-input"
+                type="text"
+                placeholder="Search events..."
+                oninput="renderEventList()"
+        >
+    </section>
 
     <!-- Month / List switch -->
     <section class="calendar-view-tabs">
@@ -125,14 +144,6 @@
 
     <!-- List view -->
     <section class="event-list-container" id="event-list-container">
-
-        <input
-                id="event-list-search"
-                class="event-list-search-input"
-                type="text"
-                placeholder="Search events..."
-                oninput="renderEventList()"
-        >
 
         <div id="event-list-content">
             <p class="calendar-loading">

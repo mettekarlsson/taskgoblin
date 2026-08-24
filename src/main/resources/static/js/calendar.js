@@ -14,6 +14,16 @@ const switchCalendarView = (view) => {
 
     currentCalendarView = view;
 
+    const searchButton =
+        document.querySelector(
+            ".calendar-search-btn"
+        );
+
+    searchButton.style.display =
+        view === "list"
+            ? "flex"
+            : "none";
+
     document
         .querySelectorAll(".calendar-view-tab")
         .forEach(tab => {
@@ -306,6 +316,66 @@ const renderEventList = () => {
 
     `).join("");
 };
+
+const toggleCalendarSearch = () => {
+
+    const searchView =
+        document.getElementById(
+            "calendar-search-view"
+        );
+
+    const searchInput =
+        document.getElementById(
+            "event-list-search"
+        );
+
+    const isOpen =
+        searchView.classList.contains(
+            "open"
+        );
+
+    if (isOpen) {
+
+        closeCalendarSearch();
+        return;
+    }
+
+    searchView.classList.add("open");
+
+    searchInput.value = "";
+    searchInput.focus();
+
+    renderEventList();
+};
+
+const closeCalendarSearch = () => {
+
+    document
+        .getElementById(
+            "calendar-search-view"
+        )
+        .classList.remove("open");
+
+    document
+        .getElementById(
+            "event-list-search"
+        )
+        .value = "";
+
+    renderEventList();
+};
+
+document
+    .getElementById("event-list-search")
+    ?.addEventListener(
+        "keydown",
+        (event) => {
+
+            if (event.key === "Escape") {
+                closeCalendarSearch();
+            }
+        }
+    );
 
 /* -------------------------------- */
 /* Calendar                         */
@@ -1996,6 +2066,11 @@ const initPage = async () => {
     renderWeekdays();
 
     await loadEvents();
+
+    document.querySelector(
+        ".calendar-search-btn"
+    ).style.display = "none";
+
     // Opens the create event form when triggered from the quick add menu.
     const quickAdd =
         new URLSearchParams(window.location.search)

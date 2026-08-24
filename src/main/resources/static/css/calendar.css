@@ -132,30 +132,53 @@
     display: block;
 }
 
+.calendar-search-btn {
+    width: 48px;
+    height: 48px;
 
-.event-list-search-input {
-    width: 100%;
-
-    margin-bottom: 24px;
-    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
 
     border: 1px solid var(--border);
-    border-radius: 12px;
+    border-radius: 14px;
 
     background: var(--surface);
     color: var(--text);
 
-    font-family: inherit;
-    font-size: 15px;
+    font-size: 1.25rem;
+    line-height: 1;
 
+    cursor: pointer;
+}
+
+.calendar-search-view {
+    display: none;
+    margin-bottom: 18px;
+}
+
+.calendar-search-view.open {
+    display: block;
+}
+
+.calendar-search-input {
+    width: 100%;
+
+    padding: 12px 14px;
+
+    border: 1px solid var(--border);
+    border-radius: 14px;
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-size: 1rem;
+}
+
+.calendar-search-input:focus {
     outline: none;
+    border-color: var(--text);
 }
-
-
-.event-list-search-input:focus {
-    border-color: var(--primary-border);
-}
-
 
 .event-section {
     margin-bottom: 34px;
