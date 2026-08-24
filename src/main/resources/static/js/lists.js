@@ -905,6 +905,7 @@ const toggleTaskComplete = async (event, taskId, status) => {
                 .dataset
                 .listId;
 
+        await loadLists();
         await openList(openListId);
 
     } catch (error) {
