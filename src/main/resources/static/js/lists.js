@@ -252,7 +252,7 @@ const renderLists = async (lists, searchQuery = "") => {
 
 <div class="list-card-bottom">
 ${
-                overdueDays > 0
+                overdueDays > 0 && !listCompleted
                     ? `
             <div class="list-overdue">
                 ⚠ ${overdueDays} ${
