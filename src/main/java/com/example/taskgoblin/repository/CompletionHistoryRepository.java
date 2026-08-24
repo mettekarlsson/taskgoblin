@@ -9,6 +9,8 @@ public interface CompletionHistoryRepository
 
     void deleteByUserId(Long userId);
 
+    void deleteByListId(Long listId);
+
     Optional<CompletionHistory>
     findFirstByListIdAndUserIdOrderByCompletedAtDesc(
             Long listId,

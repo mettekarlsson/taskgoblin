@@ -607,7 +607,7 @@ const createTask = async () => {
     const priority =
         priorityInput
             ? priorityInput.value
-            : null;
+            : "NONE";
 
     const dueDate =
         dueDateInput
