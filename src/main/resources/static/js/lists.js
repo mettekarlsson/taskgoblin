@@ -349,6 +349,38 @@ const toggleListPinned = async (event, listId) => {
 
     const list =
         currentLists.find(list => list.id === listId);
+
+    if (!list) {
+        return;
+    }
+
+    try {
+        const response = await apiFetch(
+            `/lists/${listId}`,
+            {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: JSON.stringify({
+                    pinned: !list.pinned
+                })
+            }
+        );
+
+        if (!response.ok) {
+            throw new Error(t("failedToUpdateList"));
+        }
+
+        await loadLists();
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
 };
 
 
