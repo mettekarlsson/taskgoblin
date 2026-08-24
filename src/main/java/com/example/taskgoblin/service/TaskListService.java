@@ -13,6 +13,7 @@ import com.example.taskgoblin.repository.TaskRepository;
 import com.example.taskgoblin.repository.UserRepository;
 import com.example.taskgoblin.repository.CompletionHistoryRepository;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -483,20 +484,33 @@ public class TaskListService {
     /*
      * Delete operations
      */
-
+    @Transactional
     public void deleteList(
             Long listId,
             Long userId
     ) {
 
-        // Fetches the task list that belongs to the current user.
-        // Prevents users from deleting lists they do not own.
-        TaskList taskList = taskListRepository
-                .findByIdAndUserId(listId, userId)
-                .orElseThrow(() ->
-                        new ResourceNotFoundException("Task list"));
+        // Find list and verify ownership
+        TaskList taskList =
+                taskListRepository
+                        .findByIdAndUserId(
+                                listId,
+                                userId
+                        )
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Task list"
+                                ));
 
-        // Deletes the task list from the database.
+        // Delete completion history connected to the list
+        completionHistoryRepository
+                .deleteByListId(listId);
+
+        // Delete tasks belonging to the list
+        taskRepository
+                .deleteByListId(listId);
+
+        // Delete the list itself
         taskListRepository.delete(taskList);
     }
 
