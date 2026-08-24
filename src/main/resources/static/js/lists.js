@@ -599,14 +599,14 @@ const renderSingleList = (list, tasks) => {
                                 </span>
 
                                 ${
-                    task.isRecurring
+                    list.isRecurring
                     && task.lastCompletedAt
                         ? `
-                                            <span class="list-task-badge">
-                                                ${t("lastCompleted")}
-                                                ${formatListDate(task.lastCompletedAt)}
-                                            </span>
-                                        `
+            <span class="list-task-badge">
+                ${t("lastCompleted")}
+                ${formatListDate(task.lastCompletedAt)}
+            </span>
+        `
                         : ""
                 }
 
