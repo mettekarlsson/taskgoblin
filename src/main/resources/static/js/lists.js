@@ -41,6 +41,7 @@ document.addEventListener("click", (event) => {
 });
 
 let selectedListColor = DEFAULT_LIST_COLOR;
+
 let selectedListIcon = "clipboard";
 
 let currentLists = [];
@@ -48,6 +49,8 @@ let currentLists = [];
 let currentListFilter = "all";
 
 let listToDeleteId = null;
+
+let pendingListTasks = [];
 
 const setListFilter = (filter) => {
 
@@ -247,8 +250,9 @@ const renderLists = async (lists, searchQuery = "") => {
             }
 </div>
 
+<div class="list-card-bottom">
 ${
-                overdueDays > 0
+                overdueDays > 0 && !listCompleted
                     ? `
             <div class="list-overdue">
                 ⚠ ${overdueDays} ${
@@ -282,11 +286,7 @@ ${
 <div class="list-footer">
 
     <div class="list-footer-info">
-        <span>
-            ${tasks.length} ${t("tasksCount")}
-        </span>
-
-        ${
+            ${
                 list.isRecurring
                     ? `
                     <span>
@@ -298,6 +298,10 @@ ${
                 `
                     : ""
             }
+            
+                <span>
+            ${tasks.length} ${t("tasksCount")}
+        </span>
     </div>
     
     <div class="list-footer-actions">
@@ -338,6 +342,7 @@ ${
 
     </div>
 
+</div>
 </div>
 
 </article>
@@ -508,7 +513,11 @@ const renderSingleList = (list, tasks) => {
     });
 
     listsGrid.innerHTML = `
-<section class="list-detail-card" data-list-id="${list.id}" style="background: ${listColor};">
+<section
+    class="list-detail-card"
+    data-list-id="${list.id}"
+    style="background: ${listColor};"
+>
 
     <div class="list-detail-header">
 
@@ -534,68 +543,146 @@ const renderSingleList = (list, tasks) => {
             ${listIcon}
         </span>
 
-        <h2>${list.name}</h2>
+        <h2>
+            ${list.name}
+        </h2>
 
     </div>
-<div class="list-detail-schedule">
-    ${formatListSchedule(list)}
-</div>
+
+    <div class="list-detail-schedule">
+        ${formatListSchedule(list)}
+    </div>
+
     <div class="list-detail-tasks">
 
         ${
         tasks.length
             ? sortedTasks.map(task => {
+
                 const isVisuallyCompleted =
                     task.status === "DONE";
+
                 return `
-    <div class="list-detail-task ${isVisuallyCompleted ? "done" : ""}">
+                        <div
+                            class="list-detail-task ${
+                    isVisuallyCompleted
+                        ? "done"
+                        : ""
+                }"
+                        >
 
-        <button
-            class="list-task-check ${isVisuallyCompleted ? "checked" : ""}"
-            onclick="toggleTaskComplete(event, ${task.id}, '${task.status}')"
-            aria-label="${t("completeTask")}"
-        >
-            <svg viewBox="0 0 24 24" fill="none">
-                <path d="M5 13L10 18L19 7" />
-            </svg>
-        </button>
+                            <button
+                                class="list-task-check ${
+                    isVisuallyCompleted
+                        ? "checked"
+                        : ""
+                }"
+                                onclick="toggleTaskComplete(
+                                    event,
+                                    ${task.id},
+                                    '${task.status}'
+                                )"
+                                aria-label="${t("completeTask")}"
+                            >
+                                <svg
+                                    viewBox="0 0 24 24"
+                                    fill="none"
+                                >
+                                    <path d="M5 13L10 18L19 7" />
+                                </svg>
+                            </button>
 
-        <div class="list-task-content">
+                            <div class="list-task-content">
 
-            <span class="list-task-title">
-                ${task.title}
-            </span>
+                                <span class="list-task-title">
+                                    ${task.title}
+                                </span>
 
-            ${
-                    task.isRecurring && task.lastCompletedAt
-                        ? `<span class="list-task-badge">
-                        ${t("lastCompleted")} ${formatListDate(task.lastCompletedAt)}
-                    </span>`
+                                ${
+                    task.isRecurring
+                    && task.lastCompletedAt
+                        ? `
+                                            <span class="list-task-badge">
+                                                ${t("lastCompleted")}
+                                                ${formatListDate(task.lastCompletedAt)}
+                                            </span>
+                                        `
                         : ""
                 }
 
-        </div>
+                            </div>
+                            
+                            <button
+    type="button"
+    class="list-task-remove-btn"
+    onclick="deleteTaskFromList(event, ${task.id}, ${list.id})"
+    aria-label="${t("delete")}"
+>
+    ×
+</button>
 
-    </div>
-`;
+                        </div>
+                    `;
             }).join("")
-            : `<p class="list-task-preview">${t("noTasksYet")}</p>`
+            : ""
     }
+        <div class="list-detail-add-task-row">
 
-    </div>
+    <input
+        id="list-task-title"
+        class="list-detail-add-task-input"
+        type="text"
+        placeholder="${t("addTask")}"
+        onkeydown="
+            if (event.key === 'Enter') {
+                event.preventDefault();
+                createTaskInList(${list.id});
+            }
+        "
+    >
 
     <button
-        class="list-add-task-btn"
-        onclick="renderCreateTaskInListForm(${list.id})"
+        type="button"
+        class="list-detail-add-task-submit"
+        onclick="createTaskInList(${list.id})"
+        aria-label="${t("addTask")}"
     >
-        ${t("addTask")}
+        +
     </button>
 
-    <div id="create-task-in-list-container"></div>
-    
-    <button
-    class="list-complete-btn"
-   onclick="${
+</div>
+
+    </div>
+
+    <div class="list-detail-meta">
+
+        <span>
+            ${t("created")}:
+            ${formatListDate(list.createdAt)}
+        </span>
+
+        <span>
+            ${t("updated")}:
+            ${formatListDate(
+        list.lastInteractedAt
+        || list.createdAt
+    )}
+        </span>
+
+    </div>
+
+    <div class="list-detail-actions">
+
+        <button
+            class="list-delete-btn"
+            onclick="openDeleteListModal(null, ${list.id})"
+        >
+            ${t("delete")}
+        </button>
+
+        <button
+            class="list-complete-btn"
+            onclick="${
         listCompleted
             ? (
                 list.isRecurring
@@ -604,37 +691,12 @@ const renderSingleList = (list, tasks) => {
             )
             : `completeList(${list.id})`
     }"
->
-${
+        >
+            ${
         listCompleted
             ? t("undoCompletion")
             : t("completeList")
     }
-</button>
-
-    <div class="list-detail-footer">
-
-        <div class="list-detail-meta">
-
-            <span>
-                ${t("created")}:
-                ${formatListDate(list.createdAt)}
-            </span>
-
-            <span>
-                ${t("updated")}:
-                ${formatListDate(
-        list.lastInteractedAt || list.createdAt
-    )}
-            </span>
-
-        </div>
-
-        <button
-            class="list-delete-btn"
-            onclick="openDeleteListModal(null, ${list.id})"
-        >
-            ${t("delete")}
         </button>
 
     </div>
@@ -977,39 +1039,44 @@ const reopenListFromOverview = async (event, listId) => {
 };
 
 const renderCreateTaskInListForm = (listId) => {
-    document.getElementById("create-task-in-list-container").innerHTML = `
-        <section class="list-task-form">
+    const container =
+        document.getElementById("create-task-in-list-container");
 
-            <label for="list-task-title">${t("title")}</label>
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = `
+        <div class="list-detail-add-task-row">
 
             <input
-                id="list-task-title"
-                class="list-input"
+                id="new-list-task-title"
+                class="list-detail-add-task-input"
                 type="text"
+                placeholder="${t("addTask")}"
+                onkeydown="
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        createTaskInList(${listId});
+                    }
+                "
             >
 
-            <p id="list-message" class="list-message"></p>
+            <button
+                type="button"
+                class="list-detail-add-task-submit"
+                onclick="createTaskInList(${listId})"
+                aria-label="${t("addTask")}"
+            >
+                +
+            </button>
 
-            <div class="list-form-actions">
-
-                <button
-                    class="list-save-btn"
-                    onclick="createTaskInList(${listId})"
-                >
-                    ${t("save")}
-                </button>
-
-                <button
-                    class="list-cancel-btn"
-                    onclick="document.getElementById('create-task-in-list-container').innerHTML = ''"
-                >
-                    ${t("cancel")}
-                </button>
-
-            </div>
-
-        </section>
+        </div>
     `;
+
+    document
+        .getElementById("new-list-task-title")
+        ?.focus();
 };
 
 const closeListDetail = () => {
@@ -1097,6 +1164,40 @@ const loadTasksForList = async (listId) => {
     }
 };
 
+const deleteTaskFromList = async (
+    event,
+    taskId,
+    listId
+) => {
+    event.stopPropagation();
+
+    try {
+        const response =
+            await apiFetch(
+                `/tasks/${taskId}`,
+                {
+                    method: "DELETE"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                t("failedToDeleteTask")
+            );
+        }
+
+        await loadLists();
+        await openList(listId);
+
+    } catch (error) {
+        listsGrid.innerHTML = `
+            <p class="lists-error">
+                ${error.message}
+            </p>
+        `;
+    }
+};
+
 const toggleListSearch = () => {
     const searchView =
         document.getElementById("lists-search-view");
@@ -1143,6 +1244,7 @@ const renderCreateListForm = () => {
 
     selectedListColor = DEFAULT_LIST_COLOR;
     selectedListIcon = "clipboard";
+    pendingListTasks = [];
 
     listsGrid.innerHTML = `
         <section class="list-form-card">
@@ -1151,6 +1253,12 @@ const renderCreateListForm = () => {
 
             <label for="list-name">${t("name")}</label>
             <input id="list-name" class="list-input" type="text">
+            
+            <label>${t("tasks")}</label>
+<div
+    id="pending-list-tasks"
+    class="pending-list-tasks"
+></div>
 
             <label>${t("color")}</label>
 
@@ -1247,6 +1355,7 @@ const renderCreateListForm = () => {
 
         </section>
     `;
+    renderPendingListTasks();
 };
 
 const cancelCreateList = () => {
@@ -1262,6 +1371,84 @@ const cancelCreateList = () => {
     }
 
     renderLists(currentLists);
+};
+
+const addPendingListTask = () => {
+    const input =
+        document.getElementById("pending-list-task-input");
+
+    const title =
+        input.value.trim();
+
+    if (!title) {
+        return;
+    }
+
+    pendingListTasks.push(title);
+
+    renderPendingListTasks();
+};
+
+const removePendingListTask = (index) => {
+    pendingListTasks.splice(index, 1);
+
+    renderPendingListTasks();
+};
+
+const renderPendingListTasks = () => {
+    const container =
+        document.getElementById("pending-list-tasks");
+
+    if (!container) {
+        return;
+    }
+
+    container.innerHTML = `
+        ${
+        pendingListTasks
+            .map((title, index) => `
+                    <div class="pending-list-task-row">
+                        
+                        <span class="pending-list-task-title">
+                            ${title}
+                        </span>
+
+                        <button
+                            type="button"
+                            class="pending-list-task-remove"
+                            onclick="removePendingListTask(${index})"
+                        >
+                            ×
+                        </button>
+                    </div>
+                `)
+            .join("")
+    }
+
+        <div class="pending-list-task-add-row">
+            
+            <input
+                id="pending-list-task-input"
+                class="pending-list-task-input"
+                type="text"
+                placeholder="${t("addTask")}"
+                onkeydown="
+                    if (event.key === 'Enter') {
+                        event.preventDefault();
+                        addPendingListTask();
+                    }
+                "
+            >
+
+            <button
+                type="button"
+                class="pending-list-task-add"
+                onclick="addPendingListTask()"
+            >
+                +
+            </button>
+        </div>
+    `;
 };
 
 const renderEditListForm = (event, listId) => {
@@ -1609,7 +1796,60 @@ const createList = async () => {
         listData.intervalValue = intervalValue;
     }
 
-    await sendListRequest("/lists", "POST", listData);
+    try {
+        const response = await apiFetch("/lists", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(listData)
+        });
+
+        if (!response.ok) {
+            throw new Error(t("failedToSaveList"));
+        }
+
+        const createdList =
+            await response.json();
+
+        for (const title of pendingListTasks) {
+            const taskResponse = await apiFetch(
+                `/lists/${createdList.id}/tasks`,
+                {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({
+                        title
+                    })
+                }
+            );
+
+            if (!taskResponse.ok) {
+                throw new Error(t("failedToCreateTask"));
+            }
+        }
+
+        await loadLists();
+
+        const params =
+            new URLSearchParams(window.location.search);
+
+        const quickAdd =
+            params.get("quickAdd");
+
+        const returnTo =
+            params.get("returnTo");
+
+        if (quickAdd === "true" && returnTo) {
+            window.location.href = returnTo;
+        }
+
+    } catch (error) {
+        document.getElementById("list-message").textContent =
+            error.message;
+    }
 };
 
 const createTaskInList = async (listId) => {
