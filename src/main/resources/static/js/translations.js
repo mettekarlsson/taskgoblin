@@ -153,7 +153,7 @@ const translations = {
         tasksCount: "tasks",
         recurringTask: "Recurring task",
         recurringTaskNeedsDueDate:
-            "A recurring task needs a due date.",
+            "Choose a date when the recurring task should first be completed.",
 
         addMoreDetails: "Add more details",
         lessDetails: "Less details",
@@ -264,7 +264,7 @@ const translations = {
         overdue: "Försenade",
         dayOverdue: "dag försenad",
         daysOverdue: "dagar försenad",
-        dueDate: "Slutdatum",
+        dueDate: "Ska slutföras",
         noDueDate: "Inget slutdatum",
 
 
@@ -320,7 +320,7 @@ const translations = {
         addTask: "Lägg till uppgift",
         add: "Lägg till",
         updateTask: "Uppdatera uppgift",
-        taskTitleRequired: "Uppgiftens titel krävs",
+        taskTitleRequired: "Uppgiften behöver en titel",
         failedToCreateTask: "Kunde inte skapa uppgift",
         taskTitleCannotBeEmpty: "Uppgiftens titel får inte vara tom",
         failedToUpdateTask: "Kunde inte uppdatera uppgiften",
@@ -352,7 +352,7 @@ const translations = {
         tasksCount: "uppgifter",
         recurringTask: "Återkommande uppgift",
         recurringTaskNeedsDueDate:
-            "En återkommande uppgift behöver ett förfallodatum.",
+            "Välj datum när den återkommande uppgiften ska slutföras första gången.",
 
         addMoreDetails: "Visa fler detaljer",
         lessDetails: "Färre detaljer",

@@ -641,16 +641,20 @@ const createTask = async () => {
 
     if (!title) {
 
-        alert(t("taskTitleRequired"));
+        document
+            .getElementById("task-message")
+            .textContent =
+            t("taskTitleRequired");
 
         return;
     }
 
     if (isRecurring && !dueAt) {
 
-        alert(
-            t("recurringTaskNeedsDueDate")
-        );
+        document
+            .getElementById("task-message")
+            .textContent =
+            t("recurringTaskNeedsDueDate");
 
         return;
     }
@@ -703,7 +707,10 @@ const createTask = async () => {
 
     } catch (error) {
 
-        alert(error.message);
+        document
+            .getElementById("task-message")
+            .textContent =
+            error.message;
 
     }
 };
@@ -1499,7 +1506,10 @@ const renderCreateTaskForm = () => {
             
             <div id="task-extra-fields"></div>
 
-            <p id="task-message"></p>
+            <p
+    id="task-message"
+    class="task-message"
+></p>
 
             <div class="task-form-actions">
 
