@@ -182,6 +182,9 @@ const renderLists = async (lists, searchQuery = "") => {
 
             const tasks = await loadTasksForList(list.id);
 
+            const completedTasks =
+                tasks.filter(task => task.status === "DONE").length;
+
             const listIcon =
                 getListIconEmoji(list.icon);
 
@@ -301,8 +304,8 @@ ${
             }
             
                 <span>
-            ${tasks.length} ${t("tasksCount")}
-        </span>
+    ${completedTasks}/${tasks.length} ${t("tasksCount")}
+</span>
     </div>
     
     <div class="list-footer-actions">
