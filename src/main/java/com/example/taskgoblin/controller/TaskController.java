@@ -146,6 +146,25 @@ public class TaskController {
         return taskService.completeTask(id, userId);
     }
 
+    @PatchMapping("/{id}/undo-complete")
+    public TaskDTO undoLatestCompletion(
+            @PathVariable Long id,
+            @AuthenticationPrincipal UserDetails userDetails
+    ) {
+
+        Long userId =
+                userService
+                        .getUserByEmail(
+                                userDetails.getUsername()
+                        )
+                        .getId();
+
+        return taskService
+                .undoLatestCompletion(
+                        id,
+                        userId
+                );
+    }
 
     /*
  Reopens a completed task.

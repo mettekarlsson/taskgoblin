@@ -11,6 +11,7 @@ import com.example.taskgoblin.repository.CategoryRepository;
 import com.example.taskgoblin.repository.TaskListRepository;
 import com.example.taskgoblin.repository.TaskRepository;
 import com.example.taskgoblin.repository.UserRepository;
+import com.example.taskgoblin.repository.CompletionHistoryRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +25,7 @@ public class TaskService {
     private final UserRepository userRepository;
     private final CategoryRepository categoryRepository;
     private final TaskListRepository taskListRepository;
+    private final CompletionHistoryRepository completionHistoryRepository;
     private final TaskMapper taskMapper;
     private final TaskListService taskListService;
 
@@ -33,6 +35,7 @@ public class TaskService {
             UserRepository userRepository,
             CategoryRepository categoryRepository,
             TaskListRepository taskListRepository,
+            CompletionHistoryRepository completionHistoryRepository,
             TaskMapper taskMapper,
             TaskListService taskListService
     ) {
@@ -40,6 +43,7 @@ public class TaskService {
         this.userRepository = userRepository;
         this.categoryRepository = categoryRepository;
         this.taskListRepository = taskListRepository;
+        this.completionHistoryRepository = completionHistoryRepository;
         this.taskMapper = taskMapper;
         this.taskListService = taskListService;
     }
@@ -104,6 +108,7 @@ public class TaskService {
 
         // Convert task entities into DTOs.
         return tasks.stream()
+                .map(this::activateNextOccurrenceIfDue)
                 .map(taskMapper::mapToTaskDto)
                 .toList();
     }
@@ -123,6 +128,7 @@ public class TaskService {
         List<Task> tasks = taskRepository.findByListId(listId);
 
         return tasks.stream()
+                .map(this::activateNextOccurrenceIfDue)
                 .map(taskMapper::mapToTaskDto)
                 .toList();
     }
@@ -223,22 +229,23 @@ public class TaskService {
         LocalDateTime now =
                 LocalDateTime.now();
 
+        LocalDateTime previousDueAt =
+                task.getDueAt();
+
         // Handle recurring tasks differently
         if (task.isRecurring()) {
 
-            // Store latest completion timestamp
+            // Mark current occurrence as completed
+            task.setStatus(TaskStatus.DONE);
+
+            // Store completion timestamps
+            task.setCompletedAt(now);
             task.setLastCompletedAt(now);
 
             // Move task to next occurrence
             task.setDueAt(
                     calculateNextDueAt(task)
             );
-
-            // Keep recurring task active
-            task.setStatus(TaskStatus.TODO);
-
-            // Recurring tasks are never permanently completed
-            task.setCompletedAt(null);
 
         } else {
 
@@ -256,6 +263,16 @@ public class TaskService {
         // Save updated task
         Task updatedTask =
                 taskRepository.save(task);
+
+    CompletionHistory history =
+            new CompletionHistory();
+
+history.setUser(task.getUser());
+history.setTask(task);
+history.setCompletedAt(now);
+history.setPreviousDueAt(previousDueAt);
+
+completionHistoryRepository.save(history);
 
         if (updatedTask.getList() != null
                 && updatedTask.getStatus() == TaskStatus.DONE) {
@@ -304,7 +321,84 @@ public class TaskService {
                 .mapToTaskDto(updatedTask);
     }
 
+    @Transactional
+    public TaskDTO undoLatestCompletion(
+            Long taskId,
+            Long userId
+    ) {
 
+        // Find task and verify ownership
+        Task task =
+                getTaskByIdAndUserId(
+                        taskId,
+                        userId
+                );
+
+        // This undo is only for recurring tasks
+        if (!task.isRecurring()) {
+            throw new InvalidRecurringTaskException(
+                    "Only recurring tasks can undo latest completion."
+            );
+        }
+
+        // Find latest completion history entry
+        CompletionHistory latestCompletion =
+                completionHistoryRepository
+                        .findFirstByTaskIdAndUserIdOrderByCompletedAtDesc(
+                                taskId,
+                                userId
+                        )
+                        .orElseThrow(() ->
+                                new ResourceNotFoundException(
+                                        "Task completion history"
+                                ));
+
+        // Restore due date from before completion
+        task.setDueAt(
+                latestCompletion.getPreviousDueAt()
+        );
+
+        // Remove completion that is being undone
+        completionHistoryRepository.delete(
+                latestCompletion
+        );
+
+        /*
+         * Find the completion before the one we just removed.
+         * If none exists, lastCompletedAt becomes null.
+         */
+        LocalDateTime previousCompletedAt =
+                completionHistoryRepository
+                        .findFirstByTaskIdAndUserIdOrderByCompletedAtDesc(
+                                taskId,
+                                userId
+                        )
+                        .map(
+                                CompletionHistory::getCompletedAt
+                        )
+                        .orElse(null);
+
+        task.setLastCompletedAt(
+                previousCompletedAt
+        );
+
+        // Make task active again
+        task.setStatus(TaskStatus.TODO);
+
+        // Current completion has been undone
+        task.setCompletedAt(null);
+
+        // Update system timestamp
+        task.setUpdatedAt(
+                LocalDateTime.now()
+        );
+
+        Task updatedTask =
+                taskRepository.save(task);
+
+        return taskMapper
+                .mapToTaskDto(updatedTask);
+    }
 
     // Reopens a completed non-recurring task
     public TaskDTO reopenTask(Long taskId, Long userId) {
@@ -546,5 +640,37 @@ public class TaskService {
         }
     }
 
-}
+private Task activateNextOccurrenceIfDue(
+        Task task
+) {
 
+    // Only applies to completed recurring tasks
+    if (!task.isRecurring()
+            || task.getStatus() != TaskStatus.DONE
+            || task.getDueAt() == null) {
+
+        return task;
+    }
+
+    LocalDateTime now =
+            LocalDateTime.now();
+
+    // Next occurrence has not started yet
+    if (task.getDueAt().isAfter(now)) {
+        return task;
+    }
+
+    // Make recurring task active again
+    task.setStatus(TaskStatus.TODO);
+
+    // Current completed occurrence is over
+    task.setCompletedAt(null);
+
+    /*
+     * Keep lastCompletedAt.
+     * It tells us when the previous occurrence was completed.
+     */
+
+    return taskRepository.save(task);
+}
+}

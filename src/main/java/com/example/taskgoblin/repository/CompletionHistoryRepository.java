@@ -16,4 +16,10 @@ public interface CompletionHistoryRepository
             Long listId,
             Long userId
     );
+
+    Optional<CompletionHistory>
+    findFirstByTaskIdAndUserIdOrderByCompletedAtDesc(
+            Long taskId,
+            Long userId
+    );
 }
