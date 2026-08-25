@@ -2,11 +2,13 @@ const renderMenu = () => {
 
     document.getElementById("app-header").innerHTML = `
 
-        <img
-                src="/images/logo.png"
-                alt="TaskGoblin logo"
-                class="app-logo"
-        />
+        <a href="/index.html" class="app-logo-link">
+    <img
+        src="/images/logo.png"
+        alt="TaskGoblin logo"
+        class="app-logo"
+    />
+</a>
 
         <button class="hamburger-btn" id="menu-btn">
             <span></span>
