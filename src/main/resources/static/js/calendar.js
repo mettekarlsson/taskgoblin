@@ -4,6 +4,21 @@ let currentEvents = [];
 let selectedEventId = null;
 let editingEventId = null;
 
+// Reads the backend's error body ({ status, message } - the ErrorResponse
+// shape from GlobalExceptionHandler) when a request fails, falling back to
+// a generic message if the body isn't JSON or doesn't have that shape.
+// Used everywhere a request can fail, so the user sees the real reason
+// instead of a generic "something went wrong".
+const getErrorMessage = async (response, fallbackMessage) => {
+
+    try {
+        const error = await response.json();
+        return error.message || fallbackMessage;
+    } catch (e) {
+        return fallbackMessage;
+    }
+};
+
 /* -------------------------------- */
 /* View switching (Month / List)    */
 /* -------------------------------- */
@@ -186,7 +201,7 @@ const updateEventList = async () => {
                 );
 
             if (!response.ok) {
-                throw new Error("Failed to search events");
+                throw new Error(await getErrorMessage(response, "Failed to search events"));
             }
 
             events = await response.json();
@@ -213,7 +228,7 @@ const updateEventList = async () => {
                 );
 
             if (!response.ok) {
-                throw new Error("Failed to load events");
+                throw new Error(await getErrorMessage(response, "Failed to load events"));
             }
 
             events = await response.json();
@@ -444,7 +459,7 @@ const loadEvents = async () => {
             );
 
         if (!response.ok) {
-            throw new Error("Failed to load events");
+            throw new Error(await getErrorMessage(response, "Failed to load events"));
         }
 
         currentEvents =
@@ -968,7 +983,7 @@ const openEventDetail = async (id, occurrenceStartTime, occurrenceEndTime) => {
 
         if (!response.ok) {
             throw new Error(
-                "Failed to load event"
+                await getErrorMessage(response, "Failed to load event")
             );
         }
 
@@ -1816,25 +1831,8 @@ const submitCreateEvent = async () => {
 
 
         if (!response.ok) {
-
-            let errorMessage =
-                "Failed to create event";
-
-            try {
-
-                const error =
-                    await response.json();
-
-                errorMessage =
-                    error.message ||
-                    errorMessage;
-
-            } catch (e) {
-                // Ignore JSON parsing error
-            }
-
             throw new Error(
-                errorMessage
+                await getErrorMessage(response, "Failed to create event")
             );
         }
 
@@ -2017,7 +2015,7 @@ const updateEvent = async () => {
         if (!response.ok) {
 
             throw new Error(
-                "Failed to update event"
+                await getErrorMessage(response, "Failed to update event")
             );
         }
 
@@ -2175,7 +2173,7 @@ const initPage = async () => {
                     );
 
                 if (!response.ok) {
-                    throw new Error("Failed to delete event");
+                    throw new Error(await getErrorMessage(response, "Failed to delete event"));
                 }
 
                 closeEventDetail();
