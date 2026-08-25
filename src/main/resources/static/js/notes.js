@@ -441,9 +441,10 @@ const renderCreateNoteForm = () => {
         ${t("save")}
     </button>
 
-<button class="note-cancel-btn" onclick="history.back()">
+<button class="note-cancel-btn" onclick="cancelCreateNote()">
     ${t("cancel")}
 </button>
+
 </div>
 
         </section>
@@ -539,6 +540,20 @@ const createNote = async () => {
         content,
         color
     });
+};
+
+const cancelCreateNote = () => {
+    const params = new URLSearchParams(window.location.search);
+
+    const quickAdd = params.get("quickAdd");
+    const returnTo = params.get("returnTo");
+
+    if (quickAdd === "true" && returnTo) {
+        window.location.href = returnTo;
+        return;
+    }
+
+    renderNotes(currentNotes);
 };
 
 const updateNote = async (noteId) => {
