@@ -118,13 +118,15 @@ const translations = {
         status: "Status",
         priority: "Priority",
 
-        addTask: "+ Add task",
+        addTask: "Add task",
         add: "Add",
         updateTask: "Update task",
         taskTitleRequired: "Task title is required",
         failedToCreateTask: "Failed to create task",
         taskTitleCannotBeEmpty: "Task title cannot be empty",
         failedToUpdateTask: "Failed to update task",
+        cannotEditOverdueTask:
+            "A task with a past due date cannot be edited.",
 
         none: "None",
         low: "Low",
@@ -144,14 +146,13 @@ const translations = {
         all: "All",
         upcoming: "Upcoming",
         completed: "Completed",
-        newTask: "+ New task",
         searchTasks: "Search tasks...",
 
         task: "Task",
         tasksCount: "tasks",
         recurringTask: "Recurring task",
         recurringTaskNeedsDueDate:
-            "A recurring task needs a due date.",
+            "Choose a date when the recurring task should first be completed.",
 
         addMoreDetails: "Add more details",
         lessDetails: "Less details",
@@ -170,7 +171,7 @@ const translations = {
 
         completeList: "Complete list",
         undoCompletion: "Undo completion",
-        failedToUndoListCompletion: "Failed to undo list completion",
+        failedToUndoCompletion: "Failed to undo list completion",
         nextOccurrence: "Recurs",
         done: "Done",
 
@@ -262,7 +263,7 @@ const translations = {
         overdue: "Försenade",
         dayOverdue: "dag försenad",
         daysOverdue: "dagar försenad",
-        dueDate: "Slutdatum",
+        dueDate: "Ska slutföras",
         noDueDate: "Inget slutdatum",
 
 
@@ -315,13 +316,15 @@ const translations = {
         status: "Status",
         priority: "Prioritet",
 
-        addTask: "Lägg till uppgift",
+        addTask: "Ny uppgift",
         add: "Lägg till",
         updateTask: "Uppdatera uppgift",
-        taskTitleRequired: "Uppgiftens titel krävs",
+        taskTitleRequired: "Uppgiften behöver en titel",
         failedToCreateTask: "Kunde inte skapa uppgift",
         taskTitleCannotBeEmpty: "Uppgiftens titel får inte vara tom",
         failedToUpdateTask: "Kunde inte uppdatera uppgiften",
+        cannotEditOverdueTask:
+            "En uppgift med ett passerat förfallodatum kan inte redigeras.",
 
         none: "Ingen",
         low: "Låg",
@@ -329,7 +332,7 @@ const translations = {
         high: "Hög",
 
         completeTask: "Slutför uppgift",
-        lastCompleted: "Senast gjord",
+        lastCompleted: "Senast utförd",
         complete: "Klar",
         reopen: "Återöppna",
 
@@ -341,14 +344,13 @@ const translations = {
         all: "Alla",
         upcoming: "Kommande",
         completed: "Genomförda",
-        newTask: "+ Ny uppgift",
         searchTasks: "Sök uppgifter...",
 
         task: "Uppgift",
         tasksCount: "uppgifter",
         recurringTask: "Återkommande uppgift",
         recurringTaskNeedsDueDate:
-            "En återkommande uppgift behöver ett förfallodatum.",
+            "Välj datum när den återkommande uppgiften ska slutföras första gången.",
 
         addMoreDetails: "Visa fler detaljer",
         lessDetails: "Färre detaljer",
@@ -367,12 +369,12 @@ const translations = {
 
         completeList: "Slutför lista",
         undoCompletion: "Ångra slutförande",
-        failedToUndoListCompletion: "Kunde inte ångra slutförandet",
+        failedToUndoCompletion: "Kunde inte ångra slutförandet",
         nextOccurrence: "Återkommer",
         done: "Färdig",
 
         listNameCannotBeEmpty: "Listans namn får inte vara tomt",
-        recurringListNeedsDueDate: "Återkommande listor behöver ett förfallodatum",
+        recurringListNeedsDueDate: "Välj datum när den återkommande listan ska slutföras första gången",
 
         deleteListTitle: "Ta bort lista?",
         deleteListMessage: "Den här åtgärden kan inte ångras.",

@@ -972,7 +972,7 @@ const undoListCompletion = async (listId) => {
         );
 
         if (!response.ok) {
-            throw new Error(t("failedToUndoListCompletion"));
+            throw new Error(t("failedToUndoCompletion"));
         }
 
         await loadLists();
@@ -997,7 +997,7 @@ const reopenList = async (listId) => {
         );
 
         if (!response.ok) {
-            throw new Error(t("failedToUndoListCompletion"));
+            throw new Error(t("failedToUndoCompletion"));
         }
 
         await loadLists();
@@ -1031,7 +1031,7 @@ const undoListCompletionFromOverview = async (event, listId) => {
         );
 
         if (!response.ok) {
-            throw new Error(t("failedToUndoListCompletion"));
+            throw new Error(t("failedToUndoCompletion"));
         }
 
         await loadLists();
@@ -1057,7 +1057,7 @@ const reopenListFromOverview = async (event, listId) => {
         );
 
         if (!response.ok) {
-            throw new Error(t("failedToUndoListCompletion"));
+            throw new Error(t("failedToUndoCompletion"));
         }
 
         await loadLists();
