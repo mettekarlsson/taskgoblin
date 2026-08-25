@@ -455,6 +455,8 @@ const renderEditNoteForm = (event, noteId) => {
         event.stopPropagation();
     }
 
+    document.querySelector(".notes-header").style.display = "none";
+
     const note = currentNotes.find(note => note.id === noteId);
 
     selectedColor = note.color || DEFAULT_NOTE_COLOR;
