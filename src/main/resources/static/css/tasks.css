@@ -662,6 +662,12 @@
     font-weight: 600;
 }
 
+.task-message {
+    color: darkred;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
 
 /* ---------------- */
 /*      Mobile      */

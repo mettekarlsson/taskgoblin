@@ -909,7 +909,10 @@ const openUpdateTaskModal = (taskId) => {
 
             <div id="task-extra-fields"></div>
 
-            <p id="task-message"></p>
+            <p
+    id="task-message"
+    class="task-message"
+></p>
 
             <div class="task-form-actions">
 
@@ -1180,6 +1183,49 @@ const updateTask = async (taskId) => {
                 ?? existingTask.intervalValue
             )
             : null;
+
+    const existingDueDate =
+        existingTask.dueAt
+            ? existingTask.dueAt.split("T")[0]
+            : null;
+
+    const newDueDate =
+        dueAt
+            ? dueAt.split("T")[0]
+            : null;
+
+    const dueDateChanged =
+        newDueDate !== existingDueDate;
+
+    const taskWasOverdue =
+        isTaskOverdue(existingTask);
+
+    const changedSomethingOtherThanDueDate =
+        title !== existingTask.title
+        ||
+        priority !== (existingTask.priority || "NONE")
+        ||
+        isRecurring !== existingTask.isRecurring
+        ||
+        frequency !== existingTask.frequency
+        ||
+        intervalValue !== existingTask.intervalValue;
+
+    if (
+        taskWasOverdue
+        &&
+        changedSomethingOtherThanDueDate
+        &&
+        !dueDateChanged
+    ) {
+
+        document
+            .getElementById("task-message")
+            .textContent =
+            t("cannotEditOverdueTask");
+
+        return;
+    }
 
     if (!title) {
 

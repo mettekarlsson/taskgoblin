@@ -125,6 +125,8 @@ const translations = {
         failedToCreateTask: "Failed to create task",
         taskTitleCannotBeEmpty: "Task title cannot be empty",
         failedToUpdateTask: "Failed to update task",
+        cannotEditOverdueTask:
+            "A task with a past due date cannot be edited.",
 
         none: "None",
         low: "Low",
@@ -322,6 +324,8 @@ const translations = {
         failedToCreateTask: "Kunde inte skapa uppgift",
         taskTitleCannotBeEmpty: "Uppgiftens titel får inte vara tom",
         failedToUpdateTask: "Kunde inte uppdatera uppgiften",
+        cannotEditOverdueTask:
+            "En uppgift med ett passerat förfallodatum kan inte redigeras.",
 
         none: "Ingen",
         low: "Låg",
