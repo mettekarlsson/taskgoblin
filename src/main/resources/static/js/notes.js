@@ -419,9 +419,9 @@ const renderCreateNoteForm = () => {
         ${t("save")}
     </button>
 
-    <button class="note-cancel-btn" onclick="renderNotes(currentNotes)">
-        ${t("cancel")}
-    </button>
+<button class="note-cancel-btn" onclick="history.back()">
+    ${t("cancel")}
+</button>
 </div>
 
         </section>
