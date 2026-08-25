@@ -118,7 +118,7 @@ const translations = {
         status: "Status",
         priority: "Priority",
 
-        addTask: "+ Add task",
+        addTask: "Add task",
         add: "Add",
         updateTask: "Update task",
         taskTitleRequired: "Task title is required",
@@ -146,7 +146,6 @@ const translations = {
         all: "All",
         upcoming: "Upcoming",
         completed: "Completed",
-        newTask: "+ New task",
         searchTasks: "Search tasks...",
 
         task: "Task",
@@ -317,7 +316,7 @@ const translations = {
         status: "Status",
         priority: "Prioritet",
 
-        addTask: "Lägg till uppgift",
+        addTask: "Ny uppgift",
         add: "Lägg till",
         updateTask: "Uppdatera uppgift",
         taskTitleRequired: "Uppgiften behöver en titel",
@@ -345,7 +344,6 @@ const translations = {
         all: "Alla",
         upcoming: "Kommande",
         completed: "Genomförda",
-        newTask: "+ Ny uppgift",
         searchTasks: "Sök uppgifter...",
 
         task: "Uppgift",
