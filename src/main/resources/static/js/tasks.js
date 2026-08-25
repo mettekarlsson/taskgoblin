@@ -1466,7 +1466,7 @@ const renderCreateTaskForm = () => {
 
                 <button
                     class="task-cancel-btn"
-                    onclick="loadTasks()"
+                    onclick="cancelCreateTask()"
                 >
                     ${t("cancel")}
                 </button>
@@ -1476,6 +1476,22 @@ const renderCreateTaskForm = () => {
         </section>
 
     `;
+};
+
+const cancelCreateTask = () => {
+
+    const params =
+        new URLSearchParams(window.location.search);
+
+    const returnTo =
+        params.get("returnTo");
+
+    if (returnTo) {
+        window.location.href = returnTo;
+        return;
+    }
+
+    loadTasks();
 };
 
 
