@@ -171,7 +171,7 @@ const translations = {
 
         completeList: "Complete list",
         undoCompletion: "Undo completion",
-        failedToUndoListCompletion: "Failed to undo list completion",
+        failedToUndoCompletion: "Failed to undo list completion",
         nextOccurrence: "Recurs",
         done: "Done",
 
@@ -369,7 +369,7 @@ const translations = {
 
         completeList: "Slutför lista",
         undoCompletion: "Ångra slutförande",
-        failedToUndoListCompletion: "Kunde inte ångra slutförandet",
+        failedToUndoCompletion: "Kunde inte ångra slutförandet",
         nextOccurrence: "Återkommer",
         done: "Färdig",
 

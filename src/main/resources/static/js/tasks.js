@@ -372,7 +372,11 @@ const renderTasks = (tasks = currentTasks) => {
                     data-task-id="${task.id}"
                     onclick="
                         ${task.status === "DONE"
-            ? `reopenTask(${task.id})`
+            ? (
+                task.isRecurring
+                    ? `undoTaskCompletion(${task.id})`
+                    : `reopenTask(${task.id})`
+            )
             : `completeTask(${task.id})`}
                     "
                 >
@@ -404,23 +408,31 @@ const renderTasks = (tasks = currentTasks) => {
             <div class="task-row-footer">
 
                 ${
-            overdueDays > 0
+            task.status === "DONE"
+            && task.isRecurring
+            && task.dueAt
                 ? `
-            <div class="task-overdue">
-                ⚠ ${overdueDays} ${
-                    overdueDays === 1
-                        ? t("dayOverdue")
-                        : t("daysOverdue")
-                }
+            <div class="task-next-occurrence">
+                ${t("nextOccurrence")} ${formatDate(task.dueAt)}
             </div>
         `
-                : task.dueAt
+                : overdueDays > 0
                     ? `
-        <p class="task-row-date">
-            ${formatDate(task.dueAt)}
-        </p>
-    `
-                    : ""
+                <div class="task-overdue">
+                    ⚠ ${overdueDays} ${
+                        overdueDays === 1
+                            ? t("dayOverdue")
+                            : t("daysOverdue")
+                    }
+                </div>
+            `
+                    : task.dueAt
+                        ? `
+                    <p class="task-row-date">
+                        ${formatDate(task.dueAt)}
+                    </p>
+                `
+                        : ""
         }
 
                 <div class="task-row-footer-right">
@@ -768,57 +780,15 @@ const createTask = async () => {
 // Marks a task as completed.
 const completeTask = async (taskId) => {
 
-    const task =
-        currentTasks.find(
-            task => task.id === taskId
-        );
-
-    const button =
-        document.querySelector(
-            `.task-status-btn[data-task-id="${taskId}"]`
-        );
-
-    const icon =
-        button?.querySelector(
-            ".task-status-icon"
-        );
-
-    const isRecurring =
-        task?.isRecurring;
-
-    if (
-        isRecurring &&
-        button &&
-        icon
-    ) {
-        button.classList.add(
-            "recurring-completing"
-        );
-
-        button.disabled = true;
-
-        icon.textContent = "↻";
-    }
-
     try {
 
-        const request =
-            apiFetch(`/tasks/${taskId}/complete`, {
-                method: "PATCH"
-            });
-
-        const minimumAnimation =
-            isRecurring
-                ? new Promise(resolve =>
-                    setTimeout(resolve, 700)
-                )
-                : Promise.resolve();
-
-        const [response] =
-            await Promise.all([
-                request,
-                minimumAnimation
-            ]);
+        const response =
+            await apiFetch(
+                `/tasks/${taskId}/complete`,
+                {
+                    method: "PATCH"
+                }
+            );
 
         if (!response.ok) {
             throw new Error(
@@ -830,23 +800,38 @@ const completeTask = async (taskId) => {
 
     } catch (error) {
 
-        if (
-            isRecurring &&
-            button &&
-            icon
-        ) {
-            button.classList.remove(
-                "recurring-completing"
-            );
-
-            button.disabled = false;
-
-            icon.textContent = "";
-        }
-
         alert(error.message);
+
     }
 };
+
+const undoTaskCompletion = async (taskId) => {
+
+    try {
+
+        const response =
+            await apiFetch(
+                `/tasks/${taskId}/undo-complete`,
+                {
+                    method: "PATCH"
+                }
+            );
+
+        if (!response.ok) {
+            throw new Error(
+                t("failedToUndoCompletion")
+            );
+        }
+
+        await loadTasks();
+
+    } catch (error) {
+
+        alert(error.message);
+
+    }
+};
+
 // Reopens a completed task.
 const reopenTask = async (taskId) => {
 

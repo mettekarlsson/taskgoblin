@@ -244,7 +244,7 @@ public class TaskService {
 
             // Move task to next occurrence
             task.setDueAt(
-                    calculateNextDueAt(task)
+                    calculateNextDueAt(task, now)
             );
 
         } else {
@@ -583,43 +583,32 @@ completionHistoryRepository.save(history);
     and interval settings.
     */
     private LocalDateTime calculateNextDueAt(
-            Task task
+            Task task,
+            LocalDateTime completedAt
     ) {
 
-        // Start from current due date
-        LocalDateTime nextDueAt =
-                task.getDueAt();
+        return switch (task.getFrequency()) {
 
-        // Continue until next occurrence is in the future
-        do {
+            case DAILY ->
+                    completedAt.plusDays(
+                            task.getIntervalValue()
+                    );
 
-            nextDueAt =
-                    switch (task.getFrequency()) {
+            case WEEKLY ->
+                    completedAt.plusWeeks(
+                            task.getIntervalValue()
+                    );
 
-                        case DAILY ->
-                                nextDueAt.plusDays(
-                                        task.getIntervalValue()
-                                );
+            case MONTHLY ->
+                    completedAt.plusMonths(
+                            task.getIntervalValue()
+                    );
 
-                        case WEEKLY ->
-                                nextDueAt.plusWeeks(
-                                        task.getIntervalValue()
-                                );
-
-                        case MONTHLY ->
-                                nextDueAt.plusMonths(
-                                        task.getIntervalValue()
-                                );
-
-                        case YEARLY ->
-                                nextDueAt.plusYears(
-                                        task.getIntervalValue()
-                                );
-                    };
-
-        } while (!nextDueAt.isAfter(LocalDateTime.now()));
-
-        return nextDueAt;
+            case YEARLY ->
+                    completedAt.plusYears(
+                            task.getIntervalValue()
+                    );
+        };
     }
 
     /*

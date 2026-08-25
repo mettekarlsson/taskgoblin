@@ -344,6 +344,21 @@
     white-space: nowrap;
 }
 
+.task-next-occurrence {
+    width: fit-content;
+
+    padding: 3px 7px;
+    border-radius: 999px;
+
+    background: var(--primary-soft);
+    color: var(--primary);
+
+    font-size: 0.72rem;
+    font-weight: 600;
+
+    white-space: nowrap;
+}
+
 /* ---------------- */
 /*   Task checkbox  */
 /* ---------------- */
@@ -383,29 +398,6 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-}
-
-.task-status-btn.recurring-completing {
-    border-color: #6da34d;
-    background: #6da34d;
-    color: white;
-}
-
-.task-status-btn.recurring-completing
-.task-status-icon {
-    animation: task-recurring-spin 0.7s linear infinite;
-}
-.task-status-btn:disabled {
-    cursor: default;
-}
-@keyframes task-recurring-spin {
-    from {
-        transform: rotate(0deg);
-    }
-
-    to {
-        transform: rotate(360deg);
-    }
 }
 
 /* ---------------- */
