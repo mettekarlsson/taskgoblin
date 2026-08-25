@@ -12,8 +12,7 @@ const renderMenu = () => {
 
         <button class="hamburger-btn" id="menu-btn">
             <span></span>
-            <span></span>
-            <span></span>
+            <span></span>            
         </button>
 
         <aside class="sidebar-content" id="sidebar">
