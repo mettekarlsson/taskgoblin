@@ -332,7 +332,7 @@ const translations = {
         high: "Hög",
 
         completeTask: "Slutför uppgift",
-        lastCompleted: "Senast gjord",
+        lastCompleted: "Senast utförd",
         complete: "Klar",
         reopen: "Återöppna",
 
@@ -374,7 +374,7 @@ const translations = {
         done: "Färdig",
 
         listNameCannotBeEmpty: "Listans namn får inte vara tomt",
-        recurringListNeedsDueDate: "Återkommande listor behöver ett förfallodatum",
+        recurringListNeedsDueDate: "Välj datum när den återkommande listan ska slutföras första gången",
 
         deleteListTitle: "Ta bort lista?",
         deleteListMessage: "Den här åtgärden kan inte ångras.",

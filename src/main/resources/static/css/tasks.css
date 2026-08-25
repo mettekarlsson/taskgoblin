@@ -189,6 +189,8 @@
 .task-row {
     width: 100%;
 
+    padding: 12px 14px;
+
     border-bottom: 1px solid var(--border-soft);
 }
 
@@ -196,27 +198,121 @@
     border-bottom: none;
 }
 
-.task-row-content {
-    width: 100%;
+.task-row-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
 }
 
-.task-main-info {
-    width: 100%;
+.task-title-content {
+    flex: 1;
+    min-width: 0;
+
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
 }
 
-.task-row-top {
-    min-height: 58px;
+.task-row-title {
+    margin: 0;
 
+    color: var(--text);
+
+    font-size: 0.98rem;
+    font-weight: 600;
+
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.task-last-completed {
+    color: var(--text-muted);
+
+    font-size: 0.75rem;
+    font-weight: 400;
+}
+
+
+/* ---------------- */
+/*    Row footer    */
+/* ---------------- */
+
+.task-row-footer {
     display: flex;
     align-items: center;
     gap: 12px;
 
-    padding: 10px 14px;
+    margin-top: 5px;
+    margin-left: 30px;
 }
 
-.task-row.completed .task-row-title {
-    text-decoration: line-through;
-    opacity: 0.6;
+.task-row-date {
+    margin: 0;
+
+    color: var(--text-muted);
+
+    font-size: 0.82rem;
+
+    white-space: nowrap;
+}
+
+.task-row-footer-right {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+
+    margin-left: auto;
+}
+
+/* ---------------- */
+/*   Task actions   */
+/* ---------------- */
+
+.task-edit-btn,
+.task-delete-btn {
+    width: 26px;
+    height: 26px;
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    padding: 0;
+
+    border: none;
+    border-radius: 50%;
+
+    background: transparent;
+    color: var(--text-muted);
+
+    cursor: pointer;
+}
+
+.task-edit-btn:hover,
+.task-delete-btn:hover {
+    background: var(--hover-soft);
+}
+
+.task-edit-btn:hover {
+    color: var(--primary);
+}
+
+.task-delete-btn:hover {
+    color: var(--danger);
+}
+
+.task-edit-btn svg,
+.task-delete-btn svg {
+    width: 18px;
+    height: 18px;
+
+    stroke: currentColor;
+    stroke-width: 2;
+
+    stroke-linecap: round;
+    stroke-linejoin: round;
+
+    fill: none;
 }
 
 /* ---------------- */
@@ -312,12 +408,13 @@
 
     color: var(--text);
 
-    font-size: 0.98rem;
-    font-weight: 600;
+    font-size: 0.95rem;
+    font-weight: 500;
 
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
+    white-space: normal;
+    overflow: visible;
+    text-overflow: clip;
+    overflow-wrap: anywhere;
 }
 
 .task-status-btn.completed + .task-row-title {
@@ -338,18 +435,6 @@
     gap: 10px;
 
     flex-shrink: 0;
-}
-
-.task-row-date {
-    margin: 0;
-
-    min-width: 90px;
-
-    color: var(--text-muted);
-
-    font-size: 0.82rem;
-
-    text-align: right;
 }
 
 /* ---------------- */

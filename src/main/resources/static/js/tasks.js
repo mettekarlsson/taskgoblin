@@ -313,127 +313,96 @@ const renderTasks = (tasks = currentTasks) => {
             task.priority?.toLowerCase() || "none";
 
         return `
+        <div class="task-row ${task.status === "DONE" ? "completed" : ""}">
 
-            <div class="task-row ${task.status === "DONE" ? "completed" : ""}">
+            <div class="task-row-main">
 
-                <div class="task-row-content">
-
-                    <div class="task-main-info">
-
-                        <div class="task-row-top">
-
-    <div class="task-title-group">
-
-       <button
-    class="task-status-btn
-        ${task.status === "DONE"
-            ? "completed"
-            : ""}"
-    data-task-id="${task.id}"
-    onclick="
-        ${task.status === "DONE"
+                <button
+                    class="task-status-btn
+                        ${task.status === "DONE" ? "completed" : ""}"
+                    data-task-id="${task.id}"
+                    onclick="
+                        ${task.status === "DONE"
             ? `reopenTask(${task.id})`
             : `completeTask(${task.id})`}
-    "
->
-    <span class="task-status-icon">
-        ${task.status === "DONE"
-            ? "✓"
-            : ""}
-    </span>
-</button>
+                    "
+                >
+                    <span class="task-status-icon">
+                        ${task.status === "DONE" ? "✓" : ""}
+                    </span>
+                </button>
 
-        <div class="task-title-content">
+                <div class="task-title-content">
 
-    <h3 class="task-row-title">
-        ${task.title}
-    </h3>
+                    <h3 class="task-row-title">
+                        ${task.title}
+                    </h3>
 
-    ${
+                    ${
             task.isRecurring && task.lastCompletedAt
                 ? `
-                <span class="task-last-completed">
-                    ${t("lastCompleted")} ${formatDate(task.lastCompletedAt)}
-                </span>
-            `
+                                <span class="task-last-completed">
+                                    ${t("lastCompleted")} ${formatDate(task.lastCompletedAt)}
+                                </span>
+                            `
                 : ""
         }
-
-</div>
-
-    </div>
-
-                            <div class="task-row-meta">
-
-                                ${task.priority && task.priority !== "NONE"
-            ? `
-        <span class="priority-badge ${priorityClass}">
-            ${t(task.priority.toLowerCase())}
-        </span>
-    `
-            : ""
-        }
-
-                                <p class="task-row-date">
-                                    ${formatDate(task.dueAt)}
-                                </p>
-
-                            </div>
-
-                            <div class="task-header-actions">
-
-    <div class="task-menu-container">
-
-        <button
-            class="task-menu-btn"
-            onclick="
-                toggleTaskMenu(
-                    event,
-                    ${task.id}
-                )
-            "
-        >
-            ⋮
-        </button>
-
-        <div
-            class="task-action-menu"
-            id="task-menu-${task.id}"
-        >
-
-            <button
-                onclick="
-                    openUpdateTaskModal(${task.id})
-                "
-            >
-                ${t("update")}
-            </button>
-
-            <button
-    onclick="
-        openDeleteTaskModal(${task.id})
-    "
->
-    ${t("delete")}
-</button>
-
-        </div>
-
-    </div>
-
-</div>
-                        
-                    
-
-                    </div>
 
                 </div>
 
             </div>
-         </div>
 
-        `;
+            <div class="task-row-footer">
+
+                <p class="task-row-date">
+                    ${formatDate(task.dueAt)}
+                </p>
+
+                <div class="task-row-footer-right">
+
+                    ${
+            task.priority && task.priority !== "NONE"
+                ? `
+                                <span class="priority-badge ${priorityClass}">
+                                    ${t(task.priority.toLowerCase())}
+                                </span>
+                            `
+                : ""
+        }
+
+                    <button
+                        class="task-edit-btn"
+                        onclick="openUpdateTaskModal(${task.id})"
+                        aria-label="${t("updateTask")}"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 20H8L19 9L15 5L4 16V20Z" />
+                            <path d="M13.5 6.5L17.5 10.5" />
+                        </svg>
+                    </button>
+
+                    <button
+                        class="task-delete-btn"
+                        onclick="openDeleteTaskModal(${task.id})"
+                        aria-label="${t("deleteTask")}"
+                    >
+                        <svg viewBox="0 0 24 24" fill="none">
+                            <path d="M4 7H20" />
+                            <path d="M10 11V17" />
+                            <path d="M14 11V17" />
+                            <path d="M6 7L7 21H17L18 7" />
+                            <path d="M9 7V4H15V7" />
+                        </svg>
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    `;
     };
+
     const renderTaskSection = (
         title,
         tasks
@@ -1485,7 +1454,7 @@ const renderCreateTaskForm = () => {
 
         <section class="task-form-card">
 
-            <h2>${t("newTask")}</h2>
+            <h2>${t("addTask")}</h2>
 
             <label for="task-title">
                 ${t("task")}
