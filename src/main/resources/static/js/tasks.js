@@ -450,6 +450,18 @@ const renderTasks = (tasks = currentTasks) => {
         return;
     }
 
+    if (currentTaskFilter === "overdue") {
+
+        taskContent.innerHTML =
+            overdueTasks.length > 0
+                ? renderTaskSection(
+                    t("overdue"),
+                    overdueTasks
+                )
+                : renderEmptyTasks();
+
+        return;
+    }
 
     if (currentTaskFilter === "upcoming") {
 
