@@ -159,7 +159,7 @@ const translations = {
 
         // LISTS
         listsSubtitle: "Keep your routines and tasks organized.",
-        addList: "+ Add list",
+        addList: "Add list",
         editList: "Edit list",
         deleteList: "Delete list",
         searchLists: "Search lists...",
@@ -357,7 +357,7 @@ const translations = {
 
         // LISTS
         listsSubtitle: "Håll ordning på dina rutiner och uppgifter.",
-        addList: "+ Ny lista",
+        addList: "Ny lista",
         editList: "Redigera lista",
         deleteList: "Ta bort lista",
         searchLists: "Sök listor...",
