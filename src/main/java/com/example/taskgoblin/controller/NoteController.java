@@ -71,7 +71,7 @@ public class NoteController {
 
     // DELETE /notes/1
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteNote(
+    public ResponseEntity<Void> deleteNote(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {

@@ -100,7 +100,7 @@ public class CategoryController {
 
     // DELETE /categories/1
     @DeleteMapping("/{id}")
-    public ResponseEntity<String> deleteCategory(
+    public ResponseEntity<Void> deleteCategory(
             @PathVariable Long id,
             @AuthenticationPrincipal UserDetails userDetails
     ) {

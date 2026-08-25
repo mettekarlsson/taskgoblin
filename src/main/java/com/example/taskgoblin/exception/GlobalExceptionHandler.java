@@ -6,12 +6,20 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.MissingServletRequestParameterException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.stream.Collectors;
 
 @ControllerAdvice
 // Handles exceptions globally across the entire application.
 public class GlobalExceptionHandler {
+
+    // Used to log unexpected exceptions on the server, since we don't
+    // send their details back to the client (see handleGeneric below).
+    private static final Logger logger = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     @ExceptionHandler(ResourceNotFoundException.class)
     // Runs when a requested resource does not exist.
@@ -95,23 +103,29 @@ public class GlobalExceptionHandler {
 
 
     @ExceptionHandler(AlreadyCompletedException.class)
-    public ResponseEntity<String> handleAlreadyCompletedException(
+    public ResponseEntity<ErrorResponse> handleAlreadyCompletedException(
             AlreadyCompletedException ex
     ) {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+                .body(new ErrorResponse(
+                        HttpStatus.CONFLICT.value(),
+                        ex.getMessage()
+                ));
     }
 
     @ExceptionHandler(AlreadyOpenException.class)
-    public ResponseEntity<String> handleAlreadyOpenException(
+    public ResponseEntity<ErrorResponse> handleAlreadyOpenException(
             AlreadyOpenException ex
     ) {
 
         return ResponseEntity
                 .status(HttpStatus.CONFLICT)
-                .body(ex.getMessage());
+                .body(new ErrorResponse(
+                        HttpStatus.CONFLICT.value(),
+                        ex.getMessage()
+                ));
     }
 
     @ExceptionHandler(InvalidEventException.class)
@@ -126,4 +140,50 @@ public class GlobalExceptionHandler {
                 ));
     }
 
+    @ExceptionHandler(MissingServletRequestParameterException.class)
+    // Runs when a required @RequestParam is missing entirely.
+    // Example: GET /calendar without startDate.
+    public ResponseEntity<ErrorResponse> handleMissingParam(
+            MissingServletRequestParameterException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Missing required parameter: " + ex.getParameterName()
+                ));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    // Runs when a @RequestParam is present but can't be parsed into the
+    // expected type. Example: GET /calendar?startDate=igår
+    public ResponseEntity<ErrorResponse> handleTypeMismatch(
+            MethodArgumentTypeMismatchException ex
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(new ErrorResponse(
+                        HttpStatus.BAD_REQUEST.value(),
+                        "Invalid value for parameter: " + ex.getName()
+                ));
+    }
+
+    // Catch-all: runs only when none of the more specific handlers above match.
+    // Spring picks the closest matching handler by exception type automatically,
+    // so this doesn't "steal" exceptions meant for the handlers above it.
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ErrorResponse> handleGeneric(
+            Exception ex
+    ) {
+        // Log the real exception server-side for debugging...
+        logger.error("Unhandled exception", ex);
+
+        // ...but never expose its details (message, stacktrace) to the client.
+        return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body(new ErrorResponse(
+                        HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                        "Something went wrong"
+                ));
+    }
 }
