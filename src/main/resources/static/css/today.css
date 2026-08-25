@@ -135,25 +135,6 @@
     font-weight: 700;
 }
 
-.today-section-count {
-    min-width: 26px;
-    height: 26px;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    padding: 0 8px;
-
-    border-radius: 999px;
-
-    background: var(--neutral-soft);
-
-    color: var(--text-muted);
-
-    font-size: 0.75rem;
-    font-weight: 700;
-}
 
 
 /* =========================================================
