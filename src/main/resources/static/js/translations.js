@@ -93,6 +93,7 @@ const translations = {
         dangerZone: "Danger zone",
         deleteAccountText:
             "Delete your account and all associated data permanently.",
+        deleteAccountWarning: "This will permanently delete your account and all your data. This action cannot be undone.",
         deleteAccount: "Delete account",
 
         //TODAY
@@ -294,7 +295,9 @@ const translations = {
         dangerZone: "Riskzon",
         deleteAccountText:
             "Ta bort ditt konto och all tillhörande data permanent.",
-        deleteAccount: "Ta bort konto",
+        deleteAccountWarning:
+            "Detta kommer att radera ditt konto och all din data permanent. Åtgärden går inte att ångra.",
+        deleteAccount: "Radera konto",
 
         //TODAY
         todayOverview: "Dagsöversikt",
@@ -303,13 +306,13 @@ const translations = {
         notesSubtitle: "Snabba tankar och påminnelser.",
         newNote: "Ny anteckning",
         editNote: "Redigera anteckning",
-        deleteNote: "Ta bort anteckning",
+        deleteNote: "Radera anteckning",
         searchNotes: "Sök anteckningar...",
         noNotesYet: "Inga anteckningar ännu.",
         noNotesMatchSearch: "Inga anteckningar matchar sökningen.",
         contentCannotBeEmpty: "Innehåll får inte vara tomt.",
 
-        deleteNoteTitle: "Ta bort anteckning?",
+        deleteNoteTitle: "Radera anteckning?",
         deleteNoteMessage: "Den här åtgärden kan inte ångras.",
 
         currentSettings: "Nuvarande inställningar",
@@ -344,7 +347,7 @@ const translations = {
 
         deleteTaskTitle: "Radera uppgift?",
         deleteTaskMessage: "Den här åtgärden kan inte ångras.",
-        failedToDeleteTask: "Kunde inte ta bort uppgiften",
+        failedToDeleteTask: "Kunde inte radera uppgiften",
 
         taskSubtitle: "Håll koll på dina uppgifter.",
         all: "Alla",
@@ -365,7 +368,7 @@ const translations = {
         listsSubtitle: "Håll ordning på dina rutiner och uppgifter.",
         addList: "Ny lista",
         editList: "Redigera lista",
-        deleteList: "Ta bort lista",
+        deleteList: "Radera lista",
         searchLists: "Sök listor...",
         noListsYet: "Inga listor ännu.",
         noListsMatchSearch: "Inga listor matchar sökningen.",
@@ -382,14 +385,14 @@ const translations = {
         listNameCannotBeEmpty: "Listans namn får inte vara tomt",
         recurringListNeedsDueDate: "Välj datum när den återkommande listan ska slutföras första gången",
 
-        deleteListTitle: "Ta bort lista?",
+        deleteListTitle: "Radera lista?",
         deleteListMessage: "Den här åtgärden kan inte ångras.",
 
         failedToLoadLists: "Kunde inte ladda listor",
         failedToLoadList: "Kunde inte ladda listan",
         failedToSaveList: "Kunde inte spara listan",
         failedToUpdateList: "Kunde inte uppdatera listan",
-        failedToDeleteList: "Kunde inte ta bort listan",
+        failedToDeleteList: "Kunde inte radera listan",
         failedToCompleteList: "Kunde inte slutföra listan",
 
         quickAddTask: "Ny uppgift",

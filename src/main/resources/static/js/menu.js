@@ -240,6 +240,19 @@ const initializeMenu = () => {
     const closeBtn =
         document.getElementById("close-btn");
 
+    document.addEventListener("click", (event) => {
+
+        const clickedOutsideSidebar =
+            sidebar.classList.contains("open") &&
+            !sidebar.contains(event.target) &&
+            !menuBtn.contains(event.target);
+
+        if (clickedOutsideSidebar) {
+            sidebar.classList.remove("open");
+        }
+
+    });
+
     const sidebar =
         document.getElementById("sidebar");
 
