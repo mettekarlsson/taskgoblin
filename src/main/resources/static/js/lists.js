@@ -145,6 +145,7 @@ const loadLists = async () => {
 
 const renderLists = async (lists, searchQuery = "") => {
     document.querySelector(".lists-header").style.display = "flex";
+    document.querySelector(".list-filters").style.display = "flex";
 
     if (lists.length === 0) {
         listsGrid.innerHTML = `
@@ -492,6 +493,7 @@ const openList = async (listId) => {
 const renderSingleList = (list, tasks) => {
 
     document.querySelector(".lists-header").style.display = "none";
+    document.querySelector(".list-filters").style.display = "none";
 
     const listIcon =
         getListIconEmoji(list.icon);
@@ -1274,6 +1276,7 @@ const closeListSearch = () => {
 
 const renderCreateListForm = () => {
     document.querySelector(".lists-header").style.display = "none";
+    document.querySelector(".list-filters").style.display = "none";
 
     selectedListColor = DEFAULT_LIST_COLOR;
     selectedListIcon = "clipboard";
@@ -1497,6 +1500,8 @@ const renderEditListForm = (event, listId) => {
     }
 
     document.querySelector(".lists-header").style.display = "none";
+
+    document.querySelector(".list-filters").style.display = "none";
 
     selectedListColor =
         list.color || DEFAULT_LIST_COLOR;
