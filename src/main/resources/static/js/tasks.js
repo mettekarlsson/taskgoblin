@@ -107,6 +107,25 @@ const getStartOfTomorrow = () => {
     return tomorrow;
 };
 
+const sortTasksByDueDate = (tasks) => {
+
+    return [...tasks].sort((a, b) => {
+
+        if (!a.dueAt && !b.dueAt) {
+            return 0;
+        }
+
+        if (!a.dueAt) {
+            return 1;
+        }
+
+        if (!b.dueAt) {
+            return -1;
+        }
+
+        return new Date(a.dueAt) - new Date(b.dueAt);
+    });
+};
 
 const isTaskOverdue = (task) => {
 
@@ -412,21 +431,24 @@ const renderTasks = (tasks = currentTasks) => {
             return "";
         }
 
+        const sortedTasks =
+            sortTasksByDueDate(tasks);
+
         return `
-    <div class="task-section">
+        <div class="task-section">
 
-        <h2 class="task-section-title">
-            ${title}
-        </h2>
+            <h2 class="task-section-title">
+                ${title}
+            </h2>
 
-        <div class="task-section-list">
-            ${tasks
+            <div class="task-section-list">
+                ${sortedTasks
             .map(renderTaskRow)
             .join("")}
-        </div>
+            </div>
 
-    </div>
-`;
+        </div>
+    `;
     };
 
     const renderEmptyTasks = () => {
@@ -503,15 +525,15 @@ const renderTasks = (tasks = currentTasks) => {
         t("today"),
         todayTasks
     )}
+    
+    ${renderTaskSection(
+        t("noDueDate"),
+        noDueDateTasks
+    )}
 
         ${renderTaskSection(
         t("upcoming"),
         upcomingTasks
-    )}
-
-        ${renderTaskSection(
-        t("noDueDate"),
-        noDueDateTasks
     )}
 
         ${renderTaskSection(
