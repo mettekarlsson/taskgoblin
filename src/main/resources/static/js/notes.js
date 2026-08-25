@@ -345,19 +345,41 @@ const renderSingleNote = (note) => {
 
 
 const formatDetailDate = (dateString) => {
-
     if (!dateString) {
         return "";
     }
 
-    return new Date(dateString).toLocaleString("sv-SE", {
+    const date = new Date(dateString);
+    const today = new Date();
+
+    const dateOnly = new Date(
+        date.getFullYear(),
+        date.getMonth(),
+        date.getDate()
+    );
+
+    const todayOnly = new Date(
+        today.getFullYear(),
+        today.getMonth(),
+        today.getDate()
+    );
+
+    const diffInDays =
+        Math.round((todayOnly - dateOnly) / (1000 * 60 * 60 * 24));
+
+    if (diffInDays === 0) {
+        return t("today");
+    }
+
+    if (diffInDays === 1) {
+        return t("yesterday");
+    }
+
+    return date.toLocaleDateString("sv-SE", {
         year: "numeric",
         month: "short",
-        day: "numeric",
-        hour: "2-digit",
-        minute: "2-digit"
+        day: "numeric"
     });
-
 };
 
 const closeNoteDetail = () => {
