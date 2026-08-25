@@ -95,6 +95,9 @@ const translations = {
             "Delete your account and all associated data permanently.",
         deleteAccount: "Delete account",
 
+        //TODAY
+        todayOverview: "Today's Overview",
+
         //NOTES
         notesSubtitle: "Quick thoughts and reminders.",
         newNote: "Add note",
@@ -292,6 +295,9 @@ const translations = {
         deleteAccountText:
             "Ta bort ditt konto och all tillhörande data permanent.",
         deleteAccount: "Ta bort konto",
+
+        //TODAY
+        todayOverview: "Dagsöversikt",
 
         //NOTES
         notesSubtitle: "Snabba tankar och påminnelser.",
