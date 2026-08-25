@@ -139,6 +139,31 @@ const isTaskOverdue = (task) => {
     return dueDate < getStartOfToday();
 };
 
+const getTaskOverdueDays = (dateString) => {
+
+    if (!dateString) {
+        return 0;
+    }
+
+    const dueDate =
+        new Date(dateString);
+
+    const today =
+        new Date();
+
+    dueDate.setHours(0, 0, 0, 0);
+    today.setHours(0, 0, 0, 0);
+
+    const diff =
+        Math.floor(
+            (today - dueDate) /
+            (1000 * 60 * 60 * 24)
+        );
+
+    return diff > 0
+        ? diff
+        : 0;
+};
 
 const isTaskDueToday = (task) => {
 
@@ -328,6 +353,11 @@ const renderTasks = (tasks = currentTasks) => {
     // Renders a single task row.
     const renderTaskRow = (task) => {
 
+        const overdueDays =
+            task.status !== "DONE"
+                ? getTaskOverdueDays(task.dueAt)
+                : 0;
+
         const priorityClass =
             task.priority?.toLowerCase() || "none";
 
@@ -373,9 +403,25 @@ const renderTasks = (tasks = currentTasks) => {
 
             <div class="task-row-footer">
 
-                <p class="task-row-date">
-                    ${formatDate(task.dueAt)}
-                </p>
+                ${
+            overdueDays > 0
+                ? `
+            <div class="task-overdue">
+                ⚠ ${overdueDays} ${
+                    overdueDays === 1
+                        ? t("dayOverdue")
+                        : t("daysOverdue")
+                }
+            </div>
+        `
+                : task.dueAt
+                    ? `
+        <p class="task-row-date">
+            ${formatDate(task.dueAt)}
+        </p>
+    `
+                    : ""
+        }
 
                 <div class="task-row-footer-right">
 

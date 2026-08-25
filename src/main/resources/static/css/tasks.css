@@ -251,16 +251,6 @@
     margin-left: 30px;
 }
 
-.task-row-date {
-    margin: 0;
-
-    color: var(--text-muted);
-
-    font-size: 0.82rem;
-
-    white-space: nowrap;
-}
-
 .task-row-footer-right {
     display: flex;
     align-items: center;
@@ -318,6 +308,40 @@
     stroke-linejoin: round;
 
     fill: none;
+}
+
+.task-row-date {
+    width: fit-content;
+
+    margin: 0;
+    padding: 3px 7px;
+
+    border-radius: 999px;
+
+    background: var(--neutral-soft);
+    color: var(--text-muted);
+
+    font-size: 0.70rem;
+    font-weight: 700;
+
+    white-space: nowrap;
+}
+
+.task-overdue {
+    margin-top: 6px;
+
+    background: var(--danger-soft);
+    color: var(--danger);
+
+    width: fit-content;
+    max-width: none;
+
+    padding: 4px 7px;
+
+    font-size: 0.70rem;
+    font-weight: 700;
+
+    white-space: nowrap;
 }
 
 /* ---------------- */
@@ -784,12 +808,6 @@
 
     .task-row-meta {
         gap: 6px;
-    }
-
-    .task-row-date {
-        min-width: auto;
-
-        font-size: 0.75rem;
     }
 
     .priority-badge {
