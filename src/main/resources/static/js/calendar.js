@@ -1126,6 +1126,24 @@ const changeCalendarMonth = async (
 };
 
 
+// Keeps both the month view's data (currentEvents) and the list view's
+// data (listViewEvents) in sync, regardless of which one is currently
+// visible - so creating/editing/deleting an event never leaves the
+// *other* view showing stale data next time you switch to it.
+const refreshEventData = async () => {
+
+    const refreshTasks = [loadEvents()];
+
+    // Only refresh the list view if it's actually been opened before -
+    // its date inputs are empty until then, which would produce invalid
+    // dates if we tried to fetch based on them.
+    if (listViewInitialized) {
+        refreshTasks.push(updateEventList());
+    }
+
+    await Promise.all(refreshTasks);
+};
+
 /* -------------------------------- */
 /* Restore calendar view            */
 /* -------------------------------- */
@@ -1140,51 +1158,57 @@ const changeCalendarMonth = async (
 const restoreCalendarView = () => {
 
     const header =
-        document.querySelector(
-            ".calendar-header"
-        );
+        document.querySelector(".calendar-header");
+
+    const viewTabs =
+        document.querySelector(".calendar-view-tabs");
 
     const calendarContainer =
-        document.querySelector(
-            ".calendar-container"
-        );
+        document.querySelector(".calendar-container");
 
     const dayView =
-        document.getElementById(
-            "calendar-day-view"
-        );
+        document.getElementById("calendar-day-view");
 
+    const listContainer =
+        document.getElementById("event-list-container");
+
+    const searchBtn =
+        document.getElementById("calendar-search-btn");
 
     if (header) {
         header.style.display = "flex";
     }
 
-    if (calendarContainer) {
-        calendarContainer.style.display = "block";
+    if (viewTabs) {
+        viewTabs.style.display = "flex";
     }
 
     if (dayView) {
-
-        /*
-         * Keep the day view visible.
-         * This is what allows the user to click
-         * dates and see their events underneath.
-         */
-        dayView.style.display = "block";
-
-        /*
-         * Clear the old create-event form.
-         * Do NOT hide the day view.
-         */
         dayView.innerHTML = "";
     }
 
+    if (currentCalendarView === "list") {
 
-    renderWeekdays();
-    renderCalendar();
+        if (calendarContainer) calendarContainer.style.display = "none";
+        if (dayView) dayView.style.display = "none";
+        if (listContainer) listContainer.classList.add("active");
+        if (searchBtn) searchBtn.style.display = "flex";
+
+    } else {
+
+        if (calendarContainer) calendarContainer.style.display = "block";
+        if (dayView) dayView.style.display = "block";
+        if (listContainer) listContainer.classList.remove("active");
+        if (searchBtn) searchBtn.style.display = "none";
+
+        renderWeekdays();
+    }
+
+    // Keep both views' data current, regardless of which one is visible.
+    refreshEventData();
+
     editingEventId = null;
 };
-
 
 /* -------------------------------- */
 /* Create event                     */
@@ -1215,6 +1239,22 @@ const renderCreateEventForm = () => {
     if (calendarContainer) {
         calendarContainer.style.display = "none";
     }
+
+    const listContainer =
+        document.getElementById("event-list-container");
+
+    if (listContainer) {
+        listContainer.classList.remove("active");
+    }
+
+    const viewTabs =
+        document.querySelector(".calendar-view-tabs");
+
+    if (viewTabs) {
+        viewTabs.style.display = "none";
+    }
+
+    closeCalendarSearch();
 
     if (dayView) {
 
@@ -1798,15 +1838,6 @@ const submitCreateEvent = async () => {
             );
         }
 
-
-        /*
-         * Reload events so the newly created
-         * event appears in the calendar.
-         */
-
-        await loadEvents();
-
-
 // Returns to the page where quick add was opened.
         const quickAdd =
             new URLSearchParams(window.location.search)
@@ -1846,15 +1877,63 @@ const updateEvent = async () => {
             "event-title"
         ).value.trim();
 
-    const startTime =
+    const isAllDay =
         document.getElementById(
-            "event-start"
-        ).value;
+            "event-is-all-day"
+        ).checked;
 
-    const endTime =
-        document.getElementById(
-            "event-end"
-        ).value;
+    let startTime;
+    let endTime;
+
+    if (isAllDay) {
+
+        const allDayDate =
+            document.getElementById(
+                "event-all-day-date"
+            ).value;
+
+        if (!allDayDate) {
+
+            document.getElementById(
+                "event-message"
+            ).textContent =
+                "Date cannot be empty";
+
+            return;
+        }
+
+        startTime = `${allDayDate}T00:00:00`;
+
+        // Matches how the backend computes endTime for all-day events on
+        // create (start of day + 1 day) - needed here too, since sending
+        // null would leave the OLD endTime in place, which could now be
+        // before the new startTime and get rejected by the backend.
+        const nextDay = new Date(`${allDayDate}T00:00:00`);
+        nextDay.setDate(nextDay.getDate() + 1);
+        endTime = formatDateTimeForApi(nextDay);
+
+    } else {
+
+        startTime =
+            document.getElementById(
+                "event-start"
+            ).value;
+
+        endTime =
+            document.getElementById(
+                "event-end"
+            ).value;
+
+        if (!startTime) {
+
+            document.getElementById(
+                "event-message"
+            ).textContent =
+                "Start time cannot be empty";
+
+            return;
+        }
+    }
 
     const location =
         document.getElementById(
@@ -1865,11 +1944,6 @@ const updateEvent = async () => {
         document.getElementById(
             "event-description"
         ).value.trim();
-
-    const isAllDay =
-        document.getElementById(
-            "event-is-all-day"
-        ).checked;
 
     const isRecurring =
         document.getElementById(
@@ -1949,8 +2023,6 @@ const updateEvent = async () => {
 
         editingEventId =
             null;
-
-        await loadEvents();
 
         restoreCalendarView();
 
@@ -2086,36 +2158,36 @@ const initPage = async () => {
 };
 
 //delete event
-const deleteEvent = async () => {
+        const deleteEvent = async () => {
 
-    if (!confirm("Delete this event?")) {
-        return;
-    }
+            if (!confirm("Delete this event?")) {
+                return;
+            }
 
-    try {
+            try {
 
-        const response =
-            await apiFetch(
-                `/events/${selectedEventId}`,
-                {
-                    method: "DELETE"
+                const response =
+                    await apiFetch(
+                        `/events/${selectedEventId}`,
+                        {
+                            method: "DELETE"
+                        }
+                    );
+
+                if (!response.ok) {
+                    throw new Error("Failed to delete event");
                 }
-            );
 
-        if (!response.ok) {
-            throw new Error("Failed to delete event");
-        }
+                closeEventDetail();
 
-        closeEventDetail();
+                await refreshEventData();
 
-        await loadEvents();
+                if (currentCalendarView === "month") {
+                    document.getElementById("calendar-day-view").innerHTML = "";
+                }
 
-        document.getElementById(
-            "calendar-day-view"
-        ).innerHTML = "";
+            } catch (error) {
 
-    } catch (error) {
-
-        alert(error.message);
-    }
-};
+                alert(error.message);
+            }
+        };
