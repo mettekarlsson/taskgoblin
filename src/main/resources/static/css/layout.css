@@ -39,6 +39,13 @@
     border-radius: 999px;
 }
 
+.hamburger-btn span:last-child {
+    width: 18px;
+
+    align-self: flex-start;
+    margin-left: 10px;
+}
+
 /* Close button */
 
 .close-btn {

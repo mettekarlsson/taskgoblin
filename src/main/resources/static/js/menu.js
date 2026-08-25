@@ -2,16 +2,17 @@ const renderMenu = () => {
 
     document.getElementById("app-header").innerHTML = `
 
-        <img
-                src="/images/logo.png"
-                alt="TaskGoblin logo"
-                class="app-logo"
-        />
+        <a href="/index.html" class="app-logo-link">
+    <img
+        src="/images/logo.png"
+        alt="TaskGoblin logo"
+        class="app-logo"
+    />
+</a>
 
         <button class="hamburger-btn" id="menu-btn">
             <span></span>
-            <span></span>
-            <span></span>
+            <span></span>            
         </button>
 
         <aside class="sidebar-content" id="sidebar">
@@ -238,6 +239,19 @@ const initializeMenu = () => {
 
     const closeBtn =
         document.getElementById("close-btn");
+
+    document.addEventListener("click", (event) => {
+
+        const clickedOutsideSidebar =
+            sidebar.classList.contains("open") &&
+            !sidebar.contains(event.target) &&
+            !menuBtn.contains(event.target);
+
+        if (clickedOutsideSidebar) {
+            sidebar.classList.remove("open");
+        }
+
+    });
 
     const sidebar =
         document.getElementById("sidebar");

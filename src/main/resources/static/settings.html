@@ -32,9 +32,12 @@
 
 <div id="delete-user-modal" class="modal">
     <div class="modal-content">
-        <h2>Delete account?</h2>
 
-        <p>
+        <h2 data-translate="deleteAccount">
+            Delete account
+        </h2>
+
+        <p data-translate="deleteAccountWarning">
             This will permanently delete your account and all your data.
             This action cannot be undone.
         </p>
@@ -43,6 +46,7 @@
             <button
                     class="modal-cancel-btn"
                     onclick="closeDeleteUserModal()"
+                    data-translate="cancel"
             >
                 Cancel
             </button>
@@ -50,10 +54,12 @@
             <button
                     class="modal-confirm-btn"
                     onclick="deleteUser()"
+                    data-translate="delete"
             >
                 Delete
             </button>
         </div>
+
     </div>
 </div>
 
