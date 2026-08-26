@@ -1,0 +1,102 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Notes | TaskGoblin</title>
+
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/notes.css">
+</head>
+<body>
+
+<header id="app-header"></header>
+
+<main class="notes-page">
+
+    <section class="notes-header">
+
+        <div>
+            <h1 data-translate="notes">Notes</h1>
+            <p data-translate="notesSubtitle">Quick thoughts and reminders.</p>
+        </div>
+
+        <div class="notes-header-actions">
+            <button
+                    class="notes-search-btn"
+                    onclick="toggleSearch()"
+            >
+                🔍
+            </button>
+
+            <button class="new-note-btn" onclick="renderCreateNoteForm()">
+                <span class="new-note-plus">+</span>
+                <span data-translate="newNote">New note</span>
+            </button>
+        </div>
+
+    </section>
+
+    <section class="notes-search-view" id="notes-search-view">
+
+        <input
+                id="notes-search"
+                class="notes-search-input"
+                type="text"
+                data-translate-placeholder="searchNotes"
+                placeholder="Search notes..."
+        >
+
+    </section>
+
+    <section id="notes-grid" class="notes-grid">
+        Loading notes...
+    </section>
+
+</main>
+
+<div class="modal" id="delete-note-modal">
+
+    <div class="modal-content">
+
+        <h2 data-translate="deleteNoteTitle">
+            Delete note?
+        </h2>
+
+        <p data-translate="deleteNoteMessage">
+            This action cannot be undone.
+        </p>
+
+        <div class="modal-actions">
+            <button class="modal-cancel-btn"
+                    onclick="closeDeleteModal()"
+                    data-translate="cancel">
+                Cancel
+            </button>
+
+            <button class="modal-confirm-btn"
+                    onclick="confirmDeleteNote()"
+                    data-translate="delete">
+                Delete
+            </button>
+        </div>
+
+    </div>
+
+</div>
+
+<footer id="app-footer"></footer>
+
+<script src="/js/auth.js"></script>
+<script src="/js/translations.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/menu.js"></script>
+<script src="/js/notes.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>

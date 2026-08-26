@@ -1,0 +1,156 @@
+/* ----------------- */
+/*   Settings page   */
+/* ----------------- */
+
+.settings-page {
+    display: flex;
+    justify-content: center;
+}
+
+.settings-container {
+    width: 100%;
+    max-width: 520px;
+}
+
+.settings-container h1 {
+    color: var(--text);
+    margin-bottom: 24px;
+}
+
+.settings-card {
+    background: var(--card);
+
+    border-radius: 18px;
+    padding: 24px;
+
+    box-shadow: 0 8px 20px var(--shadow);
+}
+
+.settings-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+
+    padding: 16px 0;
+
+    border-bottom: 1px solid rgba(39, 51, 15, 0.15);
+}
+
+.settings-row:last-child {
+    border-bottom: none;
+}
+
+.settings-label {
+    font-weight: 700;
+    color: var(--text);
+}
+
+.settings-value {
+    margin-left: 8px;
+    color: var(--text-muted);
+}
+
+.settings-cancel-btn {
+    background: var(--primary-soft);
+    color: var(--primary);
+}
+
+.settings-error {
+    color: var(--danger);
+}
+
+.settings-switch {
+    width: 52px;
+    height: 30px;
+
+    border: none;
+    border-radius: 999px;
+
+    background: var(--secondary);
+
+    padding: 3px;
+
+    cursor: pointer;
+}
+
+.settings-switch span {
+    width: 24px;
+    height: 24px;
+
+    display: block;
+
+    border-radius: 50%;
+
+    background: white;
+
+    transition: 0.2s ease;
+}
+
+.settings-switch.on {
+    background: var(--primary);
+}
+
+.settings-switch.on span {
+    transform: translateX(22px);
+}
+
+.settings-select {
+    width: 110px;
+
+    border: none;
+    border-radius: 999px;
+
+    padding: 8px 12px;
+
+    background: var(--surface);
+    color: var(--text);
+
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.settings-danger-zone {
+    margin-top: 24px;
+
+    padding: 20px;
+
+    background: var(--note-red-bg);
+
+    border-radius: 16px;
+}
+
+.settings-danger-zone h2 {
+    margin-bottom: 10px;
+
+    color: var(--danger);
+
+    font-size: 1.1rem;
+}
+
+.settings-danger-zone p {
+    margin-bottom: 16px;
+
+    color: var(--text);
+
+    line-height: 1.5;
+}
+
+.settings-delete-btn {
+    width: 50%;
+
+    display: block;
+    margin: 0 auto;
+
+    border: none;
+    border-radius: 999px;
+
+    padding: 12px 18px;
+
+    background: var(--danger);
+    color: white;
+
+    font-weight: 700;
+    cursor: pointer;
+}
+
+/* -------------------- */

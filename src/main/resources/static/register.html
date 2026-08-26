@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Register | TaskGoblin</title>
+
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+
+<main class="auth-page">
+
+    <section class="auth-card">
+
+        <h1>Create account</h1>
+
+        <!-- Disable browser's built-in validation so custom error messages can be displayed. -->
+        <form id="register-form" novalidate>
+
+            <input
+                    id="name"
+                    class="auth-input"
+                    type="text"
+                    placeholder="First- and Lastname"
+            >
+            <p id="name-error" class="field-error"></p>
+
+            <input
+                    id="email"
+                    class="auth-input"
+                    type="email"
+                    placeholder="E-mail"
+            >
+            <p id="email-error" class="field-error"></p>
+
+            <input
+                    id="password"
+                    class="auth-input"
+                    type="password"
+                    placeholder="Password"
+            >
+            <p id="password-error" class="field-error"></p>
+
+            <input
+                    id="confirm-password"
+                    class="auth-input"
+                    type="password"
+                    placeholder="Confirm password"
+            >
+
+            <p id="confirm-password-error" class="field-error"></p>
+
+            <button class="auth-btn" type="submit">
+                Register
+            </button>
+
+        </form>
+
+        <p id="register-message" class="auth-message"></p>
+
+        <p class="auth-switch-text">
+            Already have an account?
+            <a href="/login.html">Login here</a>
+        </p>
+
+    </section>
+
+</main>
+
+<script src="/js/auth.js"></script>
+<script src="/js/register.js"></script>
+
+</body>
+</html>

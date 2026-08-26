@@ -2,6 +2,8 @@ package com.example.taskgoblin.service;
 
 import com.example.taskgoblin.dto.CreateNoteDTO;
 import com.example.taskgoblin.dto.NoteDTO;
+import com.example.taskgoblin.dto.UpdateNoteDTO;
+import com.example.taskgoblin.exception.ResourceNotFoundException;
 import com.example.taskgoblin.mapper.NoteMapper;
 import com.example.taskgoblin.model.Note;
 import com.example.taskgoblin.model.User;
@@ -17,12 +19,14 @@ public class NoteService {
 
     private final NoteRepository noteRepository;
     private final UserRepository userRepository;
+    private final NoteMapper noteMapper;
 
     // Constructor injection.
     // Spring automatically injects the repositories here.
-    public NoteService(NoteRepository noteRepository, UserRepository userRepository) {
+    public NoteService(NoteRepository noteRepository, UserRepository userRepository, NoteMapper noteMapper) {
         this.noteRepository = noteRepository;
         this.userRepository = userRepository;
+        this.noteMapper = noteMapper;
     }
 
     // Returns all notes that belong to a specific user.
@@ -31,7 +35,7 @@ public class NoteService {
         List<Note> notes = noteRepository.findByUserId(id);
 
         return notes.stream()
-                .map(NoteMapper::mapToNoteDto)
+                .map(noteMapper::mapToNoteDto)
                 .toList();
     }
 
@@ -40,9 +44,9 @@ public class NoteService {
     // or belongs to another user.
     public NoteDTO getNote(Long id, Long userId) {
         Note note = noteRepository.findByIdAndUserId(id, userId)
-                .orElseThrow(() -> new RuntimeException("Note not found"));
+                .orElseThrow(() -> new ResourceNotFoundException("Note"));
 
-        return NoteMapper.mapToNoteDto(note);
+        return noteMapper.mapToNoteDto(note);
     }
 
     // Creates and saves a new note for a specific user.
@@ -50,13 +54,61 @@ public class NoteService {
     // are set in the service layer before saving.
     public NoteDTO createNote(Long userId, CreateNoteDTO createNoteDto) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new RuntimeException("User not found"));
-        Note note = NoteMapper.mapToNoteEntity(createNoteDto);
+                .orElseThrow(() -> new ResourceNotFoundException("User"));
+        Note note = noteMapper.mapToNoteEntity(createNoteDto);
         note.setUser(user);
         note.setCreatedAt(LocalDateTime.now());
         note.setLastInteractedAt(LocalDateTime.now());
         note.setPinned(false);
         Note savedNote = noteRepository.save(note);
-        return NoteMapper.mapToNoteDto(savedNote);
+        return noteMapper.mapToNoteDto(savedNote);
+    }
+
+    // Deletes a note for a specific user.
+    public void deleteNote(Long noteId, Long userId) {
+
+        Note note = noteRepository.findByIdAndUserId(noteId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Note"));
+
+        noteRepository.delete(note);
+    }
+
+    public NoteDTO updateNote(
+            Long noteId,
+            Long userId,
+            UpdateNoteDTO updateNoteDTO
+    ) {
+
+        Note note = noteRepository.findByIdAndUserId(noteId, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Note"));
+
+        boolean contentWasUpdated = false;
+
+        if (updateNoteDTO.getTitle() != null) {
+            note.setTitle(updateNoteDTO.getTitle());
+            contentWasUpdated = true;
+        }
+
+        if (updateNoteDTO.getContent() != null) {
+            note.setContent(updateNoteDTO.getContent());
+            contentWasUpdated = true;
+        }
+
+        if (updateNoteDTO.getColor() != null) {
+            note.setColor(updateNoteDTO.getColor());
+            contentWasUpdated = true;
+        }
+
+        if (updateNoteDTO.getPinned() != null) {
+            note.setPinned(updateNoteDTO.getPinned());
+        }
+
+        if (contentWasUpdated) {
+            note.setLastInteractedAt(LocalDateTime.now());
+        }
+
+        Note updatedNote = noteRepository.save(note);
+
+        return noteMapper.mapToNoteDto(updatedNote);
     }
 }

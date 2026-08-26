@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login | TaskGoblin</title>
+
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/auth.css">
+</head>
+<body>
+
+<main class="auth-page">
+
+    <section class="auth-card">
+
+<!--        <div class="auth-logo">-->
+<!--            <img-->
+<!--                    src="/images/logo.png"-->
+<!--                    alt="TaskGoblin"-->
+<!--            >-->
+<!--        </div>-->
+
+        <div class="auth-logo">
+            <a href="/" class="auth-logo-link">
+                <img
+                        src="/images/logo.png"
+                        alt="Till TaskGoblin startsida"
+                >
+            </a>
+        </div>
+        <h1>TaskGoblin</h1>
+
+        <form id="login-form">
+
+            <input
+                    id="email"
+                    class="auth-input"
+                    type="email"
+                    placeholder="E-mail"
+            >
+
+            <input
+                    id="password"
+                    class="auth-input"
+                    type="password"
+                    placeholder="Password"
+            >
+
+            <button class="auth-btn" type="submit">
+                Login
+            </button>
+
+        </form>
+
+        <p id="login-message" class="auth-message"></p>
+
+        <p class="auth-switch-text">
+            Don't have an account?
+            <a href="/register.html">Register here</a>
+        </p>
+
+    </section>
+
+</main>
+
+<script src="/js/auth.js"></script>
+<script src="/js/login.js"></script>
+
+</body>
+</html>

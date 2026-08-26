@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Tasks | TaskGoblin</title>
+
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/tasks.css">
+</head>
+<body>
+
+<header id="app-header"></header>
+
+<main class="tasks-page">
+
+    <section class="tasks-header">
+
+        <div>
+            <h1 data-translate="tasks">Tasks</h1>
+            <p class="tasks-subtitle" data-translate="taskSubtitle">
+                Keep track of your tasks.
+            </p>
+        </div>
+
+        <div class="tasks-header-actions">
+            <button
+                    class="tasks-search-btn"
+                    onclick="toggleTaskSearch()"
+            >
+                🔍
+            </button>
+
+            <button class="new-task-btn" onclick="renderCreateTaskForm()">
+                + <span data-translate="addTask"></span>
+            </button>
+        </div>
+
+    </section>
+
+    <section class="tasks-search-view" id="tasks-search-view">
+        <input
+                id="tasks-search"
+                class="tasks-search-input"
+                type="text"
+                data-translate-placeholder="searchTasks"
+                placeholder="Search tasks..."
+        >
+    </section>
+
+    <section class="task-filters">
+        <button
+                class="task-filter active"
+                data-filter="all"
+                onclick="setTaskFilter('all')"
+                data-translate="all">
+            All
+        </button>
+
+        <button
+                class="task-filter"
+                data-filter="today"
+                onclick="setTaskFilter('today')"
+                data-translate="today">
+            Today
+        </button>
+
+        <button
+                class="task-filter"
+                data-filter="overdue"
+                onclick="setTaskFilter('overdue')"
+                data-translate="overdue">
+            Overdue
+        </button>
+
+        <button
+                class="task-filter"
+                data-filter="upcoming"
+                onclick="setTaskFilter('upcoming')"
+                data-translate="upcoming">
+            Upcoming
+        </button>
+
+        <button
+                class="task-filter"
+                data-filter="completed"
+                onclick="setTaskFilter('completed')"
+                data-translate="completed">
+            Completed
+        </button>
+
+    </section>
+
+    <section id="task-content">
+        Loading tasks...
+    </section>
+
+</main>
+
+<div class="modal" id="delete-task-modal">
+
+    <div class="modal-content">
+
+        <h2 data-translate="deleteTaskTitle">
+            Delete task?
+        </h2>
+
+        <p data-translate="deleteTaskMessage">
+            This action cannot be undone.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                    class="modal-cancel-btn"
+                    onclick="closeDeleteTaskModal()"
+                    data-translate="cancel"
+            >
+                Cancel
+            </button>
+
+            <button
+                    class="modal-confirm-btn"
+                    onclick="confirmDeleteTask()"
+                    data-translate="delete"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer id="app-footer"></footer>
+
+<script src="/js/auth.js"></script>
+<script src="/js/translations.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/menu.js"></script>
+<script src="/js/tasks.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>

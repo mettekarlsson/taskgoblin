@@ -1,0 +1,80 @@
+/* ------------------- */
+/*   Theme variables   */
+/* ------------------- */
+
+:root {
+    --background: #F6F1EB;
+    --card: #EEE5D9;
+    --surface: #FFFBF5;
+
+    --text: #27330F;
+    --text-muted: rgba(39, 51, 15, 0.75);
+
+    --primary: #53602C;
+    --primary-soft: #E9EFD8;
+    --primary-border: rgba(83, 96, 44, 0.75);
+
+    --neutral-soft: rgba(0, 0, 0, 0.06);
+
+    --secondary: #d6c8b8;
+    --danger: #B3261E;
+    --danger-soft: #FCE8E6;
+
+    --border: rgba(39, 51, 15, 0.15);
+    --border-soft: rgba(39, 51, 15, 0.10);
+    --hover-soft: rgba(83, 96, 44, 0.08);
+
+    --shadow: rgba(0, 0, 0, 0.08);
+    --shadow-strong: rgba(0, 0, 0, 0.18);
+
+    --note-text: #111;
+    --note-text-muted: rgba(17, 17, 17, 0.7);
+
+    --note-default-bg: #EEE5D9;
+    --note-yellow-bg: #FFF8DD;
+    --note-green-bg: #E8F5E9;
+    --note-blue-bg: #DCE7F4;
+    --note-red-bg: #FDE2E4;
+    --note-lilac-bg: #EDE0EF;
+
+    --note-accent-text: #27330F;
+}
+
+body.dark-theme {
+    --background: #1F211A;
+    --card: #2B2E22;
+    --surface: #343829;
+
+    --text: #F6F1EB;
+    --text-muted: rgba(246, 241, 235, 0.72);
+
+    --primary: #A8B86D;
+    --primary-soft: #3B4328;
+    --primary-border: rgba(168, 184, 109, 0.75);
+
+    --neutral-soft: rgba(255, 255, 255, 0.08);
+
+    --secondary: #4B4038;
+    --danger: #FF7A7A;
+    --danger-soft: #3D2528;
+
+    --border: rgba(246, 241, 235, 0.16);
+    --border-soft: rgba(246, 241, 235, 0.10);
+    --hover-soft: rgba(168, 184, 109, 0.12);
+
+    --shadow: rgba(0, 0, 0, 0.25);
+    --shadow-strong: rgba(0, 0, 0, 0.38);
+
+    --note-text: #111;
+    --note-text-muted: rgba(17, 17, 17, 0.7);
+
+    --note-default-bg: #2B2E22;
+    --note-yellow-bg: #5A5330;
+    --note-green-bg: #344536;
+    --note-blue-bg: #34465A;
+    --note-red-bg: #5A3C40;
+    --note-lilac-bg: #4D3B55;
+
+    --note-accent-text: #F6F1EB;
+}
+/* -------------------- */

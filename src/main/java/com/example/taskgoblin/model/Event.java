@@ -129,19 +129,19 @@ public class Event {
         this.updatedAt = updatedAt;
     }
 
-    public boolean isAllDay() {
+    public Boolean getIsAllDay() {
         return isAllDay;
     }
 
-    public void setAllDay(boolean allDay) {
+    public void setIsAllDay(boolean allDay) {
         isAllDay = allDay;
     }
 
-    public boolean isRecurring() {
+    public Boolean getIsRecurring() {
         return isRecurring;
     }
 
-    public void setRecurring(boolean recurring) {
+    public void setIsRecurring(boolean recurring) {
         isRecurring = recurring;
     }
 

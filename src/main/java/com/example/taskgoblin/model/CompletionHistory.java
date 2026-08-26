@@ -20,8 +20,15 @@ public class CompletionHistory {
     @JoinColumn(name = "task_id")
     private Task task;
 
+    @ManyToOne
+    @JoinColumn(name = "list_id")
+    private TaskList list;
+
     @Column(nullable = false)
     private LocalDateTime completedAt;
+
+    @Column(name = "previous_due_at")
+    private LocalDateTime previousDueAt;
 
     public CompletionHistory() {
     }
@@ -46,11 +53,27 @@ public class CompletionHistory {
         this.task = task;
     }
 
+    public TaskList getList() {
+        return list;
+    }
+
+    public void setList(TaskList list) {
+        this.list = list;
+    }
+
     public LocalDateTime getCompletedAt() {
         return completedAt;
     }
 
     public void setCompletedAt(LocalDateTime completedAt) {
         this.completedAt = completedAt;
+    }
+
+    public LocalDateTime getPreviousDueAt() {
+        return previousDueAt;
+    }
+
+    public void setPreviousDueAt(LocalDateTime previousDueAt) {
+        this.previousDueAt = previousDueAt;
     }
 }

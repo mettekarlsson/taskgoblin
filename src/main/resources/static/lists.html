@@ -1,0 +1,150 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1">
+
+    <title>Lists | TaskGoblin</title>
+
+    <link rel="stylesheet" href="/css/theme.css">
+    <link rel="stylesheet" href="/css/base.css">
+    <link rel="stylesheet" href="/css/layout.css">
+    <link rel="stylesheet" href="/css/lists.css">
+</head>
+<body>
+
+<header id="app-header"></header>
+
+<main class="lists-page">
+
+    <section class="lists-header">
+
+        <div>
+            <h1 data-translate="lists">Lists</h1>
+            <p class="lists-subtitle" data-translate="listsSubtitle">
+                Keep your routines and tasks organized.
+            </p>
+        </div>
+
+        <div class="lists-header-actions">
+            <button
+                    class="lists-search-btn"
+                    onclick="toggleListSearch()"
+            >
+                🔍
+            </button>
+
+            <button class="new-list-btn" onclick="renderCreateListForm()">
+                + <span data-translate="addList">Add list</span>
+            </button>
+        </div>
+
+    </section>
+
+    <section class="lists-search-view" id="lists-search-view">
+        <input
+                id="lists-search"
+                class="lists-search-input"
+                type="text"
+                placeholder="Search lists..."
+        >
+    </section>
+
+    <section class="list-filters">
+
+        <button
+                class="list-filter active"
+                data-filter="all"
+                onclick="setListFilter('all')"
+                data-translate="all">
+            All
+        </button>
+
+        <button
+                class="list-filter"
+                data-filter="today"
+                onclick="setListFilter('today')"
+                data-translate="today">
+            Today
+        </button>
+
+        <button
+                class="list-filter"
+                data-filter="overdue"
+                onclick="setListFilter('overdue')"
+                data-translate="overdue">
+            Overdue
+        </button>
+
+        <button
+                class="list-filter"
+                data-filter="upcoming"
+                onclick="setListFilter('upcoming')"
+                data-translate="upcoming">
+            Upcoming
+        </button>
+
+        <button
+                class="list-filter"
+                data-filter="completed"
+                onclick="setListFilter('completed')"
+                data-translate="completed">
+            Completed
+        </button>
+
+    </section>
+
+    <section id="lists-grid" class="lists-grid">
+        Loading lists...
+    </section>
+
+</main>
+
+<div class="modal" id="delete-list-modal">
+
+    <div class="modal-content">
+
+        <h2 data-translate="deleteListTitle">
+            Delete list?
+        </h2>
+
+        <p data-translate="deleteListMessage">
+            This action cannot be undone.
+        </p>
+
+        <div class="modal-actions">
+
+            <button
+                    class="modal-cancel-btn"
+                    onclick="closeDeleteListModal()"
+                    data-translate="cancel"
+            >
+                Cancel
+            </button>
+
+            <button
+                    class="modal-confirm-btn"
+                    onclick="confirmDeleteList()"
+                    data-translate="delete"
+            >
+                Delete
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<footer id="app-footer"></footer>
+
+<script src="/js/auth.js"></script>
+<script src="/js/translations.js"></script>
+<script src="/js/theme.js"></script>
+<script src="/js/menu.js"></script>
+<script src="/js/lists.js"></script>
+<script src="/js/app.js"></script>
+
+</body>
+</html>
